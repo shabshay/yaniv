@@ -2,7 +2,8 @@ export enum CardSymbol {
   Hearts = 'Hearts',
   Clubs = 'Clubs',
   Diamonds = 'Diamonds',
-  Spades = 'Spades'
+  Spades = 'Spades',
+  Joker = 'Joker'
 }
 
 export interface Card {

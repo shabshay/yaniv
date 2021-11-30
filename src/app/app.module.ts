@@ -11,6 +11,7 @@ import { GameComponent } from './game/game.component';
 import { PlayerComponent } from './player/player.component';
 import { CardsComponent } from './cards/cards.component';
 import { CardComponent } from './card/card.component';
+import {MatButtonModule} from '@angular/material/button';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { CardComponent } from './card/card.component';
     BrowserAnimationsModule,
     MatToolbarModule,
     MatIconModule,
-    MatCardModule
+    MatCardModule,
+    MatButtonModule
   ],
   providers: [],
   bootstrap: [AppComponent]

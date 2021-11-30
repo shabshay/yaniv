@@ -2,5 +2,11 @@
   <mat-icon>local_fire_department</mat-icon>
   <span>Yaniv!</span>
 </mat-toolbar>
-
-<app-game></app-game>
+<div class="app-container">
+  <ng-template [ngIf]="game.isRunning" [ngIfElse]="gameNotRunningTemplate">
+    <app-game [game]="game"></app-game>
+  </ng-template>
+  <ng-template #gameNotRunningTemplate>
+    <button mat-raised-button color="primary" (click)="startGame()">Play!</button>
+  </ng-template>
+</div>
