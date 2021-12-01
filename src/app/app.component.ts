@@ -12,16 +12,20 @@ export class AppComponent {
 
   constructor() {
     this.game = new Game({
-      name: 'Shay'
+      name: 'Shay',
+      id: '132'
     });
     this.game.addPlayer({
-      name: 'Tal'
+      name: 'Tal',
+      id: '133'
     });
     this.game.addPlayer({
-      name: 'Shamib'
+      name: 'Shamib',
+      id: '111'
     });
     this.game.addPlayer({
-      name: 'Dodik'
+      name: 'Dodik',
+      id: '1bd2'
     });
   }
 
