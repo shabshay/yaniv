@@ -1,5 +1,5 @@
 import {Player} from '../player/player';
-import {Card, CardSymbol} from '../card/card';
+import {Card, CardSymbol, CardSymbolEnum, CardSymbolsMap} from '../card/card';
 
 
 export class Game {
@@ -72,19 +72,19 @@ export class Game {
   private getInitDeckCards(): Card[] {
     const initDeck = [] as Card[];
     for (let i = 1; i <= 13; i++) {
-      for (const key of Object.keys(CardSymbol)) {
-        const cardSymbol = CardSymbol[key as keyof typeof CardSymbol];
-        if (cardSymbol !== CardSymbol.Joker) {
+      CardSymbolsMap.forEach((cardSymbol: CardSymbol, symbolEnum: CardSymbolEnum) => {
+        if (symbolEnum !== CardSymbolEnum.Joker) {
           initDeck.push({
             value: i,
             symbol: cardSymbol
           });
         }
-      }
+      });
     }
+    const jokerCardSymbol = CardSymbolsMap.get(CardSymbolEnum.Joker) as CardSymbol;
     initDeck.push(
-      {value: 0, symbol: CardSymbol.Joker},
-      {value: 0, symbol: CardSymbol.Joker}
+      {value: 0, symbol: jokerCardSymbol},
+      {value: 0, symbol: jokerCardSymbol}
     );
     return initDeck;
   }
