@@ -20,6 +20,9 @@ export class Game {
   }
 
   startGame(): void {
+    if (this.players.length < 2) {
+      return;
+    }
     this.dealCards();
     this.currentPlayer = this.getRandomItemFromArray(this.players);
     this.isRunning = true;

@@ -12,6 +12,7 @@ import { PlayerComponent } from './player/player.component';
 import { CardsComponent } from './cards/cards.component';
 import { CardComponent } from './card/card.component';
 import {MatButtonModule} from '@angular/material/button';
+import { OpponentComponent } from './opponent/opponent.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import {MatButtonModule} from '@angular/material/button';
     GameComponent,
     PlayerComponent,
     CardsComponent,
-    CardComponent
+    CardComponent,
+    OpponentComponent
   ],
   imports: [
     BrowserModule,

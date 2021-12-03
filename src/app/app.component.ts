@@ -1,5 +1,6 @@
 import {Component} from '@angular/core';
 import {Game} from './game/game';
+import {Player} from './player/player';
 
 @Component({
   selector: 'app-root',
@@ -11,22 +12,12 @@ export class AppComponent {
   game: Game;
 
   constructor() {
-    this.game = new Game({
-      name: 'Shay',
-      id: '132'
-    });
-    this.game.addPlayer({
-      name: 'Tal',
-      id: '133'
-    });
-    this.game.addPlayer({
-      name: 'Shamib',
-      id: '111'
-    });
-    this.game.addPlayer({
-      name: 'Dodik',
-      id: '1bd2'
-    });
+    this.game = new Game(new Player('Shay', '3sfdaa'));
+    this.game.addPlayer(new Player('Shamib', 'asd'));
+    this.game.addPlayer(new Player('Dodik', 'ffsa3'));
+    this.game.addPlayer(new Player('Kaduri', '234sdf'));
+
+    this.startGame();
   }
 
   startGame(): void {

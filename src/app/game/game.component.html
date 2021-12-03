@@ -1,3 +1,14 @@
 <div class="game-container">
-  <app-player *ngFor="let player of game.players" [player]="player"></app-player>
+  <div class="players-container">
+    <app-opponent *ngFor="let player of opponents" [player]="player"></app-opponent>
+  </div>
+  <div class="deck-container" *ngIf="game.deck.length">
+    <mat-card class="item">
+      <img mat-card-image src="assets/back.png" alt="">
+    </mat-card>
+    <app-card [card]="player.cards[0]">
+
+    </app-card>
+  </div>
+  <app-player [player]="player"></app-player>
 </div>
