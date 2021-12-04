@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {Game} from './game';
 import {Player} from '../player/player';
 import {Card} from '../card/card';
@@ -8,7 +8,7 @@ import {Card} from '../card/card';
   templateUrl: './game.component.html',
   styleUrls: ['./game.component.less']
 })
-export class GameComponent implements OnInit {
+export class GameComponent {
 
   @Input()
   game!: Game;
@@ -24,10 +24,13 @@ export class GameComponent implements OnInit {
     return this.game.players[0];
   }
 
-  get thrownCard(): Card {
-    return this.game.thrownCards?.pop() as Card;
+  get thrownCard(): Card | undefined{
+    return this.game.thrownCards?.[this.game.thrownCards.length - 1];
   }
 
-  ngOnInit(): void {
+  onDeckClick(): void {
+    if (this.player && this.player.selectedCards?.length) {
+      this.game.makeMove(this.player, this.player.selectedCards, true);
+    }
   }
 }

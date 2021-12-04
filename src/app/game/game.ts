@@ -25,25 +25,41 @@ export class Game {
     }
     this.dealCards();
     this.currentPlayer = this.getRandomItemFromArray(this.players);
+    this.currentPlayer.isCurrentPlayer = true;
     this.isRunning = true;
   }
 
-  makeMove(player: Player, thrownCard: Card, takeFromDeck: boolean): Card | null {
+  makeMove(player: Player, thrownCards: Card[], takeFromDeck: boolean): Card | null {
     if (this.currentPlayer?.id !== player.id || player.id !== this.currentPlayer.id) {
       return null;
     }
-    this.thrownCards?.push(thrownCard);
+    this.currentPlayer.cards = this.currentPlayer.cards?.filter(c => !thrownCards.includes(c));
+    this.thrownCards = this.thrownCards?.concat(thrownCards);
     const drawnCard = takeFromDeck ?
-      this.getRandomItemFromArray(this.deck, true)
+      this.getCardFromDeck()
       : this.thrownCards?.pop() as Card;
 
     this.currentPlayer.cards?.push(drawnCard);
     this.setNextPlayer();
+    if (this.currentPlayer.id !== this.players[0].id) {
+      setTimeout(() => {
+        const card: Card = this.currentPlayer.cards?.pop() ?? {} as Card;
+        const drawn = this.makeMove(this.currentPlayer, [card], true);
+      }, 5000);
+    }
     return drawnCard;
+  }
+
+  private getCardFromDeck(): Card {
+    return this.getRandomItemFromArray(this.deck, true);
   }
 
   private setNextPlayer(): void {
     this.currentPlayer = this.getNextPlayer();
+    this.currentPlayer.isCurrentPlayer = true;
+    this.players
+      .filter(p => p.id !== this.currentPlayer.id)
+      .forEach(p => p.isCurrentPlayer = false);
   }
 
   private getRandomItemFromArray<T>(array: T[], removeItem: boolean = false): T {
@@ -55,11 +71,12 @@ export class Game {
   }
 
   private dealCards(): void {
-    this.thrownCards = [];
     this.deck = this.getShuffledDeckCards();
     this.players.forEach(player => {
       player.cards = this.deck?.splice(0, 5);
     });
+    const cardToStart = this.getCardFromDeck();
+    this.thrownCards = [cardToStart];
   }
 
   private getShuffledDeckCards(): Card[] {
@@ -76,15 +93,16 @@ export class Game {
         if (symbolEnum !== CardSymbolEnum.Joker) {
           initDeck.push({
             value: i,
-            symbol: cardSymbol
+            symbol: cardSymbol,
+            selected: false
           });
         }
       });
     }
     const jokerCardSymbol = CardSymbolsMap.get(CardSymbolEnum.Joker) as CardSymbol;
     initDeck.push(
-      {value: 0, symbol: jokerCardSymbol},
-      {value: 0, symbol: jokerCardSymbol}
+      {value: 0, symbol: jokerCardSymbol, selected: false},
+      {value: 0, symbol: jokerCardSymbol, selected: false}
     );
     return initDeck;
   }

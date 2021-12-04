@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Player} from './player';
+import {Card} from '../card/card';
 
 @Component({
   selector: 'app-player',
@@ -14,5 +15,4 @@ export class PlayerComponent implements OnInit {
 
   ngOnInit(): void {
   }
-
 }

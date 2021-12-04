@@ -1,13 +1,13 @@
 <div class="game-container">
   <div class="opponent1-container">
-    <app-opponent *ngIf="opponents.length" [player]="opponents[0]"></app-opponent>
+    <app-opponent *ngIf="opponents.length > 1" [player]="opponents[1]"></app-opponent>
   </div>
   <div class="opponents-center-container">
     <div class="opponent2-container rotated-90">
-      <app-opponent *ngIf="opponents.length > 1" [player]="opponents[1]"></app-opponent>
+      <app-opponent *ngIf="opponents.length" [player]="opponents[0]"></app-opponent>
     </div>
     <div class="deck-container">
-      <div class="card flipped-card" *ngIf="game.deck.length"></div>
+      <div class="deck card flipped-card" *ngIf="game.deck.length" (click)="onDeckClick()"></div>
       <app-card *ngIf="game.thrownCards?.length" [card]="thrownCard">
       </app-card>
     </div>

@@ -10,7 +10,6 @@ export class CardComponent implements OnInit {
 
   @Input()
   card!: Card;
-  selected = false;
 
   constructor() {
   }
@@ -19,6 +18,6 @@ export class CardComponent implements OnInit {
   }
 
   onCardClick(): void {
-    this.selected = !this.selected;
+    this.card.selected = !this.card.selected;
   }
 }

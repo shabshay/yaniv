@@ -1,4 +1,5 @@
-<div class="player-container">
+<div class="player-container"
+     [ngClass]="{'current-player': player.isCurrentPlayer}">
   <app-cards *ngIf="player?.cards" [cards]="player.cards"></app-cards>
   <h2>{{player.name}}</h2>
 </div>
