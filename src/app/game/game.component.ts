@@ -1,6 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Game} from './game';
 import {Player} from '../player/player';
+import {Card} from '../card/card';
 
 @Component({
   selector: 'app-game',
@@ -21,6 +22,10 @@ export class GameComponent implements OnInit {
 
   get player(): Player {
     return this.game.players[0];
+  }
+
+  get thrownCard(): Card {
+    return this.game.thrownCards?.pop() as Card;
   }
 
   ngOnInit(): void {

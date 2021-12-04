@@ -3,11 +3,8 @@
     <app-opponent *ngFor="let player of opponents" [player]="player"></app-opponent>
   </div>
   <div class="deck-container" *ngIf="game.deck.length">
-    <mat-card class="item">
-      <img mat-card-image src="assets/back.png" alt="">
-    </mat-card>
-    <app-card [card]="player.cards[0]">
-
+    <div class="flipped-card"></div>
+    <app-card *ngIf="game.thrownCards?.length" [card]="thrownCard">
     </app-card>
   </div>
   <app-player [player]="player"></app-player>
