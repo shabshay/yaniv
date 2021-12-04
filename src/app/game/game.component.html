@@ -3,7 +3,7 @@
     <app-opponent *ngFor="let player of opponents" [player]="player"></app-opponent>
   </div>
   <div class="deck-container" *ngIf="game.deck.length">
-    <div class="flipped-card"></div>
+    <div class="card flipped-card"></div>
     <app-card *ngIf="game.thrownCards?.length" [card]="thrownCard">
     </app-card>
   </div>

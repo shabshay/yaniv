@@ -1,4 +1,8 @@
-<mat-card class="item" >
-  <h2>{{card.symbol.icon}}</h2>
-  <h2>{{card.value}}</h2>
-</mat-card>
+<div class="card card-{{card.symbol.color}}">
+  <div class="card-symbol">
+    {{card.symbol.icon}}
+  </div>
+  <div class="card-value">
+    {{card.value}}
+  </div>
+</div>

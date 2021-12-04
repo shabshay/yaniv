@@ -31,7 +31,7 @@ export class Game {
       const drawn = this.makeMove(this.currentPlayer, card);
       console.log('drawn: ', drawn);
       console.log('cards left: ', this.deck.length);
-    }, 1000);
+    }, 2000);
   }
 
   makeMove(player: Player, thrownCard: Card): Card | null {
