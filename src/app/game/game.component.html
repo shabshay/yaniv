@@ -1,11 +1,21 @@
 <div class="game-container">
-  <div class="players-container">
-    <app-opponent *ngFor="let player of opponents" [player]="player"></app-opponent>
+  <div class="opponent1-container">
+    <app-opponent *ngIf="opponents.length" [player]="opponents[0]"></app-opponent>
   </div>
-  <div class="deck-container" *ngIf="game.deck.length">
-    <div class="card flipped-card"></div>
-    <app-card *ngIf="game.thrownCards?.length" [card]="thrownCard">
-    </app-card>
+  <div class="opponents-center-container">
+    <div class="opponent2-container rotated-90">
+      <app-opponent *ngIf="opponents.length > 1" [player]="opponents[1]"></app-opponent>
+    </div>
+    <div class="deck-container">
+      <div class="card flipped-card" *ngIf="game.deck.length"></div>
+      <app-card *ngIf="game.thrownCards?.length" [card]="thrownCard">
+      </app-card>
+    </div>
+    <div class="opponent3-container rotated-270">
+      <app-opponent *ngIf="opponents.length > 2" [player]="opponents[2]"></app-opponent>
+    </div>
   </div>
-  <app-player [player]="player"></app-player>
+  <div class="player-container">
+    <app-player [player]="player"></app-player>
+  </div>
 </div>

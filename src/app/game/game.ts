@@ -26,20 +26,17 @@ export class Game {
     this.dealCards();
     this.currentPlayer = this.getRandomItemFromArray(this.players);
     this.isRunning = true;
-    setInterval(() => {
-      const card: Card = this.currentPlayer.cards?.pop() ?? {} as Card;
-      const drawn = this.makeMove(this.currentPlayer, card);
-      console.log('drawn: ', drawn);
-      console.log('cards left: ', this.deck.length);
-    }, 2000);
   }
 
-  makeMove(player: Player, thrownCard: Card): Card | null {
+  makeMove(player: Player, thrownCard: Card, takeFromDeck: boolean): Card | null {
     if (this.currentPlayer?.id !== player.id || player.id !== this.currentPlayer.id) {
       return null;
     }
     this.thrownCards?.push(thrownCard);
-    const drawnCard = this.getRandomItemFromArray(this.deck, true);
+    const drawnCard = takeFromDeck ?
+      this.getRandomItemFromArray(this.deck, true)
+      : this.thrownCards?.pop() as Card;
+
     this.currentPlayer.cards?.push(drawnCard);
     this.setNextPlayer();
     return drawnCard;

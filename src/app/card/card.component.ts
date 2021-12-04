@@ -10,9 +10,15 @@ export class CardComponent implements OnInit {
 
   @Input()
   card!: Card;
-  constructor() { }
+  selected = false;
+
+  constructor() {
+  }
 
   ngOnInit(): void {
   }
 
+  onCardClick(): void {
+    this.selected = !this.selected;
+  }
 }

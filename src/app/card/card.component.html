@@ -1,4 +1,4 @@
-<div class="card card-{{card.symbol.color}}">
+<div class="card card-{{card.symbol.color}}" [ngClass]="{'card-selected' : selected}" (click)="onCardClick()">
   <div class="card-symbol">
     {{card.symbol.icon}}
   </div>

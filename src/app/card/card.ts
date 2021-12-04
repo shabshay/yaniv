@@ -34,7 +34,7 @@ export const CardSymbolsMap: Map<CardSymbolEnum, CardSymbol> = new Map([
     color: 'red'
   }],
   [CardSymbolEnum.Joker, {
-    icon: '🃏',
+    icon: '🤡',
     color: 'red'
   }],
 ]);
