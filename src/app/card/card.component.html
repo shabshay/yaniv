@@ -1,4 +1,4 @@
-<div class="card card-{{card.symbol.color}}" [ngClass]="{'card-selected' : card.selected}" (click)="onCardClick()">
+<div class="card card-{{card.symbol.color}}" [ngClass]="{'card-selected' : card.selected && !card?.stackCard}" (click)="onCardClick()">
   <div class="card-symbol">
     {{card.symbol.icon}}
   </div>

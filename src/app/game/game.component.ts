@@ -29,8 +29,16 @@ export class GameComponent {
   }
 
   onDeckClick(): void {
+    this.makeMove(true);
+  }
+
+  onStackCardClick(): void {
+    this.makeMove(false);
+  }
+
+  private makeMove(takeFromDeck: boolean): void {
     if (this.player && this.player.selectedCards?.length) {
-      this.game.makeMove(this.player, this.player.selectedCards, true);
+      this.game.makeMove(this.player, this.player.selectedCards, takeFromDeck);
     }
   }
 }

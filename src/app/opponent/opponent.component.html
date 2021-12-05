@@ -1,7 +1,7 @@
 <div class="opponent-container"
      [ngClass]="{'current-player': player.isCurrentPlayer}">
   <div class="cards-container">
-    <div class="card flipped-card" *ngFor="let card of player.cards;">
+    <div class="card card-back" *ngFor="let card of player.cards;">
     </div>
   </div>
   <div class="opponent-header">

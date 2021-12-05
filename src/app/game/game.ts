@@ -35,15 +35,21 @@ export class Game {
       return null;
     }
     this.currentPlayer.cards = this.currentPlayer.cards?.filter(c => !thrownCards.includes(c));
-    this.thrownCards = this.thrownCards?.concat(thrownCards);
     const drawnCard = takeFromDeck ?
       this.getCardFromDeck()
-      : this.thrownCards?.pop() as Card;
-
+      : this.getCardFromStack();
+    drawnCard.stackCard = false;
+    thrownCards.forEach(card => card.stackCard = true);
+    this.thrownCards = this.thrownCards?.concat(thrownCards);
     this.currentPlayer.cards?.push(drawnCard);
+    this.currentPlayer.cards?.forEach(card => card.selected = false);
     this.setNextPlayer();
     this.initComputerMove();
     return drawnCard;
+  }
+
+  private getCardFromStack(): Card {
+    return this.thrownCards?.splice(this.thrownCards?.length - 1, 1)[0] as Card;
   }
 
   private initComputerMove(): void {

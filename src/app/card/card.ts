@@ -10,6 +10,7 @@ export interface Card {
   value: number;
   symbol: CardSymbol;
   selected: boolean;
+  stackCard?: boolean;
 }
 
 export interface CardSymbol {

@@ -7,8 +7,8 @@
       <app-opponent *ngIf="opponents.length" [player]="opponents[0]"></app-opponent>
     </div>
     <div class="deck-container">
-      <div class="deck card flipped-card" *ngIf="game.deck.length" (click)="onDeckClick()"></div>
-      <app-card *ngIf="game.thrownCards?.length" [card]="thrownCard">
+      <div class="deck card card-back" *ngIf="game.deck.length" (click)="onDeckClick()"></div>
+      <app-card *ngIf="game.thrownCards?.length" [card]="thrownCard" (click)="onStackCardClick()">
       </app-card>
     </div>
     <div class="opponent3-container rotated-270">
