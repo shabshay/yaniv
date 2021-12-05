@@ -27,6 +27,7 @@ export class Game {
     this.currentPlayer = this.getRandomItemFromArray(this.players);
     this.currentPlayer.isCurrentPlayer = true;
     this.isRunning = true;
+    this.initComputerMove();
   }
 
   makeMove(player: Player, thrownCards: Card[], takeFromDeck: boolean): Card | null {
@@ -41,13 +42,17 @@ export class Game {
 
     this.currentPlayer.cards?.push(drawnCard);
     this.setNextPlayer();
+    this.initComputerMove();
+    return drawnCard;
+  }
+
+  private initComputerMove(): void {
     if (this.currentPlayer.id !== this.players[0].id) {
       setTimeout(() => {
         const card: Card = this.currentPlayer.cards?.pop() ?? {} as Card;
-        const drawn = this.makeMove(this.currentPlayer, [card], true);
-      }, 5000);
+        this.makeMove(this.currentPlayer, [card], true);
+      }, 1000);
     }
-    return drawnCard;
   }
 
   private getCardFromDeck(): Card {

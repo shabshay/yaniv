@@ -24,8 +24,8 @@ export class GameComponent {
     return this.game.players[0];
   }
 
-  get thrownCard(): Card | undefined{
-    return this.game.thrownCards?.[this.game.thrownCards.length - 1];
+  get thrownCard(): Card {
+    return this.game.thrownCards?.[this.game.thrownCards.length - 1] as Card;
   }
 
   onDeckClick(): void {

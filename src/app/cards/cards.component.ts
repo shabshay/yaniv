@@ -16,4 +16,9 @@ export class CardsComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  get sortedCard(): Card[] | undefined {
+    return this.cards?.sort((card1, card2) => {
+      return card1.value - card2.value || ((card1.symbol.icon < card2.symbol.icon) ? -1 : 1);
+    });
+  }
 }
