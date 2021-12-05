@@ -16,8 +16,4 @@ export class CardComponent implements OnInit {
 
   ngOnInit(): void {
   }
-
-  onCardClick(): void {
-    this.card.selected = !this.card.selected;
-  }
 }

@@ -38,8 +38,7 @@ export class Game {
     const drawnCard = takeFromDeck ?
       this.getCardFromDeck()
       : this.getCardFromStack();
-    drawnCard.stackCard = false;
-    thrownCards.forEach(card => card.stackCard = true);
+    thrownCards.forEach(card => card.selected = false);
     this.thrownCards = this.thrownCards?.concat(thrownCards);
     this.currentPlayer.cards?.push(drawnCard);
     this.currentPlayer.cards?.forEach(card => card.selected = false);
