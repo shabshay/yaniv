@@ -35,39 +35,52 @@ export class Game {
     this.initComputerMove();
   }
 
-  makeMove(player: Player, thrownCards: Card[], takeFromDeck: boolean): Card | null {
+  makeMove(player: Player, thrownCards: Card[], cardToTake: Card | null = null): void {
+    const takeFromDeck = !cardToTake;
     if (this.currentPlayer?.id !== player.id || player.id !== this.currentPlayer.id) {
-      return null;
+      return;
     }
     this.currentPlayer.cards = this.currentPlayer.cards?.filter(c => !thrownCards.includes(c));
-    const drawnCard = takeFromDeck ?
-      this.getCardFromDeck()
-      : this.getCardFromStack();
+    const drawnCard = takeFromDeck ? this.getCardFromDeck() : this.getCardFromPile(cardToTake as Card);
     thrownCards.forEach(card => card.selected = false);
     this.moves.push({cards: thrownCards});
     this.currentPlayer.cards?.push(drawnCard);
     this.currentPlayer.cards?.forEach(card => card.selected = false);
     this.setNextPlayer();
     this.initComputerMove();
-    return drawnCard;
   }
 
   get lastMove(): Move {
     return this.moves[this.moves.length - 1];
   }
 
-  private getCardFromStack(): Card {
-    // todo: should select which one
-    return this.lastMove.cards[0];
+  private getCardFromPile(cardToTake: Card): Card {
+    return this.lastMove.cards.find(card => card === cardToTake) as Card;
   }
 
   private initComputerMove(): void {
     if (this.currentPlayer.id !== this.players[0].id) {
       setTimeout(() => {
-        const card: Card = this.currentPlayer.cards?.pop() ?? {} as Card;
-        this.makeMove(this.currentPlayer, [card], true);
+        const cards: Card[] = this.maxDuplicatedCards(this.currentPlayer.cards as Card[]);
+        this.makeMove(this.currentPlayer, cards);
       }, 1000);
     }
+  }
+
+  private maxDuplicatedCards(cards: Card[]): Card[] {
+    const counts = new Map<number, Card[]>();
+    let max = 0;
+    let res: Card[] = [];
+    cards.forEach(card => {
+      const cardsCount: Card[] = counts.get(card.value) ?? [];
+      const cardsCountUpdated = [...cardsCount, card];
+      counts.set(card.value, cardsCountUpdated);
+      if (cardsCountUpdated.length > max) {
+        max = cardsCountUpdated.length;
+        res = cardsCountUpdated;
+      }
+    });
+    return res;
   }
 
   private getCardFromDeck(): Card {

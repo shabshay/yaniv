@@ -7,9 +7,9 @@
       <app-opponent *ngIf="opponents.length" [player]="opponents[0]"></app-opponent>
     </div>
     <div class="deck-container">
-      <div class="deck card card-back" *ngIf="game.deck.length" (click)="onDeckClick()"></div>
+      <div class="deck card card-back" *ngIf="game.deck.length" (click)="makeMove()"></div>
       <div class="stack-container" *ngIf="thrownCards.length">
-        <app-card *ngFor="let card of thrownCards" [card]="card" (click)="onStackCardClick()">
+        <app-card *ngFor="let card of thrownCards" [card]="card" (click)="makeMove(card)">
         </app-card>
       </div>
     </div>
