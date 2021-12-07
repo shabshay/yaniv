@@ -2,17 +2,22 @@ import {Player} from '../player/player';
 import {Card, CardSymbol, CardSymbolEnum, CardSymbolsMap} from '../card/card';
 
 
+export interface Move {
+  cards: Card[];
+}
+
 export class Game {
   players: Player[];
   currentPlayer: Player;
   deck: Card[];
-  thrownCards?: Card[];
+  moves: Move[];
   isRunning = false;
 
   constructor(player: Player) {
     this.deck = [];
     this.players = [player];
     this.currentPlayer = player;
+    this.moves = [];
   }
 
   addPlayer(player: Player): void {
@@ -39,7 +44,7 @@ export class Game {
       this.getCardFromDeck()
       : this.getCardFromStack();
     thrownCards.forEach(card => card.selected = false);
-    this.thrownCards = this.thrownCards?.concat(thrownCards);
+    this.moves.push({cards: thrownCards});
     this.currentPlayer.cards?.push(drawnCard);
     this.currentPlayer.cards?.forEach(card => card.selected = false);
     this.setNextPlayer();
@@ -47,8 +52,13 @@ export class Game {
     return drawnCard;
   }
 
+  get lastMove(): Move {
+    return this.moves[this.moves.length - 1];
+  }
+
   private getCardFromStack(): Card {
-    return this.thrownCards?.splice(this.thrownCards?.length - 1, 1)[0] as Card;
+    // todo: should select which one
+    return this.lastMove.cards[0];
   }
 
   private initComputerMove(): void {
@@ -86,7 +96,9 @@ export class Game {
       player.cards = this.deck?.splice(0, 5);
     });
     const cardToStart = this.getCardFromDeck();
-    this.thrownCards = [cardToStart];
+    this.moves = [{
+      cards: [cardToStart]
+    }];
   }
 
   private getShuffledDeckCards(): Card[] {

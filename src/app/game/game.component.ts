@@ -24,8 +24,11 @@ export class GameComponent {
     return this.game.players[0];
   }
 
-  get thrownCard(): Card {
-    return this.game.thrownCards?.[this.game.thrownCards.length - 1] as Card;
+  get thrownCards(): Card[] {
+    if (!this.game.moves?.length) {
+      return [];
+    }
+    return this.game.lastMove.cards;
   }
 
   onDeckClick(): void {

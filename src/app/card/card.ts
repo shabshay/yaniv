@@ -9,7 +9,7 @@ export enum CardSymbolEnum {
 export interface Card {
   value: number;
   symbol: CardSymbol;
-  selected: boolean;
+  selected?: boolean;
 }
 
 export interface CardSymbol {

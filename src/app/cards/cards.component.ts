@@ -36,14 +36,14 @@ export class CardsComponent implements OnInit {
     return true;
   }
 
-  private isStraightCards(selectedWithCard: Card[]): boolean {
-    return selectedWithCard
+  private isStraightCards(cards: Card[]): boolean {
+    return cards
       .sort((a, b) => a.value - b.value)
       .every((card, i) => (i === 0) ||
-        (card.symbol === selectedWithCard[0].symbol && card.value === selectedWithCard[i - 1].value + 1));
+        (card.symbol === cards[0].symbol && card.value === cards[i - 1].value + 1));
   }
 
-  private isSameValueCards(selectedWithCard: Card[]): boolean {
-    return selectedWithCard.every(card => card.value === selectedWithCard[0].value);
+  private isSameValueCards(cards: Card[]): boolean {
+    return cards.every(card => card.value === cards[0].value);
   }
 }
