@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {Game} from './game';
+import {Game, RoundResult} from './game';
 import {Player} from '../player/player';
 import {Card} from '../card/card';
 
@@ -35,5 +35,10 @@ export class GameComponent {
     if (this.player.selectedCards?.length) {
       this.game.makeMove(this.player, this.player.selectedCards, cardToTake);
     }
+  }
+
+  onPlayerCallYaniv(player: Player): void {
+    const result: RoundResult = this.game.yaniv(player);
+    console.log('Result = ', result);
   }
 }

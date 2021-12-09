@@ -2,6 +2,17 @@ import {Player} from '../player/player';
 import {Card, CardSymbol, CardSymbolEnum, CardSymbolsMap} from '../card/card';
 
 
+export interface PlayerRoundScore {
+  score: number;
+  player: Player;
+}
+
+export interface RoundResult {
+  winner: Player;
+  asaf: boolean;
+  playersRoundScores: PlayerRoundScore[];
+}
+
 export interface Move {
   cards: Card[];
 }
@@ -48,6 +59,44 @@ export class Game {
     this.currentPlayer.cards?.forEach(card => card.selected = false);
     this.setNextPlayer();
     this.initComputerMove();
+  }
+
+  yaniv(caller: Player): RoundResult {
+    let winner = caller;
+    const otherPlayers = this.players.filter(player => player.id !== caller.id);
+    otherPlayers.map(player => {
+      if (player.cardsCount <= winner.cardsCount) {
+        winner = player;
+      }
+      return player.cardsCount;
+    });
+
+    let asaf = false;
+    let winnerPlayers: Player[] = [caller];
+    if (winner.id !== caller.id) {
+      asaf = true;
+      winnerPlayers = this.players.filter(player => player.cardsCount === winner.cardsCount);
+      winner = this.getRandomItemFromArray(winnerPlayers);
+    }
+
+    const playersRoundScores: PlayerRoundScore[] = this.players.map(player => {
+      let score = player.cardsCount;
+      if (asaf && player.id === winner.id) {
+        score = 30 + player.cardsCount;
+      } else if (player.cardsCount === winner.cardsCount) {
+        score = 0;
+      }
+      return {
+        player,
+        score
+      } as PlayerRoundScore;
+    });
+
+    return {
+      winner,
+      asaf,
+      playersRoundScores
+    } as RoundResult;
   }
 
   get lastMove(): Move {

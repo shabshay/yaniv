@@ -17,4 +17,13 @@ export class Player {
   get selectedCards(): Card[] | undefined {
     return this.cards?.filter(c => c.selected);
   }
+
+  get cardsCount(): number {
+    const cardsValues: number[] | undefined = this.cards?.map(card => card.value);
+    return cardsValues?.reduce((a, b) => a + b, 0) ?? 0;
+  }
+
+  isReachedYaniv(): boolean {
+    return this.cardsCount <= 7;
+  }
 }

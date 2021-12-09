@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { PlayerComponent } from './player.component';
+import {Player} from './player';
 
 describe('PlayerComponent', () => {
   let component: PlayerComponent;
@@ -16,6 +17,7 @@ describe('PlayerComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(PlayerComponent);
     component = fixture.componentInstance;
+    component.player = new Player('name', 'id');
     fixture.detectChanges();
   });
 

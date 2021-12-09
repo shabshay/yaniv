@@ -34,7 +34,7 @@ export class CardsComponent implements OnInit {
     const selectedCards: Card[] | undefined = this.cards?.filter(c => c.selected);
     if (selectedCards?.length) {
       const selectedWithCard = [...selectedCards, card];
-      return this.isStraightCards(selectedWithCard) || this.isSameValueCards(selectedWithCard);
+      return this.isStraightCards(selectedWithCard) || this.cardsHasSameValue(selectedWithCard);
     }
     return true;
   }
@@ -48,22 +48,22 @@ export class CardsComponent implements OnInit {
         if (i === 0){
           return true;
         }
-        // verify cards symbol are the same
+        // validate cards symbol are the same
         if (card.symbol !== cardsWithoutJokers[0].symbol) {
           return false;
         }
-        // verify serial
+        // validate order
         if (card.value === cardsWithoutJokers[i - 1].value + 1) {
           return true;
         }
-        // verify serial with jokers
+        // validate order with jokers
         if (numOfJokers === 2){
           if (card.value === cardsWithoutJokers[i - 1].value + 3) {
             numOfJokers = 0;
             return true;
           }
         }
-        // verify serial with joker
+        // validate order with joker
         if (numOfJokers) {
           if (card.value === cardsWithoutJokers[i - 1].value + 2) {
             numOfJokers--;
@@ -74,7 +74,7 @@ export class CardsComponent implements OnInit {
       });
   }
 
-  private isSameValueCards(cards: Card[]): boolean {
+  private cardsHasSameValue(cards: Card[]): boolean {
     const cardsWithoutJokers = cards.filter(card => card.value !== 0);
     return cardsWithoutJokers.every(card => card.value === cardsWithoutJokers[0].value);
   }

@@ -1,6 +1,5 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Player} from './player';
-import {Card} from '../card/card';
 
 @Component({
   selector: 'app-player',
@@ -11,8 +10,17 @@ export class PlayerComponent implements OnInit {
 
   @Input()
   player!: Player;
-  constructor() { }
+
+  @Output()
+  yanivClick: EventEmitter<any> = new EventEmitter<any>();
+
+  constructor() {
+  }
 
   ngOnInit(): void {
+  }
+
+  onYanivClick(): void {
+    this.yanivClick.emit();
   }
 }
