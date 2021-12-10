@@ -23,12 +23,14 @@ export class Game {
   deck: Card[];
   moves: Move[];
   isRunning = false;
+  roundsResults: RoundResult[];
 
   constructor(player: Player) {
     this.deck = [];
     this.players = [player];
     this.currentPlayer = player;
     this.moves = [];
+    this.roundsResults = [];
   }
 
   addPlayer(player: Player): void {
@@ -39,8 +41,14 @@ export class Game {
     if (this.players.length < 2) {
       return;
     }
+    const startingPlayer = this.getRandomItemFromArray(this.players);
+    this.startNewRound(startingPlayer);
+  }
+
+  startNewRound(startingPlayer: Player): void {
     this.dealCards();
-    this.currentPlayer = this.getRandomItemFromArray(this.players);
+    this.currentPlayer = startingPlayer;
+    this.players.forEach(player => player.isCurrentPlayer = false);
     this.currentPlayer.isCurrentPlayer = true;
     this.isRunning = true;
     this.initComputerMove();
@@ -61,9 +69,9 @@ export class Game {
     this.initComputerMove();
   }
 
-  yaniv(caller: Player): RoundResult {
-    let winner = caller;
-    const otherPlayers = this.players.filter(player => player.id !== caller.id);
+  yaniv(): RoundResult {
+    let winner = this.currentPlayer;
+    const otherPlayers = this.players.filter(player => player.id !== this.currentPlayer.id);
     otherPlayers.map(player => {
       if (player.cardsCount <= winner.cardsCount) {
         winner = player;
@@ -72,31 +80,33 @@ export class Game {
     });
 
     let asaf = false;
-    let winnerPlayers: Player[] = [caller];
-    if (winner.id !== caller.id) {
+    let winnerPlayers: Player[] = [winner];
+    if (winner.id !== this.currentPlayer.id) {
       asaf = true;
       winnerPlayers = this.players.filter(player => player.cardsCount === winner.cardsCount);
       winner = this.getRandomItemFromArray(winnerPlayers);
     }
 
-    const playersRoundScores: PlayerRoundScore[] = this.players.map(player => {
-      let score = player.cardsCount;
-      if (asaf && player.id === winner.id) {
-        score = 30 + player.cardsCount;
-      } else if (player.cardsCount === winner.cardsCount) {
-        score = 0;
-      }
-      return {
-        player,
-        score
-      } as PlayerRoundScore;
-    });
+    const playersRoundScores: PlayerRoundScore[] =
+      this.players.map(player => {
+        let score = player.cardsCount;
+        if (player.id === this.currentPlayer.id) {
+          score = asaf ? 30 + player.cardsCount : 0;
+        }
+        return {
+          player,
+          score
+        } as PlayerRoundScore;
+      });
 
-    return {
+    const roundResult = {
       winner,
       asaf,
       playersRoundScores
     } as RoundResult;
+
+    this.roundsResults.push(roundResult);
+    return roundResult;
   }
 
   get lastMove(): Move {
@@ -153,9 +163,10 @@ export class Game {
   }
 
   private dealCards(): void {
+    const numOfCardsPerPlayer = 2;
     this.deck = this.getShuffledDeckCards();
     this.players.forEach(player => {
-      player.cards = this.deck?.splice(0, 5);
+      player.cards = this.deck?.splice(0, numOfCardsPerPlayer);
     });
     const cardToStart = this.getCardFromDeck();
     this.moves = [{

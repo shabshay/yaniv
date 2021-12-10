@@ -40,11 +40,19 @@ export class GameComponent {
   }
 
   onPlayerCallYaniv(player: Player): void {
-    const result: RoundResult = this.game.yaniv(player);
+    if (!player.isCurrentPlayer) {
+      return;
+    }
+    const result: RoundResult = this.game.yaniv();
+    const resultScoresString = result.playersRoundScores.map(playerScore => `${playerScore.player.name}: ${playerScore.score} \n`).join('');
+    setTimeout(() => {
+      this.dialog.closeAll();
+      this.game.startNewRound(result.winner);
+    }, 3000);
     this.dialog.open(DialogComponent, {
       data: {
         title: result.asaf ? 'Asaf!' : 'Yaniv!',
-        content: `${result.playersRoundScores.map(playerScore => `${playerScore.player.name}: ${playerScore.score} \n`)}`
+        content: resultScoresString
       } as DialogData,
     });
   }
