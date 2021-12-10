@@ -2,6 +2,8 @@ import {Component, Input} from '@angular/core';
 import {Game, RoundResult} from './game';
 import {Player} from '../player/player';
 import {Card} from '../card/card';
+import {MatDialog} from '@angular/material/dialog';
+import {DialogComponent, DialogData} from '../dialog/dialog.component';
 
 @Component({
   selector: 'app-game',
@@ -13,7 +15,7 @@ export class GameComponent {
   @Input()
   game!: Game;
 
-  constructor() {
+  constructor(private dialog: MatDialog) {
   }
 
   get opponents(): Player[] {
@@ -39,6 +41,11 @@ export class GameComponent {
 
   onPlayerCallYaniv(player: Player): void {
     const result: RoundResult = this.game.yaniv(player);
-    console.log('Result = ', result);
+    this.dialog.open(DialogComponent, {
+      data: {
+        title: result.asaf ? 'Asaf!' : 'Yaniv!',
+        content: `${result.playersRoundScores.map(playerScore => `${playerScore.player.name}: ${playerScore.score} \n`)}`
+      } as DialogData,
+    });
   }
 }

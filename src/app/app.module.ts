@@ -13,6 +13,8 @@ import { CardsComponent } from './cards/cards.component';
 import { CardComponent } from './card/card.component';
 import {MatButtonModule} from '@angular/material/button';
 import { OpponentComponent } from './opponent/opponent.component';
+import { DialogComponent } from './dialog/dialog.component';
+import {MatDialogModule} from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
@@ -21,7 +23,8 @@ import { OpponentComponent } from './opponent/opponent.component';
     PlayerComponent,
     CardsComponent,
     CardComponent,
-    OpponentComponent
+    OpponentComponent,
+    DialogComponent
   ],
   imports: [
     BrowserModule,
@@ -30,7 +33,8 @@ import { OpponentComponent } from './opponent/opponent.component';
     MatToolbarModule,
     MatIconModule,
     MatCardModule,
-    MatButtonModule
+    MatButtonModule,
+    MatDialogModule
   ],
   providers: [],
   bootstrap: [AppComponent]
