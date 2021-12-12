@@ -1,5 +1,5 @@
 import {Player} from '../player/player';
-import {Card, CardSymbol, CardSymbolEnum, CardSymbolsMap} from '../card/card';
+import {Card, CardSymbol, CardSymbolEnum, CardSymbolsMap, CardValue, CardValueEnum, CardValuesMap} from '../card/card';
 
 
 export interface PlayerRoundScore {
@@ -131,9 +131,9 @@ export class Game {
     let max = 0;
     let res: Card[] = [];
     cards.forEach(card => {
-      const cardsCount: Card[] = counts.get(card.value) ?? [];
+      const cardsCount: Card[] = counts.get(card.value.score) ?? [];
       const cardsCountUpdated = [...cardsCount, card];
-      counts.set(card.value, cardsCountUpdated);
+      counts.set(card.value.score, cardsCountUpdated);
       if (cardsCountUpdated.length > max) {
         max = cardsCountUpdated.length;
         res = cardsCountUpdated;
@@ -183,21 +183,23 @@ export class Game {
 
   private getInitDeckCards(): Card[] {
     const initDeck = [] as Card[];
-    for (let i = 1; i <= 13; i++) {
+    CardValuesMap.forEach((cardValue: CardValue, valueEnum: CardValueEnum) => {
       CardSymbolsMap.forEach((cardSymbol: CardSymbol, symbolEnum: CardSymbolEnum) => {
-        if (symbolEnum !== CardSymbolEnum.Joker) {
+        if (symbolEnum !== CardSymbolEnum.Joker && valueEnum !== CardValueEnum.Joker) {
           initDeck.push({
-            value: i,
+            value: cardValue,
             symbol: cardSymbol,
             selected: false
           });
         }
       });
-    }
+    });
+
     const jokerCardSymbol = CardSymbolsMap.get(CardSymbolEnum.Joker) as CardSymbol;
+    const jokerCardValue = CardValuesMap.get(CardValueEnum.Joker) as CardValue;
     initDeck.push(
-      {value: 0, symbol: jokerCardSymbol, selected: false},
-      {value: 0, symbol: jokerCardSymbol, selected: false}
+      {value: jokerCardValue, symbol: {...jokerCardSymbol, color: 'red'}, selected: false},
+      {value: jokerCardValue, symbol: {...jokerCardSymbol, color: 'black'}, selected: false}
     );
     return initDeck;
   }

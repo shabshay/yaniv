@@ -19,7 +19,7 @@ export class Player {
   }
 
   get cardsCount(): number {
-    const cardsValues: number[] | undefined = this.cards?.map(card => card.value);
+    const cardsValues: number[] | undefined = this.cards?.map(card => card.value.score);
     return cardsValues?.reduce((a, b) => a + b, 0) ?? 0;
   }
 

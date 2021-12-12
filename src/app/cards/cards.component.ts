@@ -19,7 +19,7 @@ export class CardsComponent implements OnInit {
 
   get sortedCard(): Card[] | undefined {
     return this.cards?.sort((card1, card2) => {
-      return card1.value - card2.value || ((card1.symbol.icon < card2.symbol.icon) ? -1 : 1);
+      return card1.value.score - card2.value.score || ((card1.symbol.icon < card2.symbol.icon) ? -1 : 1);
     });
   }
 
@@ -28,7 +28,7 @@ export class CardsComponent implements OnInit {
   }
 
   private isLegalMove(card: Card): boolean {
-    if (card.value === 0) {
+    if (card.value.score === 0) {
       return true;
     }
     const selectedCards: Card[] | undefined = this.cards?.filter(c => c.selected);
@@ -40,10 +40,10 @@ export class CardsComponent implements OnInit {
   }
 
   private isStraightCards(cards: Card[]): boolean {
-    let numOfJokers = cards.filter(card => card.value === 0)?.length ?? 0;
-    const cardsWithoutJokers = cards.filter(card => card.value !== 0);
+    let numOfJokers = cards.filter(card => card.value.score === 0)?.length ?? 0;
+    const cardsWithoutJokers = cards.filter(card => card.value.score !== 0);
     return cardsWithoutJokers
-      .sort((a, b) => a.value - b.value)
+      .sort((a, b) => a.value.score - b.value.score)
       .every((card, i) => {
         if (i === 0){
           return true;
@@ -53,19 +53,19 @@ export class CardsComponent implements OnInit {
           return false;
         }
         // validate order
-        if (card.value === cardsWithoutJokers[i - 1].value + 1) {
+        if (card.value.score === cardsWithoutJokers[i - 1].value.score + 1) {
           return true;
         }
         // validate order with jokers
         if (numOfJokers === 2){
-          if (card.value === cardsWithoutJokers[i - 1].value + 3) {
+          if (card.value.score === cardsWithoutJokers[i - 1].value.score + 3) {
             numOfJokers = 0;
             return true;
           }
         }
         // validate order with joker
         if (numOfJokers) {
-          if (card.value === cardsWithoutJokers[i - 1].value + 2) {
+          if (card.value.score === cardsWithoutJokers[i - 1].value.score + 2) {
             numOfJokers--;
             return true;
           }
@@ -75,7 +75,7 @@ export class CardsComponent implements OnInit {
   }
 
   private cardsHasSameValue(cards: Card[]): boolean {
-    const cardsWithoutJokers = cards.filter(card => card.value !== 0);
-    return cardsWithoutJokers.every(card => card.value === cardsWithoutJokers[0].value);
+    const cardsWithoutJokers = cards.filter(card => card.value.score !== 0);
+    return cardsWithoutJokers.every(card => card.value.score === cardsWithoutJokers[0].value.score);
   }
 }
