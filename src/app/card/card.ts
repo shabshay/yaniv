@@ -37,6 +37,7 @@ export interface CardSymbol {
 export interface CardValue {
   text: string;
   score: number;
+  order: number;
 }
 
 export const CardSymbolsMap: Map<CardSymbolEnum, CardSymbol> = new Map([
@@ -65,58 +66,72 @@ export const CardSymbolsMap: Map<CardSymbolEnum, CardSymbol> = new Map([
 export const CardValuesMap: Map<CardValueEnum, CardValue> = new Map([
   [CardValueEnum.Joker, {
     text: 'Joker',
-    score: 0
+    score: 0,
+    order: 0
   }],
   [CardValueEnum.Ace, {
     text: 'A',
-    score: 1
+    score: 1,
+    order: 1
   }],
   [CardValueEnum.Two, {
     text: '2',
-    score: 2
+    score: 2,
+    order: 2
   }],
   [CardValueEnum.Three, {
     text: '3',
-    score: 3
+    score: 3,
+    order: 3
   }],
   [CardValueEnum.Four, {
     text: '4',
-    score: 4
+    score: 4,
+    order: 4
   }],
   [CardValueEnum.Five, {
     text: '5',
-    score: 5
+    score: 5,
+    order: 5
   }],
   [CardValueEnum.Six, {
     text: '6',
-    score: 6
+    score: 6,
+    order: 6
   }],
   [CardValueEnum.Seven, {
     text: '7',
-    score: 7
+    score: 7,
+    order: 7
   }],
   [CardValueEnum.Eight, {
     text: '8',
-    score: 8
+    score: 8,
+    order: 8
   }],
   [CardValueEnum.Nine, {
     text: '9',
-    score: 9
+    score: 9,
+    order: 9
   }],
   [CardValueEnum.Ten, {
     text: '10',
-    score: 10
+    score: 10,
+    order: 10
   }],
   [CardValueEnum.Jack, {
     text: 'J',
-    score: 10
+    score: 10,
+    order: 11
   }],
   [CardValueEnum.Queen, {
     text: 'Q',
-    score: 10
+    score: 10,
+    order: 12
   }],
   [CardValueEnum.King, {
     text: 'K',
-    score: 10
+    score: 10,
+    order: 13
   }],
 ]);

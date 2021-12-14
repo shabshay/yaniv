@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {Game} from './game/game';
+import {Game, GameConfig} from './game/game';
 import {Player} from './player/player';
 
 @Component({
@@ -12,7 +12,13 @@ export class AppComponent {
   game: Game;
 
   constructor() {
-    this.game = new Game(new Player('Shay', '3sfdaa'));
+    const config = {
+      yanivThreshold: 7,
+      scoreLimit: 50,
+      cardsPerPlayer: 5
+    } as GameConfig;
+
+    this.game = new Game(config, new Player('Shay', '3sfdaa'));
     this.game.addPlayer(new Player('Shamib', 'asd'));
     this.game.addPlayer(new Player('Dodik', 'ffsa3'));
     this.game.addPlayer(new Player('Kaduri', '234sdf'));

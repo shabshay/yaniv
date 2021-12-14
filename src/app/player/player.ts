@@ -4,26 +4,26 @@ export class Player {
   id: string;
   name: string;
   cards?: Card[];
-  points: number;
-  isCurrentPlayer: boolean;
+  score = 0;
+  isCurrentPlayer = false;
+  isOut = false;
+  showCards = false;
 
   constructor(name: string, id: string) {
     this.name = name;
     this.id = id;
-    this.points = 0;
-    this.isCurrentPlayer = false;
   }
 
   get selectedCards(): Card[] | undefined {
     return this.cards?.filter(c => c.selected);
   }
 
-  get cardsCount(): number {
-    const cardsValues: number[] | undefined = this.cards?.map(card => card.value.score);
-    return cardsValues?.reduce((a, b) => a + b, 0) ?? 0;
+  get cardsScore(): number {
+    const cardsScores: number[] | undefined = this.cards?.map(card => card.value.score);
+    return cardsScores?.reduce((a, b) => a + b, 0) ?? 0;
   }
 
   isReachedYaniv(): boolean {
-    return this.cardsCount <= 7;
+    return this.cardsScore <= 7;
   }
 }

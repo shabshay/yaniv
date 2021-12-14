@@ -2,12 +2,19 @@ import {Player} from '../player/player';
 import {Card, CardSymbol, CardSymbolEnum, CardSymbolsMap, CardValue, CardValueEnum, CardValuesMap} from '../card/card';
 
 
+export interface GameConfig {
+  yanivThreshold: number;
+  scoreLimit: number;
+  cardsPerPlayer: number;
+}
+
 export interface PlayerRoundScore {
   score: number;
   player: Player;
 }
 
 export interface RoundResult {
+  gameIsOver: boolean;
   winner: Player;
   asaf: boolean;
   playersRoundScores: PlayerRoundScore[];
@@ -18,6 +25,7 @@ export interface Move {
 }
 
 export class Game {
+  config: GameConfig;
   players: Player[];
   currentPlayer: Player;
   deck: Card[];
@@ -25,12 +33,21 @@ export class Game {
   isRunning = false;
   roundsResults: RoundResult[];
 
-  constructor(player: Player) {
+  constructor(config: GameConfig, player: Player) {
+    this.config = config;
     this.deck = [];
     this.players = [player];
     this.currentPlayer = player;
     this.moves = [];
     this.roundsResults = [];
+  }
+
+  get gameIsOver(): boolean {
+    return this.roundsResults.length ? this.roundsResults[this.roundsResults.length - 1].gameIsOver : false;
+  }
+
+  get activePlayers(): Player[] {
+    return this.players.filter(player => !player.isOut);
   }
 
   addPlayer(player: Player): void {
@@ -41,17 +58,26 @@ export class Game {
     if (this.players.length < 2) {
       return;
     }
+    this.players.forEach(player => player.score = 0);
     const startingPlayer = this.getRandomItemFromArray(this.players);
     this.startNewRound(startingPlayer);
   }
 
   startNewRound(startingPlayer: Player): void {
+    this.updateActivePlayers();
     this.dealCards();
     this.currentPlayer = startingPlayer;
     this.players.forEach(player => player.isCurrentPlayer = false);
     this.currentPlayer.isCurrentPlayer = true;
     this.isRunning = true;
-    this.initComputerMove();
+  }
+
+  private updateActivePlayers(): void {
+    this.activePlayers.forEach(player => {
+      if (player.score > this.config.scoreLimit) {
+        player.isOut = true;
+      }
+    });
   }
 
   makeMove(player: Player, thrownCards: Card[], cardToTake: Card | null = null): void {
@@ -66,33 +92,35 @@ export class Game {
     this.currentPlayer.cards?.push(drawnCard);
     this.currentPlayer.cards?.forEach(card => card.selected = false);
     this.setNextPlayer();
-    this.initComputerMove();
   }
 
-  yaniv(): RoundResult {
+  yaniv(): RoundResult | null {
+    if (this.currentPlayer.cardsScore > this.config.yanivThreshold) {
+      return null;
+    }
+    this.showPlayersCards();
     let winner = this.currentPlayer;
-    const otherPlayers = this.players.filter(player => player.id !== this.currentPlayer.id);
-    otherPlayers.map(player => {
-      if (player.cardsCount <= winner.cardsCount) {
+    const otherPlayers = this.activePlayers.filter(player => player.id !== this.currentPlayer.id);
+    otherPlayers.forEach(player => {
+      if (player.cardsScore <= winner.cardsScore) {
         winner = player;
       }
-      return player.cardsCount;
+      return player.cardsScore;
     });
 
-    let asaf = false;
-    let winnerPlayers: Player[] = [winner];
-    if (winner.id !== this.currentPlayer.id) {
-      asaf = true;
-      winnerPlayers = this.players.filter(player => player.cardsCount === winner.cardsCount);
+    const asaf = winner.id !== this.currentPlayer.id;
+    const winnerPlayers: Player[] = this.players.filter(player => player.cardsScore === winner.cardsScore);
+    if (asaf) {
       winner = this.getRandomItemFromArray(winnerPlayers);
     }
 
     const playersRoundScores: PlayerRoundScore[] =
-      this.players.map(player => {
-        let score = player.cardsCount;
+      this.activePlayers.map(player => {
+        let score = player.cardsScore;
         if (player.id === this.currentPlayer.id) {
-          score = asaf ? 30 + player.cardsCount : 0;
+          score = asaf ? 30 + player.cardsScore : 0;
         }
+        player.score += score;
         return {
           player,
           score
@@ -102,7 +130,8 @@ export class Game {
     const roundResult = {
       winner,
       asaf,
-      playersRoundScores
+      playersRoundScores,
+      gameIsOver: this.activePlayers.length <= 1
     } as RoundResult;
 
     this.roundsResults.push(roundResult);
@@ -113,33 +142,16 @@ export class Game {
     return this.moves[this.moves.length - 1];
   }
 
+  get isComputerTurn(): boolean {
+    return  this.currentPlayer.id !== this.players[0].id;
+  }
+
+  private showPlayersCards(showCards: boolean = true): void {
+    this.activePlayers.forEach(player => player.showCards = showCards);
+  }
+
   private getCardFromPile(cardToTake: Card): Card {
     return this.lastMove.cards.find(card => card === cardToTake) as Card;
-  }
-
-  private initComputerMove(): void {
-    if (this.currentPlayer.id !== this.players[0].id) {
-      setTimeout(() => {
-        const cards: Card[] = this.maxDuplicatedCards(this.currentPlayer.cards as Card[]);
-        this.makeMove(this.currentPlayer, cards);
-      }, 1000);
-    }
-  }
-
-  private maxDuplicatedCards(cards: Card[]): Card[] {
-    const counts = new Map<number, Card[]>();
-    let max = 0;
-    let res: Card[] = [];
-    cards.forEach(card => {
-      const cardsCount: Card[] = counts.get(card.value.score) ?? [];
-      const cardsCountUpdated = [...cardsCount, card];
-      counts.set(card.value.score, cardsCountUpdated);
-      if (cardsCountUpdated.length > max) {
-        max = cardsCountUpdated.length;
-        res = cardsCountUpdated;
-      }
-    });
-    return res;
   }
 
   private getCardFromDeck(): Card {
@@ -163,10 +175,10 @@ export class Game {
   }
 
   private dealCards(): void {
-    const numOfCardsPerPlayer = 2;
+    this.showPlayersCards(false);
     this.deck = this.getShuffledDeckCards();
     this.players.forEach(player => {
-      player.cards = this.deck?.splice(0, numOfCardsPerPlayer);
+      player.cards = this.deck?.splice(0, this.config.cardsPerPlayer);
     });
     const cardToStart = this.getCardFromDeck();
     this.moves = [{
@@ -205,8 +217,8 @@ export class Game {
   }
 
   private getNextPlayer(): Player {
-    const currentIndex = this.players.indexOf(this.currentPlayer);
-    const nextIndex = (currentIndex + 1) % this.players.length;
-    return this.players[nextIndex];
+    const currentIndex = this.activePlayers.indexOf(this.currentPlayer);
+    const nextIndex = (currentIndex + 1) % this.activePlayers.length;
+    return this.activePlayers[nextIndex];
   }
 }
