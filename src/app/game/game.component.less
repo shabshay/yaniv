@@ -1,5 +1,9 @@
 @import '../common/style.less';
 
+.game-container {
+  height: 900px;
+}
+
 .deck-container {
   display: flex;
   flex-direction: column;
@@ -8,9 +12,11 @@
 }
 
 .stack-container {
+  width: 310px;
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: center;
 }
 
 .opponent1-container {
@@ -19,11 +25,12 @@
 }
 
 .opponents-center-container {
-  width: 700px;
   height: 330px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 24px;
+  width: 750px;
+  justify-content: center;
 }
 
 .player-container {
