@@ -16,7 +16,6 @@ export interface PlayerRoundScore {
 }
 
 export interface RoundResult {
-  gameIsOver: boolean;
   winner: Player;
   asaf: boolean;
   playersRoundScores: PlayerRoundScore[];
@@ -51,7 +50,7 @@ export class Game {
   }
 
   get gameIsOver(): boolean {
-    return this.roundsResults.length ? this.roundsResults[this.roundsResults.length - 1].gameIsOver : false;
+    return this.activePlayers.filter(player => player.score <= this.config.scoreLimit).length < 2;
   }
 
   get activePlayers(): Player[] {
@@ -144,8 +143,7 @@ export class Game {
     const roundResult = {
       winner,
       asaf,
-      playersRoundScores,
-      gameIsOver: this.activePlayers.length <= 1
+      playersRoundScores
     } as RoundResult;
 
     this.roundsResults.push(roundResult);

@@ -57,7 +57,7 @@ export class GameComponent implements OnInit {
     const result: RoundResult = this.game.yaniv() as RoundResult;
     const resultScoresString = result.playersRoundScores.map(playerScore => `${playerScore.player.name}: ${playerScore.score} \n`).join('');
     setTimeout(() => {
-      if (!result.gameIsOver) {
+      if (!this.game.gameIsOver) {
         this.dialog.closeAll();
         this.game.startNewRound(result.winner);
         if (this.game.isComputerTurn) {
@@ -67,9 +67,10 @@ export class GameComponent implements OnInit {
     }, 5000);
 
     let title = result.asaf ? 'Asaf!' : 'Yaniv!';
-    if (result.gameIsOver) {
-      title = title + ' GAME OVER!';
+    if (this.game.gameIsOver) {
+      title = `${title} GAME OVER!`;
     }
+    title = `${title} ${result.winner.name} Win!`;
 
     this.dialog.open(DialogComponent, {
       data: {
