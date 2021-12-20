@@ -15,6 +15,7 @@ import {MatButtonModule} from '@angular/material/button';
 import { OpponentComponent } from './opponent/opponent.component';
 import { DialogComponent } from './dialog/dialog.component';
 import {MatDialogModule} from '@angular/material/dialog';
+import {CardsValidator} from './common/cards-validator';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,7 @@ import {MatDialogModule} from '@angular/material/dialog';
     MatButtonModule,
     MatDialogModule
   ],
-  providers: [],
+  providers: [CardsValidator],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

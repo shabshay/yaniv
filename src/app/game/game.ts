@@ -1,6 +1,7 @@
 import {Player} from '../player/player';
 import {Card, CardSymbol, CardSymbolEnum, CardSymbolsMap, CardValue, CardValueEnum, CardValuesMap} from '../card/card';
 import * as AsyncLock from 'async-lock';
+import {CardsValidator} from '../common/cards-validator';
 
 
 export interface GameConfig {
@@ -36,7 +37,11 @@ export class Game {
 
   private lock = new AsyncLock({maxPending: 1, timeout: 100});
 
-  constructor(config: GameConfig, player: Player) {
+  constructor(
+    config: GameConfig,
+    player: Player,
+    private cardsValidator: CardsValidator
+  ) {
     this.config = config;
     this.deck = [];
     this.players = [player];
@@ -84,7 +89,7 @@ export class Game {
   }
 
   async makeMove(player: Player, thrownCards: Card[], cardToTake: Card | null = null): Promise<void> {
-    if (this.currentPlayer?.id !== player.id || this.lock.isBusy(this.makeMove.name)) {
+    if (this.currentPlayer?.id !== player.id || !this.cardsValidator.isLegalMove(thrownCards) || this.lock.isBusy(this.makeMove.name)) {
       return;
     }
 

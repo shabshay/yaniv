@@ -4,6 +4,7 @@ import {Player} from '../player/player';
 import {Card} from '../card/card';
 import {MatDialog} from '@angular/material/dialog';
 import {DialogComponent, DialogData} from '../dialog/dialog.component';
+import {CardsValidator} from '../common/cards-validator';
 
 @Component({
   selector: 'app-game',
@@ -15,7 +16,10 @@ export class GameComponent implements OnInit {
   @Input()
   game!: Game;
 
-  constructor(private dialog: MatDialog) {
+  constructor(
+    private dialog: MatDialog,
+    private cardsValidator: CardsValidator
+  ) {
   }
 
   ngOnInit(): void {
@@ -40,7 +44,7 @@ export class GameComponent implements OnInit {
   }
 
   async makeMove(cardToTake: Card | null = null): Promise<void> {
-    if (this.player.selectedCards?.length && this.player.isCurrentPlayer) {
+    if (this.player.selectedCards?.length && this.player.isCurrentPlayer && this.cardsValidator.isLegalMove(this.player.selectedCards)) {
       await this.game.makeMove(this.player, this.player.selectedCards, cardToTake);
       this.initComputerMove();
     }
