@@ -39,9 +39,9 @@ export class GameComponent implements OnInit {
     return this.game.lastMove.cards;
   }
 
-  makeMove(cardToTake: Card | null = null): void {
-    if (this.player.selectedCards?.length) {
-      this.game.makeMove(this.player, this.player.selectedCards, cardToTake);
+  async makeMove(cardToTake: Card | null = null): Promise<void> {
+    if (this.player.selectedCards?.length && this.player.isCurrentPlayer) {
+      await this.game.makeMove(this.player, this.player.selectedCards, cardToTake);
       this.initComputerMove();
     }
   }
@@ -94,13 +94,13 @@ export class GameComponent implements OnInit {
 
   private initComputerMove(): void {
     if (this.game.isComputerTurn && !this.game.gameIsOver) {
-      setTimeout(() => {
+      setTimeout(async () => {
         if (this.game.currentPlayer.cardsScore <= this.game.config.yanivThreshold) {
           this.onPlayerCallYaniv(this.game.currentPlayer);
         } else {
           const cards: Card[] = this.maxDuplicatedCards(this.game.currentPlayer.cards as Card[]);
           const cardToTake = this.thrownCards.length && this.thrownCards[0].value.score < 4 ? this.thrownCards[0] : null;
-          this.game.makeMove(this.game.currentPlayer, cards, cardToTake);
+          await this.game.makeMove(this.game.currentPlayer, cards, cardToTake);
           this.initComputerMove();
         }
       }, 2000);

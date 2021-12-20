@@ -1,5 +1,6 @@
 import {Player} from '../player/player';
 import {Card, CardSymbol, CardSymbolEnum, CardSymbolsMap, CardValue, CardValueEnum, CardValuesMap} from '../card/card';
+import * as AsyncLock from 'async-lock';
 
 
 export interface GameConfig {
@@ -32,6 +33,8 @@ export class Game {
   moves: Move[];
   isRunning = false;
   roundsResults: RoundResult[];
+
+  private lock = new AsyncLock({maxPending: 1, timeout: 100});
 
   constructor(config: GameConfig, player: Player) {
     this.config = config;
@@ -80,18 +83,24 @@ export class Game {
     });
   }
 
-  makeMove(player: Player, thrownCards: Card[], cardToTake: Card | null = null): void {
-    const takeFromDeck = !cardToTake;
-    if (this.currentPlayer?.id !== player.id || player.id !== this.currentPlayer.id) {
+  async makeMove(player: Player, thrownCards: Card[], cardToTake: Card | null = null): Promise<void> {
+    if (this.currentPlayer?.id !== player.id || this.lock.isBusy(this.makeMove.name)) {
       return;
     }
-    this.currentPlayer.cards = this.currentPlayer.cards?.filter(c => !thrownCards.includes(c));
-    const drawnCard = takeFromDeck ? this.getCardFromDeck() : this.getCardFromPile(cardToTake as Card);
-    thrownCards.forEach(card => card.selected = false);
-    this.moves.push({cards: thrownCards});
-    this.currentPlayer.cards?.push(drawnCard);
-    this.currentPlayer.cards?.forEach(card => card.selected = false);
-    this.setNextPlayer();
+
+    await this.lock.acquire(this.makeMove.name, () => {
+      if (this.currentPlayer?.id !== player.id) {
+        return;
+      }
+      const takeFromDeck = !cardToTake;
+      this.currentPlayer.cards = this.currentPlayer.cards?.filter(c => !thrownCards.includes(c));
+      const drawnCard = takeFromDeck ? this.getCardFromDeck() : this.getCardFromPile(cardToTake as Card);
+      thrownCards.forEach(card => card.selected = false);
+      this.moves.push({cards: thrownCards});
+      this.currentPlayer.cards?.push(drawnCard);
+      this.currentPlayer.cards?.forEach(card => card.selected = false);
+      this.setNextPlayer();
+    });
   }
 
   yaniv(): RoundResult | null {
@@ -143,7 +152,7 @@ export class Game {
   }
 
   get isComputerTurn(): boolean {
-    return  this.currentPlayer.id !== this.players[0].id;
+    return this.currentPlayer.id !== this.players[0].id;
   }
 
   private showPlayersCards(showCards: boolean = true): void {
