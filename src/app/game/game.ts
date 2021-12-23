@@ -2,6 +2,7 @@ import {Player} from '../player/player';
 import {Card, CardSymbol, CardSymbolEnum, CardSymbolsMap, CardValue, CardValueEnum, CardValuesMap} from '../card/card';
 import * as AsyncLock from 'async-lock';
 import {CardsValidator} from '../common/cards-validator';
+import {GameEvents} from './game.events';
 
 
 export interface GameConfig {
@@ -39,7 +40,8 @@ export class Game {
   constructor(
     config: GameConfig,
     player: Player,
-    private cardsValidator: CardsValidator
+    private cardsValidator: CardsValidator,
+    private gameEvents: GameEvents
   ) {
     this.config = config;
     this.deck = [];
@@ -107,9 +109,9 @@ export class Game {
     });
   }
 
-  yaniv(): RoundResult | null {
+  yaniv(): void {
     if (this.currentPlayer.cardsScore > this.config.yanivThreshold) {
-      return null;
+      return;
     }
     this.showPlayersCards();
     let winner = this.currentPlayer;
@@ -147,7 +149,7 @@ export class Game {
     } as RoundResult;
 
     this.roundsResults.push(roundResult);
-    return roundResult;
+    this.gameEvents.onPlayerCalledYaniv(roundResult);
   }
 
   get lastMove(): Move {

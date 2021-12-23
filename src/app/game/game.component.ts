@@ -5,24 +5,35 @@ import {Card} from '../card/card';
 import {MatDialog} from '@angular/material/dialog';
 import {DialogComponent, DialogData} from '../dialog/dialog.component';
 import {CardsValidator} from '../common/cards-validator';
+import {GameEvents} from './game.events';
+import {takeUntil} from 'rxjs/operators';
+import {SubscriberDirective} from '../../Subscriber';
 
 @Component({
   selector: 'app-game',
   templateUrl: './game.component.html',
   styleUrls: ['./game.component.less']
 })
-export class GameComponent implements OnInit {
+export class GameComponent extends SubscriberDirective implements OnInit {
 
   @Input()
   game!: Game;
 
   constructor(
     private dialog: MatDialog,
-    private cardsValidator: CardsValidator
+    private cardsValidator: CardsValidator,
+    private gameEvents: GameEvents
   ) {
+    super();
   }
 
   ngOnInit(): void {
+    this.gameEvents.playerCalledYaniv
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((roundResult: RoundResult) => {
+        this.handleYanivResult(roundResult);
+      });
+
     if (this.game.isRunning && this.game.isComputerTurn) {
       this.initComputerMove();
     }
@@ -54,7 +65,10 @@ export class GameComponent implements OnInit {
     if (!player.isCurrentPlayer) {
       return;
     }
-    const result: RoundResult = this.game.yaniv() as RoundResult;
+    this.game.yaniv();
+  }
+
+  private handleYanivResult(result: RoundResult): void {
     const resultScoresString = result.playersRoundScores.map(playerScore => `${playerScore.player.name}: ${playerScore.score} \n`).join('');
     setTimeout(() => {
       if (!this.game.gameIsOver) {
