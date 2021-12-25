@@ -1,27 +1,35 @@
 import {Player} from '../player/player';
 import {Card} from '../card/card';
-import {Game} from './game';
+import {Game, GameConfig, GameStatus} from './game';
+import {CardsValidator} from '../common/cards-validator';
+import {GameEvents} from './game.events';
+import {Injectable} from '@angular/core';
 
+@Injectable()
 export class GameService {
-  game: Game;
+  game?: Game;
 
-  constructor(game: Game) {
-    this.game = game;
+  constructor(private cardsValidator: CardsValidator, private gameEvents: GameEvents) {
   }
 
   async makeMove(player: Player, thrownCards: Card[], cardToTake: Card | null = null): Promise<void> {
-    return this.game.makeMove(player, thrownCards, cardToTake);
+    return this.game?.makeMove(player, thrownCards, cardToTake);
   }
 
   yaniv(): void {
-    this.game.yaniv();
+    this.game?.yaniv();
   }
 
   addPlayer(player: Player): void {
-    this.game.addPlayer(player);
+    this.game?.addPlayer(player);
+  }
+
+  createNewGame(player: Player, config: GameConfig): GameStatus {
+    this.game = new Game(config, player, this.cardsValidator, this.gameEvents);
+    return {...this.game} as Game;
   }
 
   startGame(): void {
-    this.game.startGame();
+    this.game?.startGame();
   }
 }

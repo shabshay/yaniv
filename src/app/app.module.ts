@@ -17,6 +17,7 @@ import { DialogComponent } from './dialog/dialog.component';
 import {MatDialogModule} from '@angular/material/dialog';
 import {CardsValidator} from './common/cards-validator';
 import {GameEvents} from './game/game.events';
+import {GameService} from './game/game.service';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,7 @@ import {GameEvents} from './game/game.events';
     MatButtonModule,
     MatDialogModule
   ],
-  providers: [CardsValidator, GameEvents],
+  providers: [GameService, CardsValidator, GameEvents],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

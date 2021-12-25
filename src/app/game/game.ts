@@ -72,6 +72,7 @@ export class Game implements GameStatus {
 
   addPlayer(player: Player): void {
     this.players.push(player);
+    this.updateGameStatus();
   }
 
   startGame(): void {
@@ -82,6 +83,7 @@ export class Game implements GameStatus {
     const startingPlayer = this.getRandomItemFromArray(this.players);
     this.startNewRound(startingPlayer);
     this.initComputerMove();
+    this.updateGameStatus();
   }
 
   private startNewRound(startingPlayer: Player): void {
@@ -90,7 +92,6 @@ export class Game implements GameStatus {
     this.currentPlayer = startingPlayer;
     this.players.forEach(player => player.isCurrentPlayer = false);
     this.currentPlayer.isCurrentPlayer = true;
-    this.isRunning = true;
   }
 
   private updateActivePlayers(): void {
@@ -118,6 +119,7 @@ export class Game implements GameStatus {
       this.currentPlayer.cards?.push(drawnCard);
       this.currentPlayer.cards?.forEach(card => card.selected = false);
       this.setNextPlayer();
+      this.updateGameStatus();
       this.initComputerMove();
     });
   }
@@ -163,6 +165,7 @@ export class Game implements GameStatus {
 
     this.roundsResults.push(roundResult);
     this.gameEvents.onYaniv(roundResult);
+    this.updateGameStatus();
 
     setTimeout(() => {
       if (!this.gameIsOver) {
@@ -186,6 +189,10 @@ export class Game implements GameStatus {
 
   get deckNumberOfCards(): number {
     return this.deck.length;
+  }
+
+  private updateGameStatus(): void {
+    this.gameEvents.onGameStatusUpdate(this);
   }
 
   private showPlayersCards(showCards: boolean = true): void {

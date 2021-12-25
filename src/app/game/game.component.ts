@@ -18,15 +18,13 @@ import {GameService} from './game.service';
 export class GameComponent extends SubscriberDirective implements OnInit {
 
   @Input()
-  game!: GameStatus;
+  gameStatus!: GameStatus;
 
   @Input()
   player!: Player;
 
-  @Input()
-  gameService!: GameService;
-
   constructor(
+    private gameService: GameService,
     private dialog: MatDialog,
     private cardsValidator: CardsValidator,
     private gameEvents: GameEvents
@@ -35,6 +33,13 @@ export class GameComponent extends SubscriberDirective implements OnInit {
   }
 
   ngOnInit(): void {
+    this.gameEvents.gameStatusUpdate
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((gameStatus: GameStatus) => {
+        console.log('gamestatus: ', gameStatus);
+        this.gameStatus = gameStatus;
+      });
+
     this.gameEvents.yaniv
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((roundResult: RoundResult) => {
@@ -43,7 +48,7 @@ export class GameComponent extends SubscriberDirective implements OnInit {
   }
 
   get opponents(): IPlayer[] {
-    return this.game.players.slice(1);
+    return this.gameStatus.players.slice(1);
   }
 
   async makeMove(cardToTake: Card | null = null): Promise<void> {
@@ -62,13 +67,13 @@ export class GameComponent extends SubscriberDirective implements OnInit {
   private handleYanivResult(result: RoundResult): void {
     const resultScoresString = result.playersRoundScores.map(playerScore => `${playerScore.player.name}: ${playerScore.score} \n`).join('');
     setTimeout(() => {
-      if (!this.game.gameIsOver) {
+      if (!this.gameStatus.gameIsOver) {
         this.dialog.closeAll();
       }
     }, 5000);
 
     let title = result.asaf ? 'Asaf!' : 'Yaniv!';
-    if (this.game.gameIsOver) {
+    if (this.gameStatus.gameIsOver) {
       title = `${title} GAME OVER!`;
     }
     title = `${title} ${result.winner.name} Wins!`;
