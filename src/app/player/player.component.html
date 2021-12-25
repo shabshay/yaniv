@@ -2,7 +2,7 @@
      [ngClass]="{'current-player': isCurrentPlayer}">
   <div class="player-cards-container" *ngIf="!player.isOut">
     <app-cards *ngIf="player?.cards" [cards]="player.cards"></app-cards>
-    <button mat-raised-button color="primary" [disabled]="player.cardsScore > yanivThreshold || !isCurrentPlayer" (click)="onYanivClick()">Yaniv!</button>
+    <button mat-raised-button color="primary" [disabled]="cardsScore(player.cards) > yanivThreshold || !isCurrentPlayer" (click)="onYanivClick()">Yaniv!</button>
   </div>
   <h2>{{player.name}}</h2>
   <h1>{{player.totalScore}}</h1>

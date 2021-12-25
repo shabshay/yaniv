@@ -7,7 +7,6 @@ export interface IPlayer {
   isOut: boolean;
   cards?: Card[];
   totalScore: number;
-  cardsScore: number;
   isComputerPlayer: boolean;
 }
 
@@ -29,12 +28,12 @@ export class Player implements IPlayer {
     return this.cards?.filter(c => c.selected);
   }
 
-  get cardsScore(): number {
-    const cardsScores: number[] | undefined = this.cards?.map(card => card.value.score);
-    return cardsScores?.reduce((a, b) => a + b, 0) ?? 0;
-  }
-
   get numberOfCards(): number {
     return this.cards?.length ?? 0;
   }
+}
+
+export function cardsScore(cards: Card[] | undefined): number {
+  const cardsScores: number[] | undefined = cards?.map(card => card.value.score);
+  return cardsScores?.reduce((a, b) => a + b, 0) ?? 0;
 }

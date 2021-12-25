@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {IPlayer} from './player';
+import {IPlayer, cardsScore} from './player';
 
 @Component({
   selector: 'app-player',
@@ -19,6 +19,8 @@ export class PlayerComponent implements OnInit {
 
   @Output()
   yanivClick: EventEmitter<any> = new EventEmitter<any>();
+
+  cardsScore = cardsScore;
 
   constructor() {
   }

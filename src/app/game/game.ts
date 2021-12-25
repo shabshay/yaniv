@@ -1,4 +1,4 @@
-import {IPlayer, Player} from '../player/player';
+import {cardsScore, IPlayer, Player} from '../player/player';
 import {Card, CardSymbol, CardSymbolEnum, CardSymbolsMap, CardValue, CardValueEnum, CardValuesMap} from '../card/card';
 import * as AsyncLock from 'async-lock';
 import {CardsValidator} from '../common/cards-validator';
@@ -56,7 +56,7 @@ export class Game implements GameStatus {
   ) {
     this.config = config;
     this.deck = [];
-    this.players = [player];
+    this.players = [{...player} as Player];
     this.currentPlayer = player;
     this.moves = [];
     this.roundsResults = [];
@@ -132,7 +132,7 @@ export class Game implements GameStatus {
   }
 
   async yaniv(): Promise<void> {
-    if (this.currentPlayer.cardsScore > this.config.yanivThreshold
+    if (cardsScore(this.currentPlayer.cards) > this.config.yanivThreshold
       || this.gameIsOver
       || !this.isRunning
       || this.lock.isBusy(this.lockKey)
@@ -145,23 +145,23 @@ export class Game implements GameStatus {
       let winner = this.currentPlayer;
       const otherPlayers = this.activePlayers.filter(player => player.id !== this.currentPlayer.id);
       otherPlayers.forEach(player => {
-        if (player.cardsScore <= winner.cardsScore) {
+        if (cardsScore(player.cards) <= cardsScore(winner.cards)) {
           winner = player;
         }
-        return player.cardsScore;
+        return cardsScore(player.cards);
       });
 
       const asaf = winner.id !== this.currentPlayer.id;
-      const winnerPlayers: Player[] = this.players.filter(player => player.cardsScore === winner.cardsScore);
+      const winnerPlayers: Player[] = this.players.filter(player => cardsScore(player.cards) === cardsScore(winner.cards));
       if (asaf) {
         winner = this.getRandomItemFromArray(winnerPlayers);
       }
 
       const playersRoundScores: PlayerRoundScore[] =
         this.activePlayers.map(player => {
-          let score = player.cardsScore;
+          let score = cardsScore(player.cards);
           if (player.id === this.currentPlayer.id) {
-            score = asaf ? 30 + player.cardsScore : 0;
+            score = asaf ? 30 + cardsScore(player.cards) : 0;
           }
           player.totalScore += score;
           return {
@@ -206,7 +206,7 @@ export class Game implements GameStatus {
       return {
         ...player,
         cards: showCards ? player.cards : undefined,
-        cardsScore: showCards ? player.cardsScore : undefined,
+        cardsScore: showCards ? cardsScore(player.cards) : undefined,
         numberOfCards: player.numberOfCards,
       } as IPlayer;
     });
@@ -292,7 +292,7 @@ export class Game implements GameStatus {
   private initComputerMove(): void {
     if (this.currentPlayer.isComputerPlayer && !this.gameIsOver) {
       setTimeout(async () => {
-        if (this.currentPlayer.cardsScore <= this.config.yanivThreshold) {
+        if (cardsScore(this.currentPlayer.cards) <= this.config.yanivThreshold) {
           await this.yaniv();
         } else {
           const cards: Card[] = this.maxDuplicatedCards(this.currentPlayer.cards as Card[]);
