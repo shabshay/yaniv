@@ -36,7 +36,6 @@ export class GameComponent extends SubscriberDirective implements OnInit {
     this.gameEvents.gameStatusUpdate
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((gameStatus: GameStatus) => {
-        console.log('gamestatus: ', gameStatus);
         this.gameStatus = gameStatus;
       });
 
@@ -45,10 +44,23 @@ export class GameComponent extends SubscriberDirective implements OnInit {
       .subscribe((roundResult: RoundResult) => {
         this.handleYanivResult(roundResult);
       });
+
+    setTimeout(() => {
+      this.gameService.addPlayer(new Player('Shamib', 'asd'));
+    }, 500);
+
+    setTimeout(() => {
+      this.gameService.addPlayer(new Player('Dodik', 'ffsa3'));
+    }, 1000);
+
+    setTimeout(() => {
+      this.gameService.addPlayer(new Player('Kaduri', '234sdf'));
+      this.gameService.startGame();
+    }, 2000);
   }
 
   get opponents(): IPlayer[] {
-    return this.gameStatus.players.slice(1);
+    return this.gameStatus.players?.slice(1) ?? [];
   }
 
   async makeMove(cardToTake: Card | null = null): Promise<void> {

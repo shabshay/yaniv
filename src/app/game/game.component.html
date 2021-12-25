@@ -1,20 +1,20 @@
 <div class="game-container">
   <div class="opponent1-container">
-    <app-opponent *ngIf="opponents.length > 1" [player]="gameStatus.players[2]"></app-opponent>
+    <app-opponent *ngIf="opponents.length > 1" [player]="opponents[1]"></app-opponent>
   </div>
   <div class="opponents-center-container">
     <div class="opponent2-container rotated-90">
-      <app-opponent *ngIf="opponents.length" [player]="gameStatus.players[1]"></app-opponent>
+      <app-opponent *ngIf="opponents.length" [player]="opponents[0]"></app-opponent>
     </div>
     <div class="deck-container">
       <div class="deck card card-back" *ngIf="gameStatus.deckNumberOfCards" (click)="makeMove()"></div>
-      <div class="stack-container" *ngIf="gameStatus.thrownCards.length">
+      <div class="stack-container" *ngIf="gameStatus.thrownCards?.length">
         <app-card *ngFor="let card of gameStatus.thrownCards" [card]="card" (click)="makeMove(card)">
         </app-card>
       </div>
     </div>
     <div class="opponent3-container rotated-270">
-      <app-opponent *ngIf="opponents.length > 2" [player]="gameStatus.players[3]"></app-opponent>
+      <app-opponent *ngIf="opponents.length > 2" [player]="opponents[2]"></app-opponent>
     </div>
   </div>
   <div class="player-container">

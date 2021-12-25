@@ -5,12 +5,12 @@
       <app-cards *ngIf="player.cards" [cards]="player.cards"></app-cards>
     </ng-template>
     <ng-template #backOfCards>
-      <div class="card card-back" *ngFor="let card of player.cards;">
+      <div class="card card-back" *ngFor="let card of [].constructor(player.numberOfCards);">
       </div>
     </ng-template>
   </div>
   <div class="opponent-header">
     <h2>{{player.name}}</h2>
-    <h1>{{player.score}}</h1>
+    <h1>{{player.totalScore}}</h1>
   </div>
 </div>

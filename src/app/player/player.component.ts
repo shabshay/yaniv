@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Player} from './player';
+import {IPlayer} from './player';
 
 @Component({
   selector: 'app-player',
@@ -9,7 +9,7 @@ import {Player} from './player';
 export class PlayerComponent implements OnInit {
 
   @Input()
-  player!: Player;
+  player!: IPlayer;
 
   @Input()
   yanivThreshold!: number;
