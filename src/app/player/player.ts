@@ -1,13 +1,22 @@
 import {Card} from '../card/card';
 
-export class Player {
+export interface IPlayer {
+  id: string;
+  name: string;
+  numberOfCards: number;
+  isCurrentPlayer: boolean;
+  isOut: boolean;
+  cards?: Card[];
+  score: number;
+}
+
+export class Player implements IPlayer {
   id: string;
   name: string;
   cards?: Card[];
   score = 0;
   isCurrentPlayer = false;
   isOut = false;
-  showCards = false;
 
   constructor(name: string, id: string) {
     this.name = name;
@@ -23,7 +32,7 @@ export class Player {
     return cardsScores?.reduce((a, b) => a + b, 0) ?? 0;
   }
 
-  isReachedYaniv(): boolean {
-    return this.cardsScore <= 7;
+  get numberOfCards(): number {
+    return this.cards?.length ?? 0;
   }
 }

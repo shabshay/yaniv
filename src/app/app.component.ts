@@ -1,8 +1,9 @@
 import {Component} from '@angular/core';
-import {Game, GameConfig} from './game/game';
+import {Game, GameConfig, GameStatus} from './game/game';
 import {Player} from './player/player';
 import {CardsValidator} from './common/cards-validator';
 import {GameEvents} from './game/game.events';
+import {GameService} from './game/game.service';
 
 @Component({
   selector: 'app-root',
@@ -11,24 +12,29 @@ import {GameEvents} from './game/game.events';
 })
 export class AppComponent {
 
-  game: Game;
+  game: GameStatus;
+  gameService: GameService;
+  player: Player;
 
   constructor(private cardsValidator: CardsValidator, private gameEvents: GameEvents) {
     const config = {
       yanivThreshold: 10,
-      scoreLimit: 20,
+      scoreLimit: 30,
       cardsPerPlayer: 2
     } as GameConfig;
 
-    this.game = new Game(config, new Player('Shay', '3sfdaa'), cardsValidator, gameEvents);
-    this.game.addPlayer(new Player('Shamib', 'asd'));
-    this.game.addPlayer(new Player('Dodik', 'ffsa3'));
-    this.game.addPlayer(new Player('Kaduri', '234sdf'));
+    this.player = new Player('Shay', '3sfdaa');
+    const game = new Game(config, this.player, cardsValidator, gameEvents);
+    this.game = game as GameStatus;
+    this.gameService = new GameService(game);
+    this.gameService.addPlayer(new Player('Shamib', 'asd'));
+    this.gameService.addPlayer(new Player('Dodik', 'ffsa3'));
+    this.gameService.addPlayer(new Player('Kaduri', '234sdf'));
 
     this.startGame();
   }
 
   startGame(): void {
-    this.game.startGame();
+    this.gameService.startGame();
   }
 }

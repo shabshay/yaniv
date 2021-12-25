@@ -1,4 +1,4 @@
-import {Player} from '../player/player';
+import {IPlayer, Player} from '../player/player';
 import {Card, CardSymbol, CardSymbolEnum, CardSymbolsMap, CardValue, CardValueEnum, CardValuesMap} from '../card/card';
 import * as AsyncLock from 'async-lock';
 import {CardsValidator} from '../common/cards-validator';
@@ -26,16 +26,27 @@ export interface Move {
   cards: Card[];
 }
 
-export class Game {
+export interface GameStatus {
+  config: GameConfig;
+  gameIsOver: boolean;
+  currentPlayer: IPlayer;
+  players: IPlayer[];
+  isRunning: boolean;
+  isComputerTurn: boolean;
+  thrownCards: Card[];
+  deckNumberOfCards: number;
+}
+
+export class Game implements GameStatus {
   config: GameConfig;
   players: Player[];
   currentPlayer: Player;
   deck: Card[];
-  moves: Move[];
   isRunning = false;
   roundsResults: RoundResult[];
 
   private lock = new AsyncLock({maxPending: 1, timeout: 100});
+  private moves: Move[];
 
   constructor(
     config: GameConfig,
@@ -70,9 +81,10 @@ export class Game {
     this.players.forEach(player => player.score = 0);
     const startingPlayer = this.getRandomItemFromArray(this.players);
     this.startNewRound(startingPlayer);
+    this.initComputerMove();
   }
 
-  startNewRound(startingPlayer: Player): void {
+  private startNewRound(startingPlayer: Player): void {
     this.updateActivePlayers();
     this.dealCards();
     this.currentPlayer = startingPlayer;
@@ -102,10 +114,11 @@ export class Game {
       this.currentPlayer.cards = this.currentPlayer.cards?.filter(c => !thrownCards.includes(c));
       const drawnCard = takeFromDeck ? this.getCardFromDeck() : this.getCardFromPile(cardToTake as Card);
       thrownCards.forEach(card => card.selected = false);
-      this.moves.push({cards: thrownCards});
+      this.moves.push({cards: thrownCards} as Move);
       this.currentPlayer.cards?.push(drawnCard);
       this.currentPlayer.cards?.forEach(card => card.selected = false);
       this.setNextPlayer();
+      this.initComputerMove();
     });
   }
 
@@ -149,7 +162,14 @@ export class Game {
     } as RoundResult;
 
     this.roundsResults.push(roundResult);
-    this.gameEvents.onPlayerCalledYaniv(roundResult);
+    this.gameEvents.onYaniv(roundResult);
+
+    setTimeout(() => {
+      if (!this.gameIsOver) {
+        this.startNewRound(roundResult.winner);
+        this.initComputerMove();
+      }
+    }, 5000);
   }
 
   get lastMove(): Move {
@@ -160,8 +180,16 @@ export class Game {
     return this.currentPlayer.id !== this.players[0].id;
   }
 
+  get thrownCards(): Card[] {
+    return this.lastMove.cards ?? [];
+  }
+
+  get deckNumberOfCards(): number {
+    return this.deck.length;
+  }
+
   private showPlayersCards(showCards: boolean = true): void {
-    this.activePlayers.forEach(player => player.showCards = showCards);
+    // this.activePlayers.forEach(player => player.showCards = showCards); todo
   }
 
   private getCardFromPile(cardToTake: Card): Card {
@@ -234,5 +262,36 @@ export class Game {
     const currentIndex = this.activePlayers.indexOf(this.currentPlayer);
     const nextIndex = (currentIndex + 1) % this.activePlayers.length;
     return this.activePlayers[nextIndex];
+  }
+
+  private initComputerMove(): void {
+    if (this.isComputerTurn && !this.gameIsOver) {
+      setTimeout(async () => {
+        if (this.currentPlayer.cardsScore <= this.config.yanivThreshold) {
+          this.yaniv();
+        } else {
+          const cards: Card[] = this.maxDuplicatedCards(this.currentPlayer.cards as Card[]);
+          const cardToTake = this.thrownCards.length && this.thrownCards[0].value.score < 4 ? this.thrownCards[0] : null;
+          await this.makeMove(this.currentPlayer, cards, cardToTake);
+        }
+      }, 2000);
+    }
+  }
+
+  private maxDuplicatedCards(cards: Card[]): Card[] {
+    const counts = new Map<number, Card[]>();
+    let max = 0;
+    let res: Card[] = [];
+    cards.forEach(card => {
+      const sameOrderCards: Card[] = counts.get(card.value.order) ?? [];
+      const updatedSameOrderCards = [...sameOrderCards, card];
+      counts.set(card.value.order, updatedSameOrderCards);
+      const cardsCount = updatedSameOrderCards.length * card.value.score;
+      if (cardsCount > max) {
+        max = cardsCount;
+        res = updatedSameOrderCards;
+      }
+    });
+    return res;
   }
 }

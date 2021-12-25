@@ -1,13 +1,20 @@
 import {Injectable} from '@angular/core';
 import {Subject} from 'rxjs';
-import {RoundResult} from './game';
+import {Move, RoundResult} from './game';
 
 @Injectable()
-export class GameEvents{
-  private playerCalledYanivSubject = new Subject<RoundResult>();
-  public playerCalledYaniv = this.playerCalledYanivSubject.asObservable();
+export class GameEvents {
+  private yanivSubject = new Subject<RoundResult>();
+  public yaniv = this.yanivSubject.asObservable();
 
-  onPlayerCalledYaniv(roundResult: RoundResult): void {
-    this.playerCalledYanivSubject.next(roundResult);
+  private playerMoveSubject = new Subject<Move>();
+  public playerMove = this.playerMoveSubject.asObservable();
+
+  onYaniv(roundResult: RoundResult): void {
+    this.yanivSubject.next(roundResult);
+  }
+
+  onPlayerMove(move: Move): void {
+    this.playerMoveSubject.next(move);
   }
 }
