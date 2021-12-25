@@ -45,6 +45,13 @@ export class GameComponent extends SubscriberDirective implements OnInit {
         this.handleYanivResult(roundResult);
       });
 
+    this.gameEvents.playerCardsUpdate(this.player.id)
+      ?.pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((cards: Card[]) => {
+        this.player.cards = cards;
+        this.player.cards.forEach(card => card.selected = false);
+      });
+
     setTimeout(() => {
       this.gameService.addPlayer(new Player('Shamib', 'asd', true));
     }, 500);
@@ -64,15 +71,12 @@ export class GameComponent extends SubscriberDirective implements OnInit {
   }
 
   async makeMove(cardToTake: Card | null = null): Promise<void> {
-    if (this.player.selectedCards?.length && this.player.isCurrentPlayer && this.cardsValidator.isLegalMove(this.player.selectedCards)) {
+    if (this.player.selectedCards?.length && this.cardsValidator.isLegalMove(this.player.selectedCards)) {
       await this.gameService.makeMove(this.player, this.player.selectedCards, cardToTake);
     }
   }
 
-  onPlayerCallYaniv(player: Player): void {
-    if (!player.isCurrentPlayer) {
-      return;
-    }
+  onPlayerCallYaniv(): void {
     this.gameService.yaniv();
   }
 

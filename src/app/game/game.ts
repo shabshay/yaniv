@@ -45,7 +45,7 @@ export class Game implements GameStatus {
   roundsResults: RoundResult[];
 
   private lock = new AsyncLock({maxPending: 1, timeout: 100});
-  private keyLock = 'keyLock';
+  private lockKey = 'lockKey';
   private moves: Move[];
 
   constructor(
@@ -90,8 +90,7 @@ export class Game implements GameStatus {
     this.updateActivePlayers();
     this.dealCards();
     this.currentPlayer = startingPlayer;
-    this.players.forEach(player => player.isCurrentPlayer = false);
-    this.currentPlayer.isCurrentPlayer = true;
+    this.updatePlayersCards();
     this.updateGameStatus();
     this.isRunning = true;
   }
@@ -105,11 +104,11 @@ export class Game implements GameStatus {
   }
 
   async makeMove(player: Player, thrownCards: Card[], cardToTake: Card | null = null): Promise<void> {
-    if (this.currentPlayer?.id !== player.id || !this.cardsValidator.isLegalMove(thrownCards) || this.lock.isBusy(this.makeMove.name)) {
+    if (this.currentPlayer?.id !== player.id || !this.cardsValidator.isLegalMove(thrownCards) || this.lock.isBusy(this.lockKey)) {
       return;
     }
 
-    await this.lock.acquire(this.keyLock, () => {
+    await this.lock.acquire(this.lockKey, () => {
       if (this.currentPlayer?.id !== player.id) {
         return;
       }
@@ -119,19 +118,29 @@ export class Game implements GameStatus {
       thrownCards.forEach(card => card.selected = false);
       this.moves.push({cards: thrownCards} as Move);
       this.currentPlayer.cards?.push(drawnCard);
-      this.currentPlayer.cards?.forEach(card => card.selected = false);
       this.setNextPlayer();
+      this.updatePlayersCards();
       this.updateGameStatus();
       this.initComputerMove();
     });
   }
 
+  private updatePlayersCards(): void {
+    this.players.forEach(player => {
+      this.gameEvents.onPlayerCardsUpdate(player.id, player.cards ?? []);
+    });
+  }
+
   async yaniv(): Promise<void> {
-    if (this.currentPlayer.cardsScore > this.config.yanivThreshold || this.gameIsOver || !this.isRunning) {
+    if (this.currentPlayer.cardsScore > this.config.yanivThreshold
+      || this.gameIsOver
+      || !this.isRunning
+      || this.lock.isBusy(this.lockKey)
+    ) {
       return;
     }
 
-    await this.lock.acquire(this.keyLock, () => {
+    await this.lock.acquire(this.lockKey, () => {
       this.isRunning = false;
       let winner = this.currentPlayer;
       const otherPlayers = this.activePlayers.filter(player => player.id !== this.currentPlayer.id);
@@ -223,10 +232,6 @@ export class Game implements GameStatus {
 
   private setNextPlayer(): void {
     this.currentPlayer = this.getNextPlayer();
-    this.currentPlayer.isCurrentPlayer = true;
-    this.players
-      .filter(p => p.id !== this.currentPlayer.id)
-      .forEach(p => p.isCurrentPlayer = false);
   }
 
   private getRandomItemFromArray<T>(array: T[], removeItem: boolean = false): T {

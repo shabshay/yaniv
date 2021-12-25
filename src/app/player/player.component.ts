@@ -12,6 +12,9 @@ export class PlayerComponent implements OnInit {
   player!: IPlayer;
 
   @Input()
+  isCurrentPlayer!: boolean;
+
+  @Input()
   yanivThreshold!: number;
 
   @Output()

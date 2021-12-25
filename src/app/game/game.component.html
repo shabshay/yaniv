@@ -1,10 +1,16 @@
 <div class="game-container">
   <div class="opponent1-container">
-    <app-opponent *ngIf="opponents.length > 1" [player]="opponents[1]"></app-opponent>
+    <app-opponent *ngIf="opponents.length > 1"
+                  [player]="opponents[1]"
+                  [isCurrentPlayer]="gameStatus.currentPlayer.id === opponents[1].id">
+    </app-opponent>
   </div>
   <div class="opponents-center-container">
     <div class="opponent2-container rotated-90">
-      <app-opponent *ngIf="opponents.length" [player]="opponents[0]"></app-opponent>
+      <app-opponent *ngIf="opponents.length"
+                    [player]="opponents[0]"
+                    [isCurrentPlayer]="gameStatus.currentPlayer.id === opponents[0].id">
+      </app-opponent>
     </div>
     <div class="deck-container">
       <div class="deck card card-back" *ngIf="gameStatus.deckNumberOfCards" (click)="makeMove()"></div>
@@ -14,10 +20,17 @@
       </div>
     </div>
     <div class="opponent3-container rotated-270">
-      <app-opponent *ngIf="opponents.length > 2" [player]="opponents[2]"></app-opponent>
+      <app-opponent *ngIf="opponents.length > 2"
+                    [player]="opponents[2]"
+                    [isCurrentPlayer]="gameStatus.currentPlayer.id === opponents[2].id">
+      </app-opponent>
     </div>
   </div>
   <div class="player-container">
-    <app-player [player]="player" [yanivThreshold]="gameStatus.config.yanivThreshold" (yanivClick)="onPlayerCallYaniv(player)"></app-player>
+    <app-player [player]="player"
+                [isCurrentPlayer]="gameStatus.currentPlayer.id === player.id"
+                [yanivThreshold]="gameStatus.config.yanivThreshold"
+                (yanivClick)="onPlayerCallYaniv()">
+    </app-player>
   </div>
 </div>

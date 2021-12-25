@@ -4,7 +4,6 @@ export interface IPlayer {
   id: string;
   name: string;
   numberOfCards: number;
-  isCurrentPlayer: boolean;
   isOut: boolean;
   cards?: Card[];
   totalScore: number;
@@ -17,7 +16,6 @@ export class Player implements IPlayer {
   name: string;
   cards?: Card[];
   totalScore = 0;
-  isCurrentPlayer = false;
   isOut = false;
   isComputerPlayer: boolean;
 

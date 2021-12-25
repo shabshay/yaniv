@@ -11,6 +11,9 @@ export class OpponentComponent implements OnInit {
   @Input()
   player!: IPlayer;
 
+  @Input()
+  isCurrentPlayer!: boolean;
+
   constructor() { }
 
   ngOnInit(): void {

@@ -1,5 +1,5 @@
 <div class="opponent-container"
-     [ngClass]="{'current-player': player.isCurrentPlayer}">
+     [ngClass]="{'current-player': isCurrentPlayer}">
   <div class="cards-container" *ngIf="!player.isOut">
     <ng-template [ngIf]="player.cards" [ngIfElse]="backOfCards">
       <app-cards *ngIf="player.cards" [cards]="player.cards"></app-cards>
