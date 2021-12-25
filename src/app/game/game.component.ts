@@ -46,15 +46,15 @@ export class GameComponent extends SubscriberDirective implements OnInit {
       });
 
     setTimeout(() => {
-      this.gameService.addPlayer(new Player('Shamib', 'asd'));
+      this.gameService.addPlayer(new Player('Shamib', 'asd', true));
     }, 500);
 
     setTimeout(() => {
-      this.gameService.addPlayer(new Player('Dodik', 'ffsa3'));
+      this.gameService.addPlayer(new Player('Dodik', 'ffsa3', true));
     }, 1000);
 
     setTimeout(() => {
-      this.gameService.addPlayer(new Player('Kaduri', '234sdf'));
+      this.gameService.addPlayer(new Player('Kaduri', '234sdf', true));
       this.gameService.startGame();
     }, 2000);
   }

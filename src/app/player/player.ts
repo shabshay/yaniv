@@ -9,6 +9,7 @@ export interface IPlayer {
   cards?: Card[];
   totalScore: number;
   cardsScore: number;
+  isComputerPlayer: boolean;
 }
 
 export class Player implements IPlayer {
@@ -18,10 +19,12 @@ export class Player implements IPlayer {
   totalScore = 0;
   isCurrentPlayer = false;
   isOut = false;
+  isComputerPlayer: boolean;
 
-  constructor(name: string, id: string) {
+  constructor(name: string, id: string, isComputerPlayer: boolean) {
     this.name = name;
     this.id = id;
+    this.isComputerPlayer = isComputerPlayer;
   }
 
   get selectedCards(): Card[] | undefined {

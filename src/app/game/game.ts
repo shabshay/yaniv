@@ -32,7 +32,6 @@ export interface GameStatus {
   currentPlayer: IPlayer;
   players: IPlayer[];
   isRunning: boolean;
-  isComputerTurn: boolean;
   thrownCards: Card[];
   deckNumberOfCards: number;
 }
@@ -185,10 +184,6 @@ export class Game implements GameStatus {
     return this.moves[this.moves.length - 1];
   }
 
-  get isComputerTurn(): boolean {
-    return this.currentPlayer.id !== this.players[0].id;
-  }
-
   get thrownCards(): Card[] {
     return this.lastMove?.cards ?? [];
   }
@@ -290,7 +285,7 @@ export class Game implements GameStatus {
   }
 
   private initComputerMove(): void {
-    if (this.isComputerTurn && !this.gameIsOver) {
+    if (this.currentPlayer.isComputerPlayer && !this.gameIsOver) {
       setTimeout(async () => {
         if (this.currentPlayer.cardsScore <= this.config.yanivThreshold) {
           await this.yaniv();

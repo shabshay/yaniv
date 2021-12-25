@@ -15,12 +15,12 @@ export class AppComponent {
 
   constructor(private gameService: GameService) {
     const config = {
-      yanivThreshold: 7,
-      scoreLimit: 50,
-      cardsPerPlayer: 5
+      yanivThreshold: 9,
+      scoreLimit: 20,
+      cardsPerPlayer: 2
     } as GameConfig;
 
-    this.player = new Player('Shay', '3sfdaa');
+    this.player = new Player('Shay', '3sfdaa', false);
     this.game = this.gameService.createNewGame(this.player, config);
   }
 
