@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {GameConfig, GameStatus} from './game/game';
+import {GameConfig, GameState} from './game/game';
 import {Player} from './player/player';
 import {GameService} from './game/game.service';
 
@@ -10,7 +10,7 @@ import {GameService} from './game/game.service';
 })
 export class AppComponent {
 
-  game: GameStatus;
+  game: GameState;
   player: Player;
 
   constructor(private gameService: GameService) {

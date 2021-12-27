@@ -1,6 +1,6 @@
 import {Player} from '../player/player';
 import {Card} from '../card/card';
-import {Game, GameConfig, GameStatus} from './game';
+import {Game, GameConfig, GameState} from './game';
 import {CardsValidator} from '../common/cards-validator';
 import {GameEvents} from './game.events';
 import {Injectable} from '@angular/core';
@@ -24,7 +24,7 @@ export class GameService {
     this.game?.addPlayer(player);
   }
 
-  createNewGame(player: Player, config: GameConfig): GameStatus {
+  createNewGame(player: Player, config: GameConfig): GameState {
     this.game = new Game(config, player, this.cardsValidator, this.gameEvents);
     return {...this.game} as Game;
   }

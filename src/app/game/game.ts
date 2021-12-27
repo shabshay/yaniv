@@ -26,7 +26,7 @@ export interface Move {
   cards: Card[];
 }
 
-export interface GameStatus {
+export interface GameState {
   config: GameConfig;
   gameIsOver: boolean;
   currentPlayer: IPlayer;
@@ -36,7 +36,7 @@ export interface GameStatus {
   deckNumberOfCards: number;
 }
 
-export class Game implements GameStatus {
+export class Game implements GameState {
   config: GameConfig;
   players: Player[];
   currentPlayer: Player;
@@ -211,7 +211,7 @@ export class Game implements GameStatus {
       } as IPlayer;
     });
 
-    const gameStatus: GameStatus = {
+    const gameStatus: GameState = {
       ...this,
       players,
       thrownCards: this.thrownCards,

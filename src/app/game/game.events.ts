@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Observable, Subject} from 'rxjs';
-import {GameStatus, RoundResult} from './game';
+import {GameState, RoundResult} from './game';
 import {Card} from '../card/card';
 
 @Injectable()
@@ -8,7 +8,7 @@ export class GameEvents {
   private yanivSubject = new Subject<RoundResult>();
   public yaniv = this.yanivSubject.asObservable();
 
-  private gameStatusUpdateSubject = new Subject<GameStatus>();
+  private gameStatusUpdateSubject = new Subject<GameState>();
   public gameStatusUpdate = this.gameStatusUpdateSubject.asObservable();
 
   private playerCardsUpdateSubjects = new Map<string, Subject<Card[]>>();
@@ -27,7 +27,7 @@ export class GameEvents {
     this.yanivSubject.next(roundResult);
   }
 
-  onGameStatusUpdate(gameStatus: GameStatus): void {
+  onGameStatusUpdate(gameStatus: GameState): void {
     this.gameStatusUpdateSubject.next(gameStatus);
   }
 }

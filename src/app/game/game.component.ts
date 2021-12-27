@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {GameStatus, RoundResult} from './game';
+import {GameState, RoundResult} from './game';
 import {IPlayer, Player} from '../player/player';
 import {Card} from '../card/card';
 import {MatDialog} from '@angular/material/dialog';
@@ -18,7 +18,7 @@ import {GameService} from './game.service';
 export class GameComponent extends SubscriberDirective implements OnInit {
 
   @Input()
-  gameStatus!: GameStatus;
+  gameStatus!: GameState;
 
   @Input()
   player!: Player;
@@ -35,7 +35,7 @@ export class GameComponent extends SubscriberDirective implements OnInit {
   ngOnInit(): void {
     this.gameEvents.gameStatusUpdate
       .pipe(takeUntil(this.ngUnsubscribe))
-      .subscribe((gameStatus: GameStatus) => {
+      .subscribe((gameStatus: GameState) => {
         this.gameStatus = gameStatus;
       });
 
