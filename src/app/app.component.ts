@@ -15,7 +15,7 @@ export class AppComponent {
     const config = {
       yanivThreshold: 7,
       scoreLimit: 20,
-      cardsPerPlayer: 2
+      cardsPerPlayer: 5
     } as GameConfig;
 
     this.player = {
