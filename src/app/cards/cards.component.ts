@@ -26,6 +26,6 @@ export class CardsComponent implements OnInit {
   }
 
   onCardClick(card: Card): void {
-    card.selected = !card.selected && this.cards && this.cardsValidator.isLegalCardMove(card, this.cards);
+    card.selected = !card.selected && this.cards && this.cardsValidator.cardSelectionIsValid(card, this.cards);
   }
 }

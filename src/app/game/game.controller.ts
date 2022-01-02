@@ -7,7 +7,7 @@ import {GameReducer} from './game.reducer';
 @Injectable()
 export class GameController {
   constructor(
-    private cardsValidator: GameValidator,
+    private gameValidator: GameValidator,
     private gameEvents: GameEvents,
     private gameReducer: GameReducer
   ) {
@@ -36,7 +36,10 @@ export class GameController {
   }
 
   makeMove(gameState: GameState, thrownCards: Card[], cardToTake: Card | null = null): void {
-    if (gameState.yaniv || gameState.gameIsOver || !gameState.started || !this.cardsValidator.isLegalMove(thrownCards)) {
+    if (gameState.yaniv || gameState.gameIsOver || !gameState.started
+      || !this.gameValidator.selectedCardsAreValid(thrownCards)
+      || !this.gameValidator.selectedCardIsValid(cardToTake, gameState)
+    ) {
       return;
     }
     const newState = this.gameReducer.makeMove(gameState, thrownCards, cardToTake);

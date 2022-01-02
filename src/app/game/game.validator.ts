@@ -1,18 +1,28 @@
 import {Injectable} from '@angular/core';
-import {Card} from './game.model';
+import {Card, GameState, getThrownCards} from './game.model';
 
 
 @Injectable()
 export class GameValidator {
 
-  isLegalMove(selectedCards: Card[]): boolean {
+  selectedCardIsValid(cardToTake: Card | null, gameState: GameState): boolean {
+    if (cardToTake) {
+      const cardsFromPile = getThrownCards(gameState);
+      if (cardsFromPile.length && cardsFromPile[0] !== cardToTake && cardsFromPile[cardsFromPile.length - 1] !== cardToTake) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  selectedCardsAreValid(selectedCards: Card[]): boolean {
     if (selectedCards?.length) {
       return (this.isStraightCards(selectedCards) && selectedCards.length >= 3) || this.cardsHasSameValue(selectedCards);
     }
     return false;
   }
 
-  isLegalCardMove(card: Card, cards: Card[]): boolean {
+  cardSelectionIsValid(card: Card, cards: Card[]): boolean {
     if (card.value.order === 0) {
       return true;
     }

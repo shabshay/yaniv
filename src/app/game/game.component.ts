@@ -72,7 +72,7 @@ export class GameComponent extends SubscriberDirective implements OnInit {
 
   makeMove(cardToTake: Card | null = null): void {
     const selectedCards = this.player.cards?.filter(c => c.selected);
-    if (selectedCards?.length && this.cardsValidator.isLegalMove(selectedCards)) {
+    if (selectedCards?.length && this.cardsValidator.selectedCardsAreValid(selectedCards)) {
       this.gameService.makeMove(this.gameState, selectedCards, cardToTake);
     }
   }
