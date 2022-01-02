@@ -1,7 +1,6 @@
 import {Component} from '@angular/core';
-import {GameConfig, GameState} from './game/game';
-import {Player} from './player/player';
-import {GameService} from './game/game.service';
+import {GameController} from './game/game.controller';
+import {GameConfig, GameState, Player} from './game/game.model';
 
 @Component({
   selector: 'app-root',
@@ -9,19 +8,22 @@ import {GameService} from './game/game.service';
   styleUrls: ['./app.component.less']
 })
 export class AppComponent {
-
-  game: GameState;
+  gameState: GameState;
   player: Player;
 
-  constructor(private gameService: GameService) {
+  constructor(private gameService: GameController) {
     const config = {
       yanivThreshold: 7,
       scoreLimit: 20,
       cardsPerPlayer: 2
     } as GameConfig;
 
-    this.player = new Player('Shay', '3sfdaa', false);
-    this.game = this.gameService.createNewGame(this.player, config);
+    this.player = {
+      name: 'Shay',
+      id: '2fb5s',
+      isComputerPlayer: false
+    } as Player;
+    this.gameState = this.gameService.newGame(config, this.player);
   }
 
   startGame(): void {

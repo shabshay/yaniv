@@ -1,6 +1,6 @@
 <div class="app-container">
-  <ng-template [ngIf]="game" [ngIfElse]="gameNotRunningTemplate">
-    <app-game [gameStatus]="game" [player]="player"></app-game>
+  <ng-template [ngIf]="gameState" [ngIfElse]="gameNotRunningTemplate">
+    <app-game [gameState]="gameState" [player]="player"></app-game>
   </ng-template>
   <ng-template #gameNotRunningTemplate>
     <mat-toolbar color="primary">

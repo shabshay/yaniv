@@ -15,9 +15,10 @@ import {MatButtonModule} from '@angular/material/button';
 import { OpponentComponent } from './opponent/opponent.component';
 import { DialogComponent } from './dialog/dialog.component';
 import {MatDialogModule} from '@angular/material/dialog';
-import {CardsValidator} from './common/cards-validator';
+import {GameValidator} from './game/game.validator';
 import {GameEvents} from './game/game.events';
-import {GameService} from './game/game.service';
+import {GameController} from './game/game.controller';
+import {GameReducer} from './game/game.reducer';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,7 @@ import {GameService} from './game/game.service';
     MatButtonModule,
     MatDialogModule
   ],
-  providers: [GameService, CardsValidator, GameEvents],
+  providers: [GameController, GameValidator, GameEvents, GameReducer],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

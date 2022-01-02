@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {IPlayer} from '../player/player';
+import {Player} from '../game/game.model';
 
 @Component({
   selector: 'app-opponent',
@@ -9,10 +9,13 @@ import {IPlayer} from '../player/player';
 export class OpponentComponent implements OnInit {
 
   @Input()
-  player!: IPlayer;
+  player!: Player;
 
   @Input()
   isCurrentPlayer!: boolean;
+
+  @Input()
+  showCards = false;
 
   constructor() { }
 

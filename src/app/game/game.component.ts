@@ -1,14 +1,12 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {GameState, RoundResult} from './game';
-import {IPlayer, Player} from '../player/player';
-import {Card} from '../card/card';
 import {MatDialog} from '@angular/material/dialog';
 import {DialogComponent, DialogData} from '../dialog/dialog.component';
-import {CardsValidator} from '../common/cards-validator';
+import {GameValidator} from './game.validator';
 import {GameEvents} from './game.events';
 import {takeUntil} from 'rxjs/operators';
 import {SubscriberDirective} from '../../Subscriber';
-import {GameService} from './game.service';
+import {GameController} from './game.controller';
+import {Card, GameState, getThrownCards, Player, RoundResult} from './game.model';
 
 @Component({
   selector: 'app-game',
@@ -18,78 +16,100 @@ import {GameService} from './game.service';
 export class GameComponent extends SubscriberDirective implements OnInit {
 
   @Input()
-  gameStatus!: GameState;
+  gameState!: GameState;
 
   @Input()
   player!: Player;
 
   constructor(
-    private gameService: GameService,
+    private gameService: GameController,
     private dialog: MatDialog,
-    private cardsValidator: CardsValidator,
+    private cardsValidator: GameValidator,
     private gameEvents: GameEvents
   ) {
     super();
   }
 
   ngOnInit(): void {
-    this.gameEvents.gameStatusUpdate
+    this.initGameEvents();
+
+    setTimeout(() => {
+      const player = {
+        name: 'Shamib',
+        id: 'asd',
+        isComputerPlayer: true
+      } as Player;
+      this.gameService.addPlayer(this.gameState, player);
+    }, 500);
+
+    setTimeout(() => {
+      const player = {
+        name: 'Dodik',
+        id: 'fasdf',
+        isComputerPlayer: true
+      } as Player;
+      this.gameService.addPlayer(this.gameState, player);
+    }, 1000);
+
+    setTimeout(() => {
+      const player = {
+        name: 'Kaduri',
+        id: '2dsfx',
+        isComputerPlayer: true
+      } as Player;
+      this.gameService.addPlayer(this.gameState, player);
+      this.gameService.startGame(this.gameState);
+    }, 2000);
+  }
+
+  get opponents(): Player[] {
+    return this.gameState.players?.filter(player => player.id !== this.player.id) ?? [];
+  }
+
+  get thrownCards(): Card[] | undefined {
+    return getThrownCards(this.gameState);
+  }
+
+  makeMove(cardToTake: Card | null = null): void {
+    const selectedCards = this.player.cards?.filter(c => c.selected);
+    if (selectedCards?.length && this.cardsValidator.isLegalMove(selectedCards)) {
+      this.gameService.makeMove(this.gameState, selectedCards, cardToTake);
+    }
+  }
+
+  onPlayerCallYaniv(): void {
+    this.gameService.yaniv(this.gameState);
+  }
+
+  private initGameEvents(): void {
+    this.gameEvents.gameStateUpdate
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((gameStatus: GameState) => {
-        this.gameStatus = gameStatus;
+        this.onGameStateUpdate(gameStatus);
       });
 
     this.gameEvents.yaniv
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((roundResult: RoundResult) => {
-        this.handleYanivResult(roundResult);
+        this.onYanivResult(roundResult);
       });
-
-    this.gameEvents.playerCardsUpdate(this.player.id)
-      ?.pipe(takeUntil(this.ngUnsubscribe))
-      .subscribe((cards: Card[]) => {
-        this.player.cards = cards;
-        this.player.cards.forEach(card => card.selected = false);
-      });
-
-    setTimeout(() => {
-      this.gameService.addPlayer(new Player('Shamib', 'asd', true));
-    }, 500);
-
-    setTimeout(() => {
-      this.gameService.addPlayer(new Player('Dodik', 'ffsa3', true));
-    }, 1000);
-
-    setTimeout(() => {
-      this.gameService.addPlayer(new Player('Kaduri', '234sdf', true));
-      this.gameService.startGame();
-    }, 2000);
   }
 
-  get opponents(): IPlayer[] {
-    return this.gameStatus.players?.slice(1) ?? [];
+  private onGameStateUpdate(gameStatus: GameState): void {
+    this.gameState = gameStatus;
+    this.player = this.gameState.players.find(player => player.id === this.player.id) as Player;
   }
 
-  async makeMove(cardToTake: Card | null = null): Promise<void> {
-    if (this.player.selectedCards?.length && this.cardsValidator.isLegalMove(this.player.selectedCards)) {
-      await this.gameService.makeMove(this.player, this.player.selectedCards, cardToTake);
-    }
-  }
-
-  onPlayerCallYaniv(): void {
-    this.gameService.yaniv();
-  }
-
-  private handleYanivResult(result: RoundResult): void {
+  private onYanivResult(result: RoundResult): void {
     const resultScoresString = result.playersRoundScores.map(playerScore => `${playerScore.player.name}: ${playerScore.score} \n`).join('');
     setTimeout(() => {
-      if (!this.gameStatus.gameIsOver) {
+      if (!this.gameState.gameIsOver) {
         this.dialog.closeAll();
       }
     }, 5000);
 
     let title = result.asaf ? 'Asaf!' : 'Yaniv!';
-    if (this.gameStatus.gameIsOver) {
+    if (this.gameState.gameIsOver) {
       title = `${title} GAME OVER!`;
     }
     title = `${title} ${result.winner.name} Wins!`;

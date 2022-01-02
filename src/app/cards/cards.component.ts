@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Card} from '../card/card';
-import {CardsValidator} from '../common/cards-validator';
+import {GameValidator} from '../game/game.validator';
+import {Card} from '../game/game.model';
 
 @Component({
   selector: 'app-cards',
@@ -12,7 +12,7 @@ export class CardsComponent implements OnInit {
   @Input()
   cards?: Card[];
 
-  constructor(private cardsValidator: CardsValidator) {
+  constructor(private cardsValidator: GameValidator) {
   }
 
   ngOnInit(): void {

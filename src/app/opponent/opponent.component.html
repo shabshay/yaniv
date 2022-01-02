@@ -1,11 +1,11 @@
 <div class="opponent-container"
      [ngClass]="{'current-player': isCurrentPlayer}">
   <div class="cards-container" *ngIf="!player.isOut">
-    <ng-template [ngIf]="player.cards" [ngIfElse]="backOfCards">
+    <ng-template [ngIf]="showCards" [ngIfElse]="backOfCards">
       <app-cards *ngIf="player.cards" [cards]="player.cards"></app-cards>
     </ng-template>
     <ng-template #backOfCards>
-      <div class="card card-back" *ngFor="let card of [].constructor(player.numberOfCards);">
+      <div class="card card-back" *ngFor="let card of player.cards;">
       </div>
     </ng-template>
   </div>

@@ -1,8 +1,9 @@
-import {Card} from '../card/card';
 import {Injectable} from '@angular/core';
+import {Card} from './game.model';
+
 
 @Injectable()
-export class CardsValidator {
+export class GameValidator {
 
   isLegalMove(selectedCards: Card[]): boolean {
     if (selectedCards?.length) {

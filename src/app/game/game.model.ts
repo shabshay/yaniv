@@ -1,3 +1,45 @@
+export interface GameConfig {
+  yanivThreshold: number;
+  scoreLimit: number;
+  cardsPerPlayer: number;
+}
+
+export interface PlayerRoundScore {
+  score: number;
+  player: Player;
+}
+
+export interface RoundResult {
+  winner: Player;
+  asaf: boolean;
+  playersRoundScores: PlayerRoundScore[];
+}
+
+export interface Move {
+  cards: Card[];
+}
+
+export interface GameState {
+  config: GameConfig;
+  gameIsOver: boolean;
+  started: boolean;
+  currentPlayer?: Player;
+  players: Player[];
+  yaniv: boolean;
+  deck: Card[];
+  roundsResults: RoundResult[];
+  moves: Move[];
+}
+
+export interface Player {
+  id: string;
+  name: string;
+  isOut: boolean;
+  cards?: Card[];
+  totalScore: number;
+  isComputerPlayer: boolean;
+}
+
 export enum CardSymbolEnum {
   Hearts = 'Hearts',
   Clubs = 'Clubs',
@@ -135,3 +177,16 @@ export const CardValuesMap: Map<CardValueEnum, CardValue> = new Map([
     order: 13
   }],
 ]);
+
+export function cardsScore(cards: Card[] | undefined): number {
+  const cardsScores: number[] | undefined = cards?.map(card => card.value.score);
+  return cardsScores?.reduce((a, b) => a + b, 0) ?? 0;
+}
+
+export function getLastMove(gameState: GameState): Move | undefined {
+  return gameState.moves.length ? gameState.moves[gameState.moves.length - 1] : undefined;
+}
+
+export function getThrownCards(gameState: GameState): Card[] {
+  return getLastMove(gameState)?.cards ?? [];
+}
