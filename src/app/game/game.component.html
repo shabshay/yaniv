@@ -1,20 +1,20 @@
 <div class="game-container">
-  <div class="opponent1-container">
-    <app-opponent *ngIf="opponents.length > 1"
-                  [player]="opponents[1]"
+  <div class="opponent1-container" *ngIf="opponents.length > 1">
+    <app-avatar [player]="opponents[1]" [isCurrentPlayer]="gameState.currentPlayer?.id === opponents[1].id" [timeLeft]="timeLeft"></app-avatar>
+    <app-opponent [player]="opponents[1]"
                   [showCards]="gameState.yaniv"
                   [timeLeft]="timeLeft"
                   [isCurrentPlayer]="gameState.currentPlayer?.id === opponents[1].id">
     </app-opponent>
   </div>
   <div class="opponents-center-container">
-    <div class="opponent2-container rotated-90">
-      <app-opponent *ngIf="opponents.length"
-                    [player]="opponents[0]"
+    <div class="opponent2-container rotated-90" *ngIf="opponents.length">
+      <app-opponent [player]="opponents[0]"
                     [showCards]="gameState.yaniv"
                     [timeLeft]="timeLeft"
                     [isCurrentPlayer]="gameState.currentPlayer?.id === opponents[0].id">
       </app-opponent>
+      <app-avatar [player]="opponents[0]" [isCurrentPlayer]="gameState.currentPlayer?.id === opponents[0].id" [timeLeft]="timeLeft"></app-avatar>
     </div>
     <div class="deck-container">
       <div class="deck card card-back" *ngIf="gameState.deck?.length" (click)="makeMove()"></div>
@@ -23,13 +23,13 @@
         </app-card>
       </div>
     </div>
-    <div class="opponent3-container rotated-270">
-      <app-opponent *ngIf="opponents.length > 2"
-                    [player]="opponents[2]"
+    <div class="opponent3-container rotated-270" *ngIf="opponents.length > 2">
+      <app-opponent [player]="opponents[2]"
                     [showCards]="gameState.yaniv"
                     [timeLeft]="timeLeft"
                     [isCurrentPlayer]="gameState.currentPlayer?.id === opponents[2].id">
       </app-opponent>
+      <app-avatar [player]="opponents[2]" [isCurrentPlayer]="gameState.currentPlayer?.id === opponents[2].id" [timeLeft]="timeLeft"></app-avatar>
     </div>
   </div>
   <div class="player-container">
@@ -39,5 +39,6 @@
                 [timeLeft]="timeLeft"
                 (yanivClick)="onPlayerCallYaniv()">
     </app-player>
+    <app-avatar [player]="player" [isCurrentPlayer]="gameState.currentPlayer?.id === player.id" [timeLeft]="timeLeft"></app-avatar>
   </div>
 </div>

@@ -3,5 +3,4 @@
     <app-cards *ngIf="player?.cards" [cards]="player.cards"></app-cards>
     <button mat-raised-button color="primary" [disabled]="cardsScore(player.cards) > yanivThreshold || !isCurrentPlayer" (click)="onYanivClick()">Yaniv!</button>
   </div>
-  <app-avatar [player]="player" [isCurrentPlayer]="isCurrentPlayer" [timeLeft]="timeLeft"></app-avatar>
 </div>

@@ -16,7 +16,7 @@ export class AppComponent {
       yanivThreshold: 7,
       scoreLimit: 50,
       cardsPerPlayer: 5,
-      moveTimeoutInMS: 5000,
+      moveTimeoutInMS: 15000,
       timeBetweenRoundsInMS: 5000
     } as GameConfig;
 
