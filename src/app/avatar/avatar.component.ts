@@ -2,11 +2,11 @@ import {Component, Input, OnInit} from '@angular/core';
 import {Player} from '../game/game.model';
 
 @Component({
-  selector: 'app-opponent',
-  templateUrl: './opponent.component.html',
-  styleUrls: ['./opponent.component.less']
+  selector: 'app-avatar',
+  templateUrl: './avatar.component.html',
+  styleUrls: ['./avatar.component.less']
 })
-export class OpponentComponent implements OnInit {
+export class AvatarComponent implements OnInit {
 
   @Input()
   player!: Player;
@@ -15,12 +15,10 @@ export class OpponentComponent implements OnInit {
   isCurrentPlayer!: boolean;
 
   @Input()
-  showCards = false;
-
-  @Input()
   timeLeft?: number;
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit(): void {
   }

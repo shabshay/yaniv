@@ -3,6 +3,7 @@
     <app-opponent *ngIf="opponents.length > 1"
                   [player]="opponents[1]"
                   [showCards]="gameState.yaniv"
+                  [timeLeft]="timeLeft"
                   [isCurrentPlayer]="gameState.currentPlayer?.id === opponents[1].id">
     </app-opponent>
   </div>
@@ -11,6 +12,7 @@
       <app-opponent *ngIf="opponents.length"
                     [player]="opponents[0]"
                     [showCards]="gameState.yaniv"
+                    [timeLeft]="timeLeft"
                     [isCurrentPlayer]="gameState.currentPlayer?.id === opponents[0].id">
       </app-opponent>
     </div>
@@ -25,6 +27,7 @@
       <app-opponent *ngIf="opponents.length > 2"
                     [player]="opponents[2]"
                     [showCards]="gameState.yaniv"
+                    [timeLeft]="timeLeft"
                     [isCurrentPlayer]="gameState.currentPlayer?.id === opponents[2].id">
       </app-opponent>
     </div>
@@ -33,6 +36,7 @@
     <app-player [player]="player"
                 [isCurrentPlayer]="gameState.currentPlayer?.id === player.id"
                 [yanivThreshold]="gameState.config.yanivThreshold"
+                [timeLeft]="timeLeft"
                 (yanivClick)="onPlayerCallYaniv()">
     </app-player>
   </div>

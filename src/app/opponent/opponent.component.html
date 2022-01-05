@@ -9,8 +9,5 @@
       </div>
     </ng-template>
   </div>
-  <div class="opponent-header">
-    <h2>{{player.name}}</h2>
-    <h1>{{player.totalScore}}</h1>
-  </div>
+  <app-avatar [player]="player" [isCurrentPlayer]="isCurrentPlayer" [timeLeft]="timeLeft"></app-avatar>
 </div>

@@ -14,8 +14,10 @@ export class AppComponent {
   constructor(private gameService: GameController) {
     const config = {
       yanivThreshold: 7,
-      scoreLimit: 20,
-      cardsPerPlayer: 5
+      scoreLimit: 50,
+      cardsPerPlayer: 5,
+      moveTimeoutInMS: 5000,
+      timeBetweenRoundsInMS: 5000
     } as GameConfig;
 
     this.player = {

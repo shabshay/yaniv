@@ -2,6 +2,8 @@ export interface GameConfig {
   yanivThreshold: number;
   scoreLimit: number;
   cardsPerPlayer: number;
+  moveTimeoutInMS: number;
+  timeBetweenRoundsInMS: number;
 }
 
 export interface PlayerRoundScore {

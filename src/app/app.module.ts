@@ -19,6 +19,7 @@ import {GameValidator} from './game/game.validator';
 import {GameEvents} from './game/game.events';
 import {GameController} from './game/game.controller';
 import {GameReducer} from './game/game.reducer';
+import { AvatarComponent } from './avatar/avatar.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import {GameReducer} from './game/game.reducer';
     CardsComponent,
     CardComponent,
     OpponentComponent,
-    DialogComponent
+    DialogComponent,
+    AvatarComponent
   ],
   imports: [
     BrowserModule,

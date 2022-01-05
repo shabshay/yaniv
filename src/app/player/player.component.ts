@@ -17,6 +17,9 @@ export class PlayerComponent implements OnInit {
   @Input()
   yanivThreshold!: number;
 
+  @Input()
+  timeLeft?: number;
+
   @Output()
   yanivClick: EventEmitter<any> = new EventEmitter<any>();
 

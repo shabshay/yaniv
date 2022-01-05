@@ -21,6 +21,9 @@ export class GameComponent extends SubscriberDirective implements OnInit {
   @Input()
   player!: Player;
 
+  timeLeft?: number;
+  private timerInterval?: number;
+
   constructor(
     private gameService: GameController,
     private dialog: MatDialog,
@@ -71,9 +74,11 @@ export class GameComponent extends SubscriberDirective implements OnInit {
   }
 
   makeMove(cardToTake: Card | null = null): void {
-    const selectedCards = this.player.cards?.filter(c => c.selected);
-    if (selectedCards?.length && this.cardsValidator.selectedCardsAreValid(selectedCards)) {
-      this.gameService.makeMove(this.gameState, selectedCards, cardToTake);
+    if (this.gameState.currentPlayer?.id === this.player.id) {
+      const selectedCards = this.player.cards?.filter(c => c.selected);
+      if (selectedCards?.length && this.cardsValidator.selectedCardsAreValid(selectedCards)) {
+        this.gameService.makeMove(this.gameState, selectedCards, cardToTake);
+      }
     }
   }
 
@@ -98,6 +103,24 @@ export class GameComponent extends SubscriberDirective implements OnInit {
   private onGameStateUpdate(gameStatus: GameState): void {
     this.gameState = gameStatus;
     this.player = this.gameState.players.find(player => player.id === this.player.id) as Player;
+    this.startTimer();
+  }
+
+  private startTimer(): void {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+    }
+    if (!this.gameState.started || this.gameState.gameIsOver || this.gameState.yaniv) {
+      return;
+    }
+    this.timeLeft = this.gameState.config.moveTimeoutInMS / 1000;
+    this.timerInterval = setInterval(() => {
+      if (this.timeLeft as number >= 0) {
+        (this.timeLeft as number)--;
+      } else {
+        clearInterval(this.timerInterval);
+      }
+    }, 1000);
   }
 
   private onYanivResult(result: RoundResult): void {
