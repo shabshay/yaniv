@@ -1,4 +1,4 @@
 <div class="cards-container">
-  <app-card *ngFor="let card of sortedCard" [card]="card" (click)="onCardClick(card)">
+  <app-card *ngFor="let card of sortedCard" [card]="card" [flipped]="flipped" (click)="onCardClick(card)">
   </app-card>
 </div>

@@ -12,6 +12,9 @@ export class CardsComponent implements OnInit {
   @Input()
   cards?: Card[];
 
+  @Input()
+  flipped = false;
+
   constructor(private cardsValidator: GameValidator) {
   }
 
