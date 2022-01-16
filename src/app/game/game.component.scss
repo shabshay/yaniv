@@ -1,13 +1,15 @@
+@import './src/variables';
+
 .game-container {
   height: 900px;
   background-image: radial-gradient(#89c189 30%, #408940 70%);
-  padding: 20px;
+  padding: $spacing-large;
 }
 
 .pile-deck-container {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: $spacing-large;
   align-items: center;
   justify-content: center;
 }
@@ -15,7 +17,7 @@
 .pile-container {
   width: 170px;
   display: flex;
-  gap: 8px;
+  gap: $spacing-small;
   flex-direction: row;
   align-items: center;
   justify-content: center;
@@ -32,7 +34,7 @@
   height: 330px;
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: $spacing-large;
   width: 750px;
   justify-content: center;
 }

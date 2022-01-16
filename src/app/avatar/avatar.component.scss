@@ -1,9 +1,11 @@
+@import './src/variables';
+
 .avatar-section {
   display: flex;
   flex-direction: row;
-  gap: 10px;
-  padding: 8px;
-  margin: 8px;
+  gap: $spacing-medium;
+  padding: $spacing-small;
+  margin: $spacing-small;
   justify-content: center;
   align-items: center;
 
