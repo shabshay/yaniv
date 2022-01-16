@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Player} from '../game/game.model';
+import {Card, getSortedCards, Player} from '../game/game.model';
 
 @Component({
   selector: 'app-opponent',
@@ -12,17 +12,14 @@ export class OpponentComponent implements OnInit {
   player!: Player;
 
   @Input()
-  isCurrentPlayer!: boolean;
-
-  @Input()
   showCards = false;
-
-  @Input()
-  timeLeft?: number;
 
   constructor() { }
 
   ngOnInit(): void {
   }
 
+  get sortedCard(): Card[] | undefined {
+    return getSortedCards(this.player.cards);
+  }
 }

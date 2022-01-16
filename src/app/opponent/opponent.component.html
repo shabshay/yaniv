@@ -1,6 +1,6 @@
-<div class="opponent-container"
-     [ngClass]="{'current-player': isCurrentPlayer}">
-  <div class="cards-container" *ngIf="!player.isOut">
-    <app-cards *ngIf="player.cards" [cards]="player.cards" [flipped]="!showCards"></app-cards>
+<div class="opponent-container">
+  <div class="opponent-cards-container" *ngIf="!player.isOut && player?.cards">
+    <app-card *ngFor="let card of sortedCard" class="opponent-card" [card]="card" [flipped]="!showCards">
+    </app-card>
   </div>
 </div>

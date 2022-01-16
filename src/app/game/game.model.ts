@@ -192,3 +192,10 @@ export function getLastMove(gameState: GameState): Move | undefined {
 export function getThrownCards(gameState: GameState): Card[] {
   return getLastMove(gameState)?.cards ?? [];
 }
+
+export function getSortedCards(cards: Card[] | undefined): Card[] | undefined {
+  return cards?.sort((card1, card2) => {
+    return (card1.value.order - card2.value.order)
+      || ((card1.symbol.icon < card2.symbol.icon) ? -1 : 1);
+  });
+}

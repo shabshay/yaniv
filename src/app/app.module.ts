@@ -9,7 +9,6 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatCardModule} from '@angular/material/card';
 import { GameComponent } from './game/game.component';
 import { PlayerComponent } from './player/player.component';
-import { CardsComponent } from './cards/cards.component';
 import { CardComponent } from './card/card.component';
 import {MatButtonModule} from '@angular/material/button';
 import { OpponentComponent } from './opponent/opponent.component';
@@ -26,7 +25,6 @@ import { AvatarComponent } from './avatar/avatar.component';
     AppComponent,
     GameComponent,
     PlayerComponent,
-    CardsComponent,
     CardComponent,
     OpponentComponent,
     DialogComponent,

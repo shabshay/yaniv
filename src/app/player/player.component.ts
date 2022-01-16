@@ -1,5 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Player, cardsScore} from '../game/game.model';
+import {Player, cardsScore, Card, getSortedCards} from '../game/game.model';
+import {GameValidator} from '../game/game.validator';
 
 @Component({
   selector: 'app-player',
@@ -17,15 +18,12 @@ export class PlayerComponent implements OnInit {
   @Input()
   yanivThreshold!: number;
 
-  @Input()
-  timeLeft?: number;
-
   @Output()
   yanivClick: EventEmitter<any> = new EventEmitter<any>();
 
   cardsScore = cardsScore;
 
-  constructor() {
+  constructor(private cardsValidator: GameValidator) {
   }
 
   ngOnInit(): void {
@@ -33,5 +31,13 @@ export class PlayerComponent implements OnInit {
 
   onYanivClick(): void {
     this.yanivClick.emit();
+  }
+
+  get sortedCard(): Card[] | undefined {
+    return getSortedCards(this.player.cards);
+  }
+
+  onCardClick(card: Card): void {
+    card.selected = !card.selected && this.player.cards && this.cardsValidator.cardSelectionIsValid(card, this.player.cards);
   }
 }
