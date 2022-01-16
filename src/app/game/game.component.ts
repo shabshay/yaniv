@@ -115,7 +115,7 @@ export class GameComponent extends SubscriberDirective implements OnInit {
     }
     this.timeLeft = this.gameState.config.moveTimeoutInMS / 1000;
     this.timerInterval = setInterval(() => {
-      if (this.timeLeft as number >= 0) {
+      if (this.timeLeft as number > 0) {
         (this.timeLeft as number)--;
       } else {
         clearInterval(this.timerInterval);
