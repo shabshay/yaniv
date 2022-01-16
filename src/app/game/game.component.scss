@@ -7,8 +7,9 @@
 .pile-deck-container {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 24px;
   align-items: center;
+  justify-content: center;
 }
 
 .pile-container {
@@ -48,10 +49,11 @@
   width: 80px;
   height: 110px;
   justify-content: center;
+  align-items: center;
 }
 
 .deck-card {
-  margin: -30px;
+  margin: -35px;
 }
 
 .rotated-90 {
