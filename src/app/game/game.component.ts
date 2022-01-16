@@ -11,7 +11,7 @@ import {Card, GameState, getThrownCards, Player, RoundResult} from './game.model
 @Component({
   selector: 'app-game',
   templateUrl: './game.component.html',
-  styleUrls: ['./game.component.less']
+  styleUrls: ['./game.component.scss']
 })
 export class GameComponent extends SubscriberDirective implements OnInit {
 

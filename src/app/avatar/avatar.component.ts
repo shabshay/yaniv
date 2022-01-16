@@ -4,7 +4,7 @@ import {Player} from '../game/game.model';
 @Component({
   selector: 'app-avatar',
   templateUrl: './avatar.component.html',
-  styleUrls: ['./avatar.component.less']
+  styleUrls: ['./avatar.component.scss']
 })
 export class AvatarComponent implements OnInit {
 

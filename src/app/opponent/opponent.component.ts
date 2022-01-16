@@ -4,7 +4,7 @@ import {Card, getSortedCards, Player} from '../game/game.model';
 @Component({
   selector: 'app-opponent',
   templateUrl: './opponent.component.html',
-  styleUrls: ['./opponent.component.less']
+  styleUrls: ['./opponent.component.scss']
 })
 export class OpponentComponent implements OnInit {
 
