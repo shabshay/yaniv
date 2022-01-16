@@ -12,8 +12,10 @@
       </app-opponent>
       <app-avatar [player]="opponents[0]" [isCurrentPlayer]="gameState.currentPlayer?.id === opponents[0].id" [timeLeft]="timeLeft"></app-avatar>
     </div>
-    <div class="deck-container">
-      <div class="deck card card-back" *ngIf="gameState.deck?.length" (click)="makeMove()"></div>
+    <div class="pile-deck-container">
+      <div class="deck-container" *ngIf="gameState.deck?.length" (click)="makeMove()">
+        <div *ngFor="let card of gameState.deck.slice(0, 3)" class="deck-card card card-back"></div>
+      </div>
       <div class="pile-container" *ngIf="thrownCards?.length">
         <app-card *ngFor="let card of thrownCards" [card]="card" (click)="makeMove(card)">
         </app-card>
