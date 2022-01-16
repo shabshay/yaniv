@@ -14,7 +14,7 @@
     </div>
     <div class="deck-container">
       <div class="deck card card-back" *ngIf="gameState.deck?.length" (click)="makeMove()"></div>
-      <div class="stack-container" *ngIf="thrownCards?.length">
+      <div class="pile-container" *ngIf="thrownCards?.length">
         <app-card *ngFor="let card of thrownCards" [card]="card" (click)="makeMove(card)">
         </app-card>
       </div>
