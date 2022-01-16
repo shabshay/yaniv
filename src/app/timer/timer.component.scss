@@ -1,0 +1,43 @@
+@keyframes animate-color-yellow {
+  0%  {background-color: #408940;}
+  30%  {background-color: yellowgreen;}
+  60% {background-color: yellow;}
+  90% {background-color: orange;}
+}
+
+@keyframes animate-color-red {
+  0% {background-color: orange;}
+  20% {background-color: orangered;}
+  60% {background-color: red;}
+  90% {background-color: darkred;}
+}
+
+.timer {
+  width: 45px;
+  height: 45px;
+  font-weight: bold;
+  font-size: 21px;
+  border: 2px solid honeydew;
+  border-radius: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  float: right;
+
+  p {
+    margin: auto;
+  }
+}
+
+.timer-green {
+  background-color: #408940;
+}
+
+.timer-yellow {
+  animation: animate-color-yellow 6s;
+}
+
+.timer-red {
+  animation: animate-color-red 6s;
+}
+

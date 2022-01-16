@@ -106,10 +106,15 @@ export class GameComponent extends SubscriberDirective implements OnInit {
     this.startTimer();
   }
 
-  private startTimer(): void {
+  private stopTimer(): void {
     if (this.timerInterval) {
       clearInterval(this.timerInterval);
     }
+    this.timeLeft = undefined;
+  }
+
+  private startTimer(): void {
+    this.stopTimer();
     if (!this.gameState.started || this.gameState.gameIsOver || this.gameState.yaniv) {
       return;
     }

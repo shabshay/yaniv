@@ -1,0 +1,7 @@
+<div class="timer" *ngIf="timeLeft !== undefined"
+     [ngClass]="{
+     'timer-green':  timeLeft >= 10,
+     'timer-yellow': timeLeft >= 5 && timeLeft !== undefined && timeLeft < 10,
+     'timer-red': timeLeft < 5}">
+  <p>{{timeLeft}}</p>
+</div>

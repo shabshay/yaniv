@@ -1,40 +1,35 @@
 @import './src/variables';
 
-.avatar-section {
+.avatar-container {
   display: flex;
-  flex-direction: row;
-  gap: $spacing-medium;
+  flex-direction: column;
   padding: $spacing-small;
   margin: $spacing-small;
   justify-content: center;
   align-items: center;
+  width: 60px;
+  height: 130px;
 
   h1, h2 {
     margin: 0 !important;
   }
 }
 
+.avatar-img {
+  border-radius: 70px;
+  width: 50px;
+  border: 2px solid white;
+}
+
 .current-player {
+  border: 5px solid yellow;
+}
+
+.score {
+  color: white;
+  background-color: darkslategray;
   border-radius: 30px;
-  border-style: solid;
-  border-width: 2px;
-  border-color: honeydew;
-  animation: animate-color 15s;
-}
-
-@keyframes animate-color {
-  0%   {background-color: #408940;}
-  25%  {background-color: #89c189;}
-  40%  {background-color: darkseagreen;}
-  60%  {background-color: yellowgreen;}
-  75% {background-color: yellow;}
-  100% {background-color: orangered;}
-}
-
-.timer {
-  width: 30px;
-  height: 30px;
-  margin-right: auto;
-  margin-left: auto;
-  font-weight: bold;
+  padding: 3px;
+  align-items: center;
+  border: black solid 1px;
 }

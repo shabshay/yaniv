@@ -1,9 +1,7 @@
-<div class="avatar-section" >
-  <h2>{{player.name}}</h2>
-  <h1>{{player.totalScore}}</h1>
-</div>
-<div class="avatar-section timer" [ngClass]="{'current-player': isCurrentPlayer}">
-  <div *ngIf="isCurrentPlayer">
-    {{timeLeft}}
+<div class="avatar-container">
+  <img [src]="avatarImageSrc" alt="" class="avatar-img" [ngClass]="{'current-player' : isCurrentPlayer}">
+  <h2>{{player.name.slice(0, 10)}}</h2>
+  <div class="score" *ngIf="player?.totalScore !== undefined">
+    <h1>{{player.totalScore}}</h1>
   </div>
 </div>
