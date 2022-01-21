@@ -1,6 +1,7 @@
 @import './src/variables';
 
 .card {
+  cursor: default;
   background-color: white;
   border: 2px solid white;
   border-radius: 4px;
@@ -12,6 +13,9 @@
   align-items: center;
   justify-content: space-evenly;
   font-size: 18px;
+}
+
+.active {
   cursor: pointer;
 }
 
@@ -26,4 +30,3 @@
 .card-selected {
   border-color: black;
 }
-

@@ -1,7 +1,7 @@
 <div class="player-container">
   <div class="player-cards-container" *ngIf="!player.isOut">
     <div class="cards-container" *ngIf="player?.cards">
-      <app-card *ngFor="let card of sortedCard" [card]="card" (click)="onCardClick(card)">
+      <app-card *ngFor="let card of sortedCard" [card]="card" (click)="onCardClick(card)" [isActive]="true">
       </app-card>
     </div>
     <button mat-raised-button color="primary" [disabled]="cardsScore(player.cards) > yanivThreshold || !isCurrentPlayer" (click)="onYanivClick()">Yaniv!</button>
