@@ -5,7 +5,7 @@
                 [isCurrentPlayer]="gameState.currentPlayer?.id === opponents[1].id"
                 avatarImageSrc="../../assets/avatar1.png">
     </app-avatar>
-    <app-opponent [player]="opponents[1]"
+    <app-opponent [player]="opponents[1]" class="rotated-180"
                   [showCards]="gameState.yaniv">
     </app-opponent>
   </div>
@@ -27,14 +27,14 @@
       <div class="deck-container" *ngIf="gameState.deck?.length" (click)="makeMove()">
         <app-card *ngFor="let card of deckTopCards; let i = index"
                   [card]="card"
-                  [isActive]="i === deckTopCards.length - 1 && gameState.currentPlayer?.id === player.id"
+                  [isActive]="!gameState.gameIsOver &&  i === deckTopCards.length - 1 && gameState.currentPlayer?.id === player.id"
                   [flipped]="true"
                   class="deck-card"></app-card>
       </div>
       <div class="pile-container" *ngIf="thrownCards?.length">
         <app-card *ngFor="let card of thrownCards"
                   [card]="card" class="pile-card"
-                  [isActive]="gameState.currentPlayer?.id === player.id"
+                  [isActive]="!gameState.gameIsOver && gameState.currentPlayer?.id === player.id"
                   (click)="makeMove(card)">
         </app-card>
       </div>
