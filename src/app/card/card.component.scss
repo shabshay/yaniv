@@ -15,7 +15,7 @@
   font-size: 18px;
 }
 
-.active {
+.card-active {
   cursor: pointer;
 }
 
@@ -27,6 +27,14 @@
   color: red;
 }
 
+$selected-card-animation-speed: 300ms;
+
 .card-selected {
-  border-color: black;
+  margin-top: -$spacing-medium;
+  transition: margin $selected-card-animation-speed;
+}
+
+:not(card-selected) {
+  margin-top: 0;
+  transition: margin $selected-card-animation-speed;
 }
