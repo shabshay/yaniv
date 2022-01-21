@@ -25,9 +25,9 @@
     </div>
     <div class="pile-deck-container">
       <div class="deck-container" *ngIf="gameState.deck?.length" (click)="makeMove()">
-        <app-card *ngFor="let card of gameState.deck.slice(0, 6)"
+        <app-card *ngFor="let card of deckTopCards; let i = index"
                   [card]="card"
-                  [isActive]="gameState.currentPlayer?.id === player.id"
+                  [isActive]="i === deckTopCards.length - 1 && gameState.currentPlayer?.id === player.id"
                   [flipped]="true"
                   class="deck-card"></app-card>
       </div>

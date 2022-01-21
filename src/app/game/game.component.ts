@@ -73,6 +73,10 @@ export class GameComponent extends SubscriberDirective implements OnInit {
     return getThrownCards(this.gameState);
   }
 
+  get deckTopCards(): Card[] {
+    return this.gameState.deck.slice(0, 6);
+  }
+
   makeMove(cardToTake: Card | null = null): void {
     if (this.gameState.currentPlayer?.id === this.player.id) {
       const selectedCards = this.player.cards?.filter(c => c.selected);

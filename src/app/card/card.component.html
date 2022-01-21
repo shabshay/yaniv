@@ -1,14 +1,17 @@
-<ng-template [ngIf]="!flipped" [ngIfElse]="flippedTemplate">
-  <div class="card card-{{card.symbol.color}}" [ngClass]="{'card-selected' : card.selected, 'card-active' : isActive}">
-    <div class="card-symbol">
-      {{card.symbol.icon}}
+<div class="card-container" [ngClass]="{'card-active' : isActive}">
+  <ng-template [ngIf]="!flipped" [ngIfElse]="flippedTemplate">
+    <div class="card card-{{card.symbol.color}}"
+         [ngClass]="{'card-selected' : card.selected}">
+      <div class="card-symbol">
+        {{card.symbol.icon}}
+      </div>
+      <div class="card-value">
+        {{card.value.text}}
+      </div>
     </div>
-    <div class="card-value">
-      {{card.value.text}}
+  </ng-template>
+  <ng-template #flippedTemplate>
+    <div class="card card-back">
     </div>
-  </div>
-</ng-template>
-<ng-template #flippedTemplate>
-  <div class="card card-back" [ngClass]="{'card-active' : isActive}">
-  </div>
-</ng-template>
+  </ng-template>
+</div>

@@ -1,7 +1,23 @@
 @import './src/variables';
 
+$animation-speed: 200ms;
+
+.card-container {
+  &:not(card-active) {
+    cursor: default;
+  }
+
+  &.card-active {
+    cursor: pointer;
+
+    &:hover {
+      transform: rotate(5deg);
+      transition: transform $animation-speed;
+    }
+  }
+}
+
 .card {
-  cursor: default;
   background-color: white;
   border: 2px solid white;
   border-radius: 4px;
@@ -15,10 +31,6 @@
   font-size: 18px;
 }
 
-.card-active {
-  cursor: pointer;
-}
-
 .card-back {
   background-image: linear-gradient(140deg, #050505 0%, #322f6e 50%, #465d8a 75%);
 }
@@ -27,14 +39,12 @@
   color: red;
 }
 
-$selected-card-animation-speed: 300ms;
-
 .card-selected {
   margin-top: -$spacing-medium;
-  transition: margin $selected-card-animation-speed;
+  transition: margin $animation-speed;
 }
 
 :not(card-selected) {
   margin-top: 0;
-  transition: margin $selected-card-animation-speed;
+  transition: margin $animation-speed;
 }
