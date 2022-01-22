@@ -3,7 +3,7 @@
     <app-timer [timeLeft]="timeLeft"></app-timer>
   </div>
   <div class="opponents-container">
-    <div class="opponent1-container">
+    <div class="opponent-top-container">
       <ng-template [ngIf]="opponentTop">
         <app-avatar [player]="opponentTop"
                     [isCurrentPlayer]="isCurrentPlayer(opponentTop)"
@@ -15,14 +15,12 @@
       </ng-template>
     </div>
     <div class="opponents-center-container">
-      <div class="opponent3-container opponent-side-container">
+      <div class="opponent-left-container opponent-side-container">
         <ng-template [ngIf]="opponentLeft">
-          <div class="opponent2-avatar">
-            <app-avatar [player]="opponentLeft"
-                        [isCurrentPlayer]="isCurrentPlayer(opponentLeft)"
-                        avatarImageSrc="../../assets/avatar2.png">
-            </app-avatar>
-          </div>
+          <app-avatar [player]="opponentLeft"
+                      [isCurrentPlayer]="isCurrentPlayer(opponentLeft)"
+                      avatarImageSrc="../../assets/avatar2.png">
+          </app-avatar>
           <app-opponent [player]="opponentLeft" class="rotated-90"
                         [showCards]="gameState.yaniv">
           </app-opponent>
@@ -44,14 +42,12 @@
           </app-card>
         </div>
       </div>
-      <div class="opponent3-container opponent-side-container">
+      <div class="opponent-right-container opponent-side-container">
         <ng-template [ngIf]="opponentRight">
-          <div class="opponent3-avatar">
-            <app-avatar [player]="opponentRight"
-                        [isCurrentPlayer]="isCurrentPlayer(opponentRight)"
-                        avatarImageSrc="../../assets/avatar3.png">
-            </app-avatar>
-          </div>
+          <app-avatar [player]="opponentRight"
+                      [isCurrentPlayer]="isCurrentPlayer(opponentRight)"
+                      avatarImageSrc="../../assets/avatar3.png">
+          </app-avatar>
           <app-opponent [player]="opponentRight" class="rotated-270"
                         [showCards]="gameState.yaniv">
           </app-opponent>
