@@ -4,10 +4,15 @@
       <app-card *ngFor="let card of sortedCard" [card]="card" (click)="onCardClick(card)" [isActive]="true">
       </app-card>
     </div>
-    <button mat-fab color="accent"
-            [disabled]="cardsScore(player.cards) > yanivThreshold || !isCurrentPlayer"
-            (click)="onYanivClick()">
-      <mat-icon>campaign</mat-icon>
-    </button>
+    <div class="yaniv-button-container" *ngIf="player.cards">
+      <button mat-fab color="accent"
+              [disabled]="cardsScore(player.cards) > yanivThreshold || !isCurrentPlayer"
+              (click)="onYanivClick()">
+        <mat-icon>campaign</mat-icon>
+      </button>
+      <div class="hand-score">
+        <h2>{{cardsScore(player.cards)}}</h2>
+      </div>
+    </div>
   </div>
 </div>

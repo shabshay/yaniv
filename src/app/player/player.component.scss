@@ -9,11 +9,27 @@
 
 .player-cards-container {
   display: flex;
-  align-items: center;
 }
 
 .cards-container {
   display: flex;
   gap: $spacing-small;
   margin: 0 50px;
+}
+
+.yaniv-button-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.hand-score {
+  color: white;
+  padding: 3px;
+  align-items: center;
+}
+
+h1, h2 {
+  margin: 0 !important;
 }
