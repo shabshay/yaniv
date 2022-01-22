@@ -106,7 +106,9 @@ export class GameController {
     } else {
       const cards: Card[] = this.maxDuplicatedCards(gameState.currentPlayer?.cards as Card[]);
       const thrownCards = getThrownCards(gameState);
-      const cardToTake = getThrownCards(gameState).length && thrownCards[0].value.score < 4 ? thrownCards[0] : null;
+      const cardToTake = getThrownCards(gameState).length &&
+      (thrownCards[0].value.score < 4 || !gameState.deck.length)
+        ? thrownCards[0] : null;
       this.makeMove(gameState, cards, cardToTake);
     }
   }
