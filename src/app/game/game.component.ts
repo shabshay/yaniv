@@ -61,12 +61,43 @@ export class GameComponent extends SubscriberDirective implements OnInit {
         isComputerPlayer: true
       } as Player;
       this.gameService.addPlayer(this.gameState, player);
-      this.gameService.startGame(this.gameState);
     }, 2000);
+
+    setTimeout(() => {
+      this.gameService.startGame(this.gameState);
+    }, 3000);
+  }
+
+  isCurrentPlayer(player: Player): boolean {
+    return this.gameState?.currentPlayer?.id === player.id;
   }
 
   get opponents(): Player[] {
     return this.gameState.players?.filter(player => player.id !== this.player.id) ?? [];
+  }
+
+  get opponentTop(): Player | undefined {
+    if (this.opponents.length === 1) {
+      return this.opponents[0];
+    }
+    if (this.opponents.length === 3) {
+      return this.opponents[1];
+    }
+    return undefined;
+  }
+
+  get opponentLeft(): Player | undefined {
+    if (this.opponents.length > 1) {
+      return this.opponents[0];
+    }
+    return undefined;
+  }
+
+  get opponentRight(): Player | undefined {
+    if (this.opponents.length > 1) {
+      return this.opponents[this.opponents.length - 1];
+    }
+    return undefined;
   }
 
   get thrownCards(): Card[] | undefined {

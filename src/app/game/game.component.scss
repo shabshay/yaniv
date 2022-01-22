@@ -1,9 +1,9 @@
 @import './src/variables';
 
 .game-container {
-  height: 1100px;
+  height: 960px;
   background-image: radial-gradient(#89c189 30%, #408940 70%);
-  padding: $spacing-large;
+  padding: $spacing-medium;
 }
 
 .top-container {
@@ -34,7 +34,7 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  gap: $spacing-large;
+  gap: $spacing-medium;
 }
 
 .opponent1-container {

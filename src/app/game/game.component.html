@@ -3,28 +3,30 @@
     <app-timer [timeLeft]="timeLeft"></app-timer>
   </div>
   <div class="opponents-container">
-    <div class="opponent1-container" *ngIf="opponents.length > 1">
-      <app-avatar [player]="opponents[1]"
-                  [isCurrentPlayer]="gameState.currentPlayer?.id === opponents[1].id"
-                  avatarImageSrc="../../assets/avatar1.png">
-      </app-avatar>
-      <app-opponent [player]="opponents[1]" class="rotated-180"
-                    [showCards]="gameState.yaniv">
-      </app-opponent>
+    <div class="opponent1-container">
+      <ng-template [ngIf]="opponentTop">
+        <app-avatar [player]="opponentTop"
+                    [isCurrentPlayer]="isCurrentPlayer(opponentTop)"
+                    avatarImageSrc="../../assets/avatar1.png">
+        </app-avatar>
+        <app-opponent [player]="opponentTop" class="rotated-180"
+                      [showCards]="gameState.yaniv">
+        </app-opponent>
+      </ng-template>
     </div>
     <div class="opponents-center-container">
-      <div class="opponent3-container opponent-side-container" *ngIf="opponents.length">
-        <div class="opponent2-avatar">
-          <app-avatar [player]="opponents[0]"
-                      [isCurrentPlayer]="gameState.currentPlayer?.id === opponents[0].id"
-                      avatarImageSrc="../../assets/avatar2.png">
-          </app-avatar>
-        </div>
-        <div class="rotated-90">
-          <app-opponent [player]="opponents[0]"
+      <div class="opponent3-container opponent-side-container">
+        <ng-template [ngIf]="opponentLeft">
+          <div class="opponent2-avatar">
+            <app-avatar [player]="opponentLeft"
+                        [isCurrentPlayer]="isCurrentPlayer(opponentLeft)"
+                        avatarImageSrc="../../assets/avatar2.png">
+            </app-avatar>
+          </div>
+          <app-opponent [player]="opponentLeft" class="rotated-90"
                         [showCards]="gameState.yaniv">
           </app-opponent>
-        </div>
+        </ng-template>
       </div>
       <div class="pile-deck-container">
         <div class="deck-container" *ngIf="gameState.deck?.length" (click)="makeMove()">
@@ -42,18 +44,18 @@
           </app-card>
         </div>
       </div>
-      <div class="opponent3-container opponent-side-container" *ngIf="opponents.length > 2">
-        <div class="opponent3-avatar">
-          <app-avatar [player]="opponents[2]"
-                      [isCurrentPlayer]="gameState.currentPlayer?.id === opponents[2].id"
-                      avatarImageSrc="../../assets/avatar3.png">
-          </app-avatar>
-        </div>
-        <div class="rotated-270">
-          <app-opponent [player]="opponents[2]"
+      <div class="opponent3-container opponent-side-container">
+        <ng-template [ngIf]="opponentRight">
+          <div class="opponent3-avatar">
+            <app-avatar [player]="opponentRight"
+                        [isCurrentPlayer]="isCurrentPlayer(opponentRight)"
+                        avatarImageSrc="../../assets/avatar3.png">
+            </app-avatar>
+          </div>
+          <app-opponent [player]="opponentRight" class="rotated-270"
                         [showCards]="gameState.yaniv">
           </app-opponent>
-        </div>
+        </ng-template>
       </div>
     </div>
     <div class="player-container">
