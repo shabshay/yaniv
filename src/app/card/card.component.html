@@ -1,5 +1,5 @@
-<div class="card-container" [ngClass]="{'card-active' : isActive}">
-  <ng-template [ngIf]="!flipped" [ngIfElse]="flippedTemplate">
+<div class="card-container" [ngClass]="{'card-active' : isActive, 'flipped' : flipped}">
+  <div class="card-inner">
     <div class="card card-{{card.symbol.color}}"
          [ngClass]="{'card-selected' : card.selected}">
       <div class="card-symbol">
@@ -9,9 +9,7 @@
         {{card.value.text}}
       </div>
     </div>
-  </ng-template>
-  <ng-template #flippedTemplate>
     <div class="card card-back">
     </div>
-  </ng-template>
+  </div>
 </div>
