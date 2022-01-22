@@ -1,9 +1,14 @@
 @import './src/variables';
 
 .game-container {
-  height: 900px;
+  height: 1100px;
   background-image: radial-gradient(#89c189 30%, #408940 70%);
   padding: $spacing-large;
+}
+
+.top-container {
+  height: 50px;
+  width: 100%;
 }
 
 .pile-deck-container {
@@ -23,11 +28,22 @@
   justify-content: center;
 }
 
+.opponents-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: $spacing-large;
+}
+
 .opponent1-container {
   display: flex;
   justify-content: center;
   flex-direction: column;
   align-items: center;
+  width: 310px;
+  height: 290px;
 }
 
 .opponent-side-container {
@@ -36,15 +52,15 @@
   align-items: center;
   gap: 60px;
   margin-top: -220px;
+  width: 200px;
 }
 
 .opponents-center-container {
   height: 330px;
   display: flex;
   align-items: center;
-  gap: $spacing-large;
+  justify-content: space-between;
   width: 650px;
-  justify-content: center;
 }
 
 .player-container {
@@ -52,6 +68,8 @@
   justify-content: center;
   flex-direction: column;
   align-items: center;
+  width: 530px;
+  height: 280px;
 }
 
 .deck-container {
