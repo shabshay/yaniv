@@ -1,6 +1,10 @@
-<div class="opponent-container">
+<div [class]="'opponent-container ' + opponentClass">
+  <app-avatar [player]="player"
+              [isCurrentPlayer]="isCurrentPlayer"
+              [avatarImageSrc]="avatarImageSrc">
+  </app-avatar>
   <ng-template [ngIf]="!player.isOut && player?.cards">
-    <div class="opponent-cards-container">
+    <div [class]="'opponent-cards-container ' + cardsClass">
       <app-card *ngFor="let card of sortedCard" class="opponent-card" [card]="card" [flipped]="!showCards">
       </app-card>
     </div>

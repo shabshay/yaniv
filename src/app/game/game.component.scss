@@ -34,7 +34,6 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  gap: $spacing-medium;
 }
 
 .opponent-top-container {
@@ -50,13 +49,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 60px;
-  margin-top: -250px;
   width: 120px;
 }
 
 .opponents-center-container {
-  height: 330px;
+  height: 310px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -86,16 +83,4 @@
 
 .pile-card {
   margin: -15px;
-}
-
-.rotated-90 {
-  transform: rotate(90deg);
-}
-
-.rotated-180 {
-  transform: rotate(180deg);
-}
-
-.rotated-270 {
-  transform: rotate(270deg);
 }

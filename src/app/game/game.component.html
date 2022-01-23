@@ -4,27 +4,25 @@
   </div>
   <div class="opponents-container">
     <div class="opponent-top-container">
-      <ng-template [ngIf]="opponentTop">
-        <app-avatar [player]="opponentTop"
+      <app-opponent *ngIf="opponentTop"
+                    [player]="opponentTop"
                     [isCurrentPlayer]="isCurrentPlayer(opponentTop)"
-                    avatarImageSrc="../../assets/avatar1.png">
-        </app-avatar>
-        <app-opponent [player]="opponentTop" class="rotated-180"
-                      [showCards]="gameState.yaniv">
-        </app-opponent>
-      </ng-template>
+                    opponentClass="opponent-top"
+                    cardsClass="rotated-180"
+                    avatarImageSrc="../../assets/avatar1.png"
+                    [showCards]="gameState.yaniv">
+      </app-opponent>
     </div>
     <div class="opponents-center-container">
-      <div class="opponent-left-container opponent-side-container">
-        <ng-template [ngIf]="opponentLeft">
-          <app-avatar [player]="opponentLeft"
+      <div class="opponent-side-container">
+        <app-opponent *ngIf="opponentLeft"
+                      [player]="opponentLeft"
                       [isCurrentPlayer]="isCurrentPlayer(opponentLeft)"
-                      avatarImageSrc="../../assets/avatar2.png">
-          </app-avatar>
-          <app-opponent [player]="opponentLeft" class="rotated-90"
-                        [showCards]="gameState.yaniv">
-          </app-opponent>
-        </ng-template>
+                      opponentClass="opponent-side"
+                      cardsClass="rotated-90"
+                      avatarImageSrc="../../assets/avatar2.png"
+                      [showCards]="gameState.yaniv">
+        </app-opponent>
       </div>
       <div class="pile-deck-container">
         <div class="deck-container" *ngIf="gameState.deck?.length" (click)="makeMove()">
@@ -42,16 +40,15 @@
           </app-card>
         </div>
       </div>
-      <div class="opponent-right-container opponent-side-container">
-        <ng-template [ngIf]="opponentRight">
-          <app-avatar [player]="opponentRight"
+      <div class="opponent-side-container">
+        <app-opponent *ngIf="opponentRight"
+                      [player]="opponentRight"
                       [isCurrentPlayer]="isCurrentPlayer(opponentRight)"
-                      avatarImageSrc="../../assets/avatar3.png">
-          </app-avatar>
-          <app-opponent [player]="opponentRight" class="rotated-270"
-                        [showCards]="gameState.yaniv">
-          </app-opponent>
-        </ng-template>
+                      opponentClass="opponent-side"
+                      cardsClass="rotated-270"
+                      avatarImageSrc="../../assets/avatar3.png"
+                      [showCards]="gameState.yaniv">
+        </app-opponent>
       </div>
     </div>
     <div class="player-container">
