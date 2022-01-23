@@ -1,9 +1,9 @@
 .opponent-container {
   width: 310px;
+  height: 130px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 5px;
 }
 
 .opponent-cards-container {
@@ -13,6 +13,12 @@
   align-items: center;
 }
 
+.hand-score {
+  padding: 3px;
+  align-items: center;
+}
+
 .opponent-card {
-  margin: -15px;
+  margin-left: -15px;
+  margin-right: -15px;
 }

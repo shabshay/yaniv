@@ -1,6 +1,11 @@
 <div class="opponent-container">
-  <div class="opponent-cards-container" *ngIf="!player.isOut && player?.cards">
-    <app-card *ngFor="let card of sortedCard" class="opponent-card" [card]="card" [flipped]="!showCards">
-    </app-card>
-  </div>
+  <ng-template [ngIf]="!player.isOut && player?.cards">
+    <div class="opponent-cards-container">
+      <app-card *ngFor="let card of sortedCard" class="opponent-card" [card]="card" [flipped]="!showCards">
+      </app-card>
+    </div>
+    <div class="hand-score" *ngIf="showCards">
+      <h2>{{cardsScore(player.cards)}}</h2>
+    </div>
+  </ng-template>
 </div>

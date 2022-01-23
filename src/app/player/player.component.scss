@@ -9,13 +9,14 @@
 
 .player-cards-container {
   display: flex;
+  gap: $spacing-medium;
 }
 
 .cards-container {
   display: flex;
   gap: $spacing-small;
   margin: 0 50px;
-  width: 350px;
+  width: 310px;
   justify-content: center;
 }
 
