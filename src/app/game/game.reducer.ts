@@ -82,7 +82,7 @@ export class GameReducer {
 
     const roundResult = {winner, asaf, playersRoundScores} as RoundResult;
     newState.roundsResults.push(roundResult);
-    newState.status = this.isGameOver(gameState) ? GameStatus.gameOver : GameStatus.yaniv;
+    newState.status = GameStatus.yaniv;
     return newState;
   }
 
@@ -98,6 +98,10 @@ export class GameReducer {
 
   startNewRound(gameState: GameState, startingPlayer: Player): GameState {
     const newState = {...gameState};
+    if (this.isGameOver(newState)) {
+      newState.status = GameStatus.gameOver;
+      return newState;
+    }
     this.updateActivePlayers(newState);
     this.dealCards(newState);
     newState.currentPlayer = startingPlayer;

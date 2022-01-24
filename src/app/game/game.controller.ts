@@ -45,10 +45,7 @@ export class GameController {
     ) {
       return;
     }
-    if (this.autoMoveTimer) {
-      clearTimeout(this.autoMoveTimer);
-      this.autoMoveTimer = undefined;
-    }
+    this.clearAutoMoveTimer();
     const newState = this.gameReducer.makeMove(gameState, thrownCards, cardToTake);
     this.updateGameState(newState);
   }
@@ -59,11 +56,17 @@ export class GameController {
     ) {
       return;
     }
+    this.clearAutoMoveTimer();
     const newState = this.gameReducer.yaniv(gameState);
     this.updateGameState(newState);
-    const result = newState.roundsResults[newState.roundsResults.length - 1];
-    this.gameEvents.onYaniv(result);
     this.startNewRound(newState);
+  }
+
+  private clearAutoMoveTimer(): void {
+    if (this.autoMoveTimer) {
+      clearTimeout(this.autoMoveTimer);
+      this.autoMoveTimer = undefined;
+    }
   }
 
   private updateGameState(gameState: GameState): void {

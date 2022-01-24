@@ -9,7 +9,7 @@
                     [isCurrentPlayer]="isCurrentPlayer(opponentTop)"
                     opponentClass="opponent-top"
                     cardsClass="rotated-180"
-                    [showCards]="gameState.status === 'yaniv'">
+                    [showCards]="showCards">
       </app-opponent>
     </div>
     <div class="opponents-center-container">
@@ -19,7 +19,7 @@
                       [isCurrentPlayer]="isCurrentPlayer(opponentLeft)"
                       opponentClass="opponent-side"
                       cardsClass="rotated-90"
-                      [showCards]="gameState.status === 'yaniv'">
+                      [showCards]="showCards">
         </app-opponent>
       </div>
       <div class="pile-deck-container">
@@ -44,7 +44,7 @@
                       [isCurrentPlayer]="isCurrentPlayer(opponentRight)"
                       opponentClass="opponent-side"
                       cardsClass="rotated-270"
-                      [showCards]="gameState.status === 'yaniv'">
+                      [showCards]="showCards">
         </app-opponent>
       </div>
     </div>

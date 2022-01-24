@@ -6,7 +6,7 @@ import {GameEvents} from './game.events';
 import {takeUntil} from 'rxjs/operators';
 import {SubscriberDirective} from '../../Subscriber';
 import {GameController} from './game.controller';
-import {Card, GameState, GameStatus, getThrownCards, Player, RoundResult} from './game.model';
+import {Card, GameState, GameStatus, getThrownCards, Player} from './game.model';
 import {GameSounds} from './game.sounds';
 
 @Component({
@@ -113,6 +113,10 @@ export class GameComponent extends SubscriberDirective implements OnInit {
     return this.gameState.deck.slice(0, 6);
   }
 
+  get showCards(): boolean {
+    return [GameStatus.yaniv, GameStatus.gameOver].includes(this.gameState.status);
+  }
+
   makeMove(cardToTake: Card | null = null): void {
     if (this.gameState.currentPlayer?.id === this.player.id) {
       const selectedCards = this.player.cards?.filter(c => c.selected);
@@ -132,12 +136,6 @@ export class GameComponent extends SubscriberDirective implements OnInit {
       .subscribe((gameStatus: GameState) => {
         this.onGameStateUpdate(gameStatus);
       });
-
-    this.gameEvents.yaniv
-      .pipe(takeUntil(this.ngUnsubscribe))
-      .subscribe((roundResult: RoundResult) => {
-        this.onYanivResult(roundResult);
-      });
   }
 
   private onGameStateUpdate(gameStatus: GameState): void {
@@ -149,6 +147,14 @@ export class GameComponent extends SubscriberDirective implements OnInit {
 
       case GameStatus.newRound:
         this.gameSounds.playShuffleCards();
+        break;
+
+      case GameStatus.gameOver:
+        this.onGameOver();
+        break;
+
+      case GameStatus.yaniv:
+        this.onYaniv();
         break;
     }
 
@@ -178,7 +184,25 @@ export class GameComponent extends SubscriberDirective implements OnInit {
     }, 1000);
   }
 
-  private onYanivResult(result: RoundResult): void {
+  private onGameOver(): void {
+    this.gameSounds.playGameOver();
+    const result = this.gameState.roundsResults[this.gameState.roundsResults.length - 1];
+    this.dialog.open(DialogComponent, {
+      data: {
+        title: 'GAME OVER!',
+        content: `${result.winner.name} Wins!`
+      } as DialogData,
+    });
+  }
+
+  private onYaniv(): void {
+    this.gameSounds.playYaniv();
+    const result = this.gameState.roundsResults[this.gameState.roundsResults.length - 1];
+    if (result.asaf) {
+      setTimeout(() => {
+        this.gameSounds.playAsaf();
+      }, 1200);
+    }
     const resultScoresString = result.playersRoundScores.map(playerScore => `${playerScore.player.name}: ${playerScore.score} \n`).join('');
     setTimeout(() => {
       if (this.gameState.status !== GameStatus.gameOver) {
@@ -187,9 +211,6 @@ export class GameComponent extends SubscriberDirective implements OnInit {
     }, 5000);
 
     let title = result.asaf ? 'Asaf!' : 'Yaniv!';
-    if (this.gameState.status === GameStatus.gameOver) {
-      title = `${title} GAME OVER!`;
-    }
     title = `${title} ${result.winner.name} Wins!`;
 
     this.dialog.open(DialogComponent, {

@@ -6,6 +6,9 @@ export class GameSounds {
   private clockBellAudio = new Audio('./assets/clock-bell.mp3');
   private deckCardAudio = new Audio('./assets/deck-card.mp3');
   private shuffleCardsAudio = new Audio('./assets/shuffle-cards.mp3');
+  private yanivAudio = new Audio('./assets/yaniv.mp3');
+  private asafAudio = new Audio('./assets/asaf.mp3');
+  private gameOverAudio = new Audio('./assets/game-over.mp3');
 
   constructor() {
     this.cardClickAudio.load();
@@ -25,5 +28,17 @@ export class GameSounds {
 
   playShuffleCards(): void {
     this.shuffleCardsAudio.play().catch();
+  }
+
+  playYaniv(): void {
+    this.yanivAudio.play().catch();
+  }
+
+  playAsaf(): void {
+    this.asafAudio.play().catch();
+  }
+
+  playGameOver(): void {
+    this.gameOverAudio.play().catch();
   }
 }
