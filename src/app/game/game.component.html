@@ -9,7 +9,6 @@
                     [isCurrentPlayer]="isCurrentPlayer(opponentTop)"
                     opponentClass="opponent-top"
                     cardsClass="rotated-180"
-                    avatarImageSrc="../../assets/avatar1.png"
                     [showCards]="gameState.yaniv">
       </app-opponent>
     </div>
@@ -20,7 +19,6 @@
                       [isCurrentPlayer]="isCurrentPlayer(opponentLeft)"
                       opponentClass="opponent-side"
                       cardsClass="rotated-90"
-                      avatarImageSrc="../../assets/avatar2.png"
                       [showCards]="gameState.yaniv">
         </app-opponent>
       </div>
@@ -46,7 +44,6 @@
                       [isCurrentPlayer]="isCurrentPlayer(opponentRight)"
                       opponentClass="opponent-side"
                       cardsClass="rotated-270"
-                      avatarImageSrc="../../assets/avatar3.png"
                       [showCards]="gameState.yaniv">
         </app-opponent>
       </div>
@@ -55,7 +52,6 @@
       <app-player [player]="player"
                   [isCurrentPlayer]="isCurrentPlayer(player)"
                   [yanivThreshold]="gameState.config.yanivThreshold"
-                  avatarImageSrc="../../assets/avatar4.png"
                   (yanivClick)="onPlayerCallYaniv()">
       </app-player>
     </div>

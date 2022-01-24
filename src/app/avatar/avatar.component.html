@@ -1,5 +1,5 @@
 <div class="avatar-container">
-  <img [src]="avatarImageSrc" alt="" class="avatar-img" [ngClass]="{'current-player' : isCurrentPlayer}">
+  <img [src]="player.img" alt="" class="avatar-img" [ngClass]="{'current-player' : isCurrentPlayer}">
   <h2>{{player.name.slice(0, 10)}}</h2>
   <div class="score" *ngIf="player?.totalScore !== undefined">
     <h1>{{player.totalScore}}</h1>

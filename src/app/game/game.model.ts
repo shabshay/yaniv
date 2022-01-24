@@ -36,6 +36,7 @@ export interface GameState {
 export interface Player {
   id: string;
   name: string;
+  img: string;
   isOut: boolean;
   cards?: Card[];
   totalScore: number;

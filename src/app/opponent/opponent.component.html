@@ -1,7 +1,6 @@
 <div [class]="'opponent-container ' + opponentClass">
   <app-avatar [player]="player"
-              [isCurrentPlayer]="isCurrentPlayer"
-              [avatarImageSrc]="avatarImageSrc">
+              [isCurrentPlayer]="isCurrentPlayer">
   </app-avatar>
   <ng-template [ngIf]="!player.isOut && player?.cards">
     <div [class]="'opponent-cards-container ' + cardsClass">

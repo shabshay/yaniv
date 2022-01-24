@@ -12,9 +12,6 @@ export class AvatarComponent implements OnInit {
   player!: Player;
 
   @Input()
-  avatarImageSrc = '../../assets/avatar1.png';
-
-  @Input()
   isCurrentPlayer = false;
 
   constructor() {

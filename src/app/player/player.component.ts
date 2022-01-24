@@ -19,9 +19,6 @@ export class PlayerComponent implements OnInit {
   yanivThreshold!: number;
 
   @Input()
-  avatarImageSrc!: string;
-
-  @Input()
   opponentClass?: string;
 
   @Output()

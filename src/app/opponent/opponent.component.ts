@@ -18,9 +18,6 @@ export class OpponentComponent implements OnInit {
   isCurrentPlayer = false;
 
   @Input()
-  avatarImageSrc!: string;
-
-  @Input()
   opponentClass?: string;
 
   @Input()
