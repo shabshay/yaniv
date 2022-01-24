@@ -1,9 +1,15 @@
 <div class="player-container">
-  <div class="player-cards-container" *ngIf="!player.isOut">
-    <div class="cards-container" *ngIf="player?.cards">
+  <div class="cards-container">
+    <ng-template [ngIf]="player?.cards">
       <app-card *ngFor="let card of sortedCard" [card]="card" (click)="onCardClick(card)" [isActive]="true">
       </app-card>
-    </div>
+    </ng-template>
+  </div>
+  <div class="avatar-yaniv-btn-container">
+    <app-avatar [player]="player"
+                [isCurrentPlayer]="isCurrentPlayer"
+                [avatarImageSrc]="avatarImageSrc">
+    </app-avatar>
     <div class="yaniv-button-container" *ngIf="player.cards">
       <button mat-fab color="accent"
               [disabled]="cardsScore(player.cards) > yanivThreshold || !isCurrentPlayer"
@@ -15,4 +21,5 @@
       </div>
     </div>
   </div>
+
 </div>

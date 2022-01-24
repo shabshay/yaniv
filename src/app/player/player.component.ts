@@ -18,6 +18,12 @@ export class PlayerComponent implements OnInit {
   @Input()
   yanivThreshold!: number;
 
+  @Input()
+  avatarImageSrc!: string;
+
+  @Input()
+  opponentClass?: string;
+
   @Output()
   yanivClick: EventEmitter<any> = new EventEmitter<any>();
 

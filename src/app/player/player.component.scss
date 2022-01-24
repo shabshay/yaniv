@@ -4,11 +4,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: $spacing-small;
-}
-
-.player-cards-container {
-  display: flex;
   gap: $spacing-medium;
 }
 
@@ -17,14 +12,23 @@
   gap: $spacing-small;
   margin: 0 50px;
   width: 310px;
+  height: $card-height;
   justify-content: center;
+}
+
+.avatar-yaniv-btn-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 50px;
+  margin-left: 100px;
+  width: 200px;
 }
 
 .yaniv-button-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
 }
 
 .hand-score {

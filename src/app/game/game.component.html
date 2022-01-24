@@ -53,14 +53,11 @@
     </div>
     <div class="player-container">
       <app-player [player]="player"
-                  [isCurrentPlayer]="gameState.currentPlayer?.id === player.id"
+                  [isCurrentPlayer]="isCurrentPlayer(player)"
                   [yanivThreshold]="gameState.config.yanivThreshold"
+                  avatarImageSrc="../../assets/avatar4.png"
                   (yanivClick)="onPlayerCallYaniv()">
       </app-player>
-      <app-avatar [player]="player"
-                  [isCurrentPlayer]="gameState.currentPlayer?.id === player.id"
-                  avatarImageSrc="../../assets/avatar4.png">
-      </app-avatar>
     </div>
   </div>
 </div>
