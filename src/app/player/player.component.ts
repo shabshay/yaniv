@@ -1,6 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Player, cardsScore, Card, getSortedCards} from '../game/game.model';
 import {GameValidator} from '../game/game.validator';
+import {GameSounds} from '../game/game.sounds';
 
 @Component({
   selector: 'app-player',
@@ -26,7 +27,7 @@ export class PlayerComponent implements OnInit {
 
   cardsScore = cardsScore;
 
-  constructor(private cardsValidator: GameValidator) {
+  constructor(private cardsValidator: GameValidator, private gameSounds: GameSounds) {
   }
 
   ngOnInit(): void {
@@ -41,6 +42,10 @@ export class PlayerComponent implements OnInit {
   }
 
   onCardClick(card: Card): void {
-    card.selected = !card.selected && this.player.cards && this.cardsValidator.cardSelectionIsValid(card, this.player.cards);
+    const isValidSelection = this.player.cards && this.cardsValidator.cardSelectionIsValid(card, this.player.cards);
+    if (isValidSelection) {
+      this.gameSounds.playCardClick();
+    }
+    card.selected = !card.selected && isValidSelection;
   }
 }

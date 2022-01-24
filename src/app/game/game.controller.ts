@@ -79,7 +79,7 @@ export class GameController {
     }
     this.autoMoveTimer = setTimeout(() => {
       this.makeAutoMove(gameState);
-    }, gameState.config.moveTimeoutInMS);
+    }, gameState.config.moveTimeoutInMS + 1000);
   }
 
   private startNewRound(gameState: GameState): void {

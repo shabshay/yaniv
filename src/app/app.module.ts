@@ -20,6 +20,7 @@ import {GameController} from './game/game.controller';
 import {GameReducer} from './game/game.reducer';
 import { AvatarComponent } from './avatar/avatar.component';
 import { TimerComponent } from './timer/timer.component';
+import {GameSounds} from './game/game.sounds';
 
 @NgModule({
   declarations: [
@@ -42,7 +43,7 @@ import { TimerComponent } from './timer/timer.component';
     MatButtonModule,
     MatDialogModule
   ],
-  providers: [GameController, GameValidator, GameEvents, GameReducer],
+  providers: [GameController, GameValidator, GameEvents, GameReducer, GameSounds],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
