@@ -147,7 +147,7 @@ export class GameReducer {
   private dealCards(gameState: GameState): void {
     gameState.deck = this.getShuffledDeckCards();
     gameState.players.forEach(player => {
-      player.cards = gameState.deck?.splice(0, gameState.config.cardsPerPlayer);
+      player.cards = player.isOut ? undefined : gameState.deck?.splice(0, gameState.config.cardsPerPlayer);
     });
     const cardToStart = this.getCardFromDeck(gameState);
     gameState.moves = [{
