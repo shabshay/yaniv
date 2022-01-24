@@ -1,7 +1,7 @@
 import {GameValidator} from './game.validator';
 import {GameEvents} from './game.events';
 import {Injectable} from '@angular/core';
-import {Card, cardsScore, GameConfig, GameState, getThrownCards, Player} from './game.model';
+import {Card, cardsScore, GameConfig, GameState, GameStatus, getThrownCards, Player} from './game.model';
 import {GameReducer} from './game.reducer';
 
 @Injectable()
@@ -23,7 +23,7 @@ export class GameController {
   }
 
   addPlayer(gameState: GameState, player: Player): void {
-    if (gameState.started || gameState.players.length > 3) {
+    if (gameState.status !== GameStatus.pending || gameState.players.length > 3) {
       return;
     }
     const newState = this.gameReducer.addPlayer(gameState, player);
@@ -31,7 +31,7 @@ export class GameController {
   }
 
   startGame(gameState: GameState): void {
-    if (gameState.players.length < 2 || gameState.started) {
+    if (gameState.players.length < 2 || ![GameStatus.pending, GameStatus.gameOver].includes(gameState.status)) {
       return;
     }
     const newState = this.gameReducer.startGame(gameState);
@@ -39,7 +39,7 @@ export class GameController {
   }
 
   makeMove(gameState: GameState, thrownCards: Card[], cardToTake: Card | null = null): void {
-    if (gameState.yaniv || gameState.gameIsOver || !gameState.started
+    if ([GameStatus.gameOver, GameStatus.yaniv, GameStatus.pending].includes(gameState.status)
       || !this.gameValidator.selectedCardsAreValid(thrownCards)
       || !this.gameValidator.selectedCardIsValid(cardToTake, gameState)
     ) {
@@ -55,8 +55,7 @@ export class GameController {
 
   yaniv(gameState: GameState): void {
     if (cardsScore(gameState.currentPlayer?.cards) > gameState.config.yanivThreshold
-      || gameState.gameIsOver
-      || gameState.yaniv
+      || [GameStatus.gameOver, GameStatus.yaniv].includes(gameState.status)
     ) {
       return;
     }
@@ -74,7 +73,9 @@ export class GameController {
   }
 
   private initAutoMoveTimer(gameState: GameState): void {
-    if (gameState.currentPlayer?.isComputerPlayer || gameState.gameIsOver || !gameState.started || gameState.yaniv) {
+    if (gameState.currentPlayer?.isComputerPlayer ||
+      [GameStatus.gameOver, GameStatus.yaniv, GameStatus.pending].includes(gameState.status)
+    ) {
       return;
     }
     this.autoMoveTimer = setTimeout(() => {
@@ -84,7 +85,7 @@ export class GameController {
 
   private startNewRound(gameState: GameState): void {
     setTimeout(() => {
-      if (!gameState.gameIsOver) {
+      if (gameState.status !== GameStatus.gameOver) {
         const newState = this.gameReducer.startNewRound(gameState, gameState.roundsResults[gameState.roundsResults.length - 1].winner);
         this.updateGameState(newState);
       }
@@ -92,7 +93,7 @@ export class GameController {
   }
 
   private initComputerMove(gameState: GameState): void {
-    if (!gameState.currentPlayer?.isComputerPlayer || gameState.yaniv || gameState.gameIsOver) {
+    if (!gameState.currentPlayer?.isComputerPlayer || [GameStatus.yaniv, GameStatus.gameOver].includes(gameState.status)) {
       return;
     }
     setTimeout(() => {

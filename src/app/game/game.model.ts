@@ -21,16 +21,23 @@ export interface Move {
   cards: Card[];
 }
 
+export enum GameStatus {
+  pending = 'pending',
+  running = 'running',
+  move = 'move',
+  yaniv = 'yaniv',
+  newRound = 'newRound',
+  gameOver = 'gameOver'
+}
+
 export interface GameState {
   config: GameConfig;
-  gameIsOver: boolean;
-  started: boolean;
   currentPlayer?: Player;
   players: Player[];
-  yaniv: boolean;
   deck: Card[];
   roundsResults: RoundResult[];
   moves: Move[];
+  status: GameStatus;
 }
 
 export interface Player {

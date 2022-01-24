@@ -9,7 +9,7 @@
                     [isCurrentPlayer]="isCurrentPlayer(opponentTop)"
                     opponentClass="opponent-top"
                     cardsClass="rotated-180"
-                    [showCards]="gameState.yaniv">
+                    [showCards]="gameState.status === 'yaniv'">
       </app-opponent>
     </div>
     <div class="opponents-center-container">
@@ -19,21 +19,21 @@
                       [isCurrentPlayer]="isCurrentPlayer(opponentLeft)"
                       opponentClass="opponent-side"
                       cardsClass="rotated-90"
-                      [showCards]="gameState.yaniv">
+                      [showCards]="gameState.status === 'yaniv'">
         </app-opponent>
       </div>
       <div class="pile-deck-container">
         <div class="deck-container" *ngIf="gameState.deck?.length" (click)="makeMove()">
           <app-card *ngFor="let card of deckTopCards; let i = index"
                     [card]="card"
-                    [isActive]="!gameState.gameIsOver &&  i === deckTopCards.length - 1 && gameState.currentPlayer?.id === player.id"
+                    [isActive]="gameState.status !== 'gameOver' &&  i === deckTopCards.length - 1 && gameState.currentPlayer?.id === player.id"
                     [flipped]="true"
                     class="deck-card"></app-card>
         </div>
         <div class="pile-container" *ngIf="thrownCards?.length">
           <app-card *ngFor="let card of thrownCards"
                     [card]="card" class="pile-card"
-                    [isActive]="!gameState.gameIsOver && gameState.currentPlayer?.id === player.id"
+                    [isActive]="gameState.status !== 'gameOver' && gameState.currentPlayer?.id === player.id"
                     (click)="makeMove(card)">
           </app-card>
         </div>
@@ -44,7 +44,7 @@
                       [isCurrentPlayer]="isCurrentPlayer(opponentRight)"
                       opponentClass="opponent-side"
                       cardsClass="rotated-270"
-                      [showCards]="gameState.yaniv">
+                      [showCards]="gameState.status === 'yaniv'">
         </app-opponent>
       </div>
     </div>

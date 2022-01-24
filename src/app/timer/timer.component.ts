@@ -11,7 +11,8 @@ export class TimerComponent implements OnInit {
   @Input()
   timeLeft?: number;
 
-  constructor(private gameSounds: GameSounds) { }
+  constructor(private gameSounds: GameSounds) {
+  }
 
   ngOnInit(): void {
     setInterval(() => {

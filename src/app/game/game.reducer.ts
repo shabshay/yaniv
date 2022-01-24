@@ -10,6 +10,7 @@ import {
   CardValuesMap,
   GameConfig,
   GameState,
+  GameStatus,
   getThrownCards,
   Move,
   Player,
@@ -26,12 +27,10 @@ export class GameReducer {
       config,
       players: [player],
       deckNumberOfCards: 0,
-      gameIsOver: false,
-      started: false,
-      yaniv: false,
       deck: [],
       roundsResults: [],
-      moves: []
+      moves: [],
+      status: GameStatus.pending
     } as GameState;
   }
 
@@ -43,7 +42,7 @@ export class GameReducer {
 
   startGame(gameState: GameState): GameState {
     const newState = {...gameState};
-    newState.started = true;
+    newState.status = GameStatus.running;
     newState.players.forEach(player => {
       player.totalScore = 0;
       player.isOut = false;
@@ -54,6 +53,7 @@ export class GameReducer {
 
   makeMove(gameState: GameState, thrownCards: Card[], cardToTake: Card | null = null): GameState {
     const newState = {...gameState};
+    newState.status = GameStatus.move;
     const takeFromDeck = !cardToTake;
     const currentPlayer = newState.currentPlayer as Player;
     currentPlayer.cards = currentPlayer?.cards?.filter(c => !thrownCards.includes(c));
@@ -67,7 +67,6 @@ export class GameReducer {
 
   yaniv(gameState: GameState): GameState {
     const newState = {...gameState};
-    newState.yaniv = true;
     const currentPlayer = newState.currentPlayer as Player;
     const otherPlayers = this.getActivePlayers(newState).filter(player => player.id !== currentPlayer.id);
     const {asaf, winner} = this.getWinners(otherPlayers, currentPlayer);
@@ -83,7 +82,7 @@ export class GameReducer {
 
     const roundResult = {winner, asaf, playersRoundScores} as RoundResult;
     newState.roundsResults.push(roundResult);
-    newState.gameIsOver = this.isGameOver(gameState);
+    newState.status = this.isGameOver(gameState) ? GameStatus.gameOver : GameStatus.yaniv;
     return newState;
   }
 
@@ -102,7 +101,7 @@ export class GameReducer {
     this.updateActivePlayers(newState);
     this.dealCards(newState);
     newState.currentPlayer = startingPlayer;
-    newState.yaniv = false;
+    newState.status = GameStatus.newRound;
     return newState;
   }
 

@@ -6,7 +6,8 @@ import {GameEvents} from './game.events';
 import {takeUntil} from 'rxjs/operators';
 import {SubscriberDirective} from '../../Subscriber';
 import {GameController} from './game.controller';
-import {Card, GameState, getThrownCards, Player, RoundResult} from './game.model';
+import {Card, GameState, GameStatus, getThrownCards, Player, RoundResult} from './game.model';
+import {GameSounds} from './game.sounds';
 
 @Component({
   selector: 'app-game',
@@ -28,7 +29,8 @@ export class GameComponent extends SubscriberDirective implements OnInit {
     private gameService: GameController,
     private dialog: MatDialog,
     private cardsValidator: GameValidator,
-    private gameEvents: GameEvents
+    private gameEvents: GameEvents,
+    private gameSounds: GameSounds
   ) {
     super();
   }
@@ -140,6 +142,16 @@ export class GameComponent extends SubscriberDirective implements OnInit {
 
   private onGameStateUpdate(gameStatus: GameState): void {
     this.gameState = gameStatus;
+    switch (this.gameState.status) {
+      case GameStatus.move:
+        this.gameSounds.playDeckCard();
+        break;
+
+      case GameStatus.newRound:
+        this.gameSounds.playShuffleCards();
+        break;
+    }
+
     this.player = this.gameState.players.find(player => player.id === this.player.id) as Player;
     this.startTimer();
   }
@@ -153,7 +165,7 @@ export class GameComponent extends SubscriberDirective implements OnInit {
 
   private startTimer(): void {
     this.stopTimer();
-    if (!this.gameState.started || this.gameState.gameIsOver || this.gameState.yaniv) {
+    if (![GameStatus.newRound, GameStatus.move].includes(this.gameState.status)) {
       return;
     }
     this.timeLeft = this.gameState.config.moveTimeoutInMS / 1000;
@@ -169,13 +181,13 @@ export class GameComponent extends SubscriberDirective implements OnInit {
   private onYanivResult(result: RoundResult): void {
     const resultScoresString = result.playersRoundScores.map(playerScore => `${playerScore.player.name}: ${playerScore.score} \n`).join('');
     setTimeout(() => {
-      if (!this.gameState.gameIsOver) {
+      if (this.gameState.status !== GameStatus.gameOver) {
         this.dialog.closeAll();
       }
     }, 5000);
 
     let title = result.asaf ? 'Asaf!' : 'Yaniv!';
-    if (this.gameState.gameIsOver) {
+    if (this.gameState.status === GameStatus.gameOver) {
       title = `${title} GAME OVER!`;
     }
     title = `${title} ${result.winner.name} Wins!`;
