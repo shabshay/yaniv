@@ -1,8 +1,13 @@
 import {Injectable} from '@angular/core';
 import {
   Card,
-  cardsScore, CardSymbol, CardSymbolEnum, CardSymbolsMap,
-  CardValue, CardValueEnum, CardValuesMap,
+  cardsScore,
+  CardSymbol,
+  CardSymbolEnum,
+  CardSymbolsMap,
+  CardValue,
+  CardValueEnum,
+  CardValuesMap,
   GameConfig,
   GameState,
   getThrownCards,
@@ -64,43 +69,32 @@ export class GameReducer {
     const newState = {...gameState};
     newState.yaniv = true;
     const currentPlayer = newState.currentPlayer as Player;
-    let winner = currentPlayer;
     const otherPlayers = this.getActivePlayers(newState).filter(player => player.id !== currentPlayer.id);
-    otherPlayers.forEach(player => {
-      if (cardsScore(player.cards) <= cardsScore(winner.cards)) {
-        winner = player;
+    const {asaf, winner} = this.getWinners(otherPlayers, currentPlayer);
+
+    const playersRoundScores: PlayerRoundScore[] = this.getActivePlayers(newState).map(player => {
+      let score = cardsScore(player.cards);
+      if (player.id === currentPlayer.id) {
+        score = asaf ? 30 + cardsScore(player.cards) : 0;
       }
-      return cardsScore(player.cards);
+      player.totalScore += score;
+      return {player, score} as PlayerRoundScore;
     });
 
-    const asaf = winner.id !== currentPlayer.id;
-    const winnerPlayers: Player[] = newState.players.filter(player => cardsScore(player.cards) === cardsScore(winner.cards));
-    if (asaf) {
-      winner = this.getRandomItemFromArray(winnerPlayers);
-    }
-
-    const playersRoundScores: PlayerRoundScore[] =
-      this.getActivePlayers(newState).map(player => {
-        let score = cardsScore(player.cards);
-        if (player.id === currentPlayer.id) {
-          score = asaf ? 30 + cardsScore(player.cards) : 0;
-        }
-        player.totalScore += score;
-        return {
-          player,
-          score
-        } as PlayerRoundScore;
-      });
-
-    const roundResult = {
-      winner,
-      asaf,
-      playersRoundScores
-    } as RoundResult;
-
+    const roundResult = {winner, asaf, playersRoundScores} as RoundResult;
     newState.roundsResults.push(roundResult);
     newState.gameIsOver = this.isGameOver(gameState);
     return newState;
+  }
+
+  getWinners(otherPlayers: Player[], currentPlayer: Player): { winner: Player; asaf: boolean } {
+    const otherPlayersMinScore = otherPlayers.map(player => cardsScore(player.cards)).sort()[0];
+    const asaf = otherPlayersMinScore <= cardsScore(currentPlayer.cards);
+    const winnerPlayers: Player[] = !asaf
+      ? [currentPlayer]
+      : otherPlayers.filter(player => cardsScore(player.cards) === otherPlayersMinScore);
+    const winner = this.getRandomItemFromArray(winnerPlayers);
+    return {asaf, winner};
   }
 
   startNewRound(gameState: GameState, startingPlayer: Player): GameState {
