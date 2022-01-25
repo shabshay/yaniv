@@ -44,7 +44,7 @@ export class PlayerComponent implements OnInit {
   onCardClick(card: Card): void {
     const isValidSelection = this.player.cards && this.cardsValidator.cardSelectionIsValid(card, this.player.cards);
     if (isValidSelection) {
-      this.gameSounds.playCardClick();
+      this.gameSounds.cardClickAudio.play().catch();
     }
     card.selected = !card.selected && isValidSelection;
   }

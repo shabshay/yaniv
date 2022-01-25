@@ -2,43 +2,29 @@ import {Injectable} from '@angular/core';
 
 @Injectable()
 export class GameSounds {
-  private cardClickAudio = new Audio('./assets/card-click.mp3');
-  private clockBellAudio = new Audio('./assets/clock-bell.mp3');
-  private deckCardAudio = new Audio('./assets/deck-card.mp3');
-  private shuffleCardsAudio = new Audio('./assets/shuffle-cards.mp3');
-  private yanivAudio = new Audio('./assets/yaniv.mp3');
-  private asafAudio = new Audio('./assets/asaf.mp3');
-  private gameOverAudio = new Audio('./assets/game-over.mp3');
+  cardClickAudio = new Audio('./assets/card-click.mp3');
+  shortBellAudio = new Audio('./assets/short-bell.mp3');
+  deckCardAudio = new Audio('./assets/deck-card.mp3');
+  shuffleCardsAudio = new Audio('./assets/shuffle-cards.mp3');
+  yanivAudio = new Audio('./assets/yaniv.mp3');
+  asafAudio = new Audio('./assets/asaf.mp3');
+  gameOverAudio = new Audio('./assets/game-over.mp3');
+  tikTokAudio = new Audio('./assets/tick-tok.mp3');
+
+  private audios = [
+    this.cardClickAudio,
+    this.shortBellAudio,
+    this.deckCardAudio,
+    this.shuffleCardsAudio,
+    this.yanivAudio,
+    this.asafAudio,
+    this.gameOverAudio,
+    this.tikTokAudio
+  ];
 
   constructor() {
-    this.cardClickAudio.load();
-  }
-
-  playCardClick(): void {
-    this.cardClickAudio.play().catch();
-  }
-
-  playClockBell(): void {
-    this.clockBellAudio.play().catch();
-  }
-
-  playDeckCard(): void {
-    this.deckCardAudio.play().catch();
-  }
-
-  playShuffleCards(): void {
-    this.shuffleCardsAudio.play().catch();
-  }
-
-  playYaniv(): void {
-    this.yanivAudio.play().catch();
-  }
-
-  playAsaf(): void {
-    this.asafAudio.play().catch();
-  }
-
-  playGameOver(): void {
-    this.gameOverAudio.play().catch();
+    this.audios.forEach(audio => {
+      audio.load();
+    });
   }
 }

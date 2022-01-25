@@ -144,13 +144,18 @@ export class GameComponent extends SubscriberDirective implements OnInit {
 
   private onGameStateUpdate(gameStatus: GameState): void {
     this.gameState = gameStatus;
+    this.gameSounds.tikTokAudio.pause();
+    this.gameSounds.tikTokAudio.currentTime = 0;
+    if (this.isCurrentPlayer(this.player)) {
+      this.gameSounds.shortBellAudio.play().catch();
+    }
     switch (this.gameState.status) {
       case GameStatus.move:
-        this.gameSounds.playDeckCard();
+        this.gameSounds.deckCardAudio.play().catch();
         break;
 
       case GameStatus.newRound:
-        this.gameSounds.playShuffleCards();
+        this.gameSounds.shuffleCardsAudio.play().catch();
         break;
 
       case GameStatus.gameOver:
@@ -189,7 +194,7 @@ export class GameComponent extends SubscriberDirective implements OnInit {
   }
 
   private onGameOver(): void {
-    this.gameSounds.playGameOver();
+    this.gameSounds.gameOverAudio.play().catch();
     const result = this.gameState.roundsResults[this.gameState.roundsResults.length - 1];
     this.dialog.open(DialogComponent, {
       position: this.dialogPosition,
@@ -201,11 +206,11 @@ export class GameComponent extends SubscriberDirective implements OnInit {
   }
 
   private onYaniv(): void {
-    this.gameSounds.playYaniv();
+    this.gameSounds.yanivAudio.play().catch();
     const result = this.gameState.roundsResults[this.gameState.roundsResults.length - 1];
     if (result.asaf) {
       setTimeout(() => {
-        this.gameSounds.playAsaf();
+        this.gameSounds.asafAudio.play().catch();
       }, 1200);
     }
     const resultScoresString = result.playersRoundScores.map(playerScore => `${playerScore.player.name}: ${playerScore.score} \n`).join('');

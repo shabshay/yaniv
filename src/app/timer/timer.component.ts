@@ -16,8 +16,8 @@ export class TimerComponent implements OnInit {
 
   ngOnInit(): void {
     setInterval(() => {
-      if (this.timeLeft === 4) {
-        this.gameSounds.playClockBell();
+      if (this.timeLeft === 5) {
+        this.gameSounds.tikTokAudio.play().catch();
       }
     }, 1000);
   }
