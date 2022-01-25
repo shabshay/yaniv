@@ -26,7 +26,7 @@ export class GameComponent extends SubscriberDirective implements OnInit {
   timeLeft?: number;
   private timerInterval?: number;
   private dialogPosition = {
-    top: '200px'
+    top: '300px'
   } as DialogPosition;
 
   constructor(
