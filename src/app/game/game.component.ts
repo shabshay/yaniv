@@ -1,13 +1,14 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {DialogComponent, DialogData} from '../dialog/dialog.component';
-import {GameValidator} from './game.validator';
-import {GameEvents} from './game.events';
+import {GameValidator} from './api/game.validator';
+import {GameEvents} from './api/game.events';
 import {takeUntil} from 'rxjs/operators';
 import {SubscriberDirective} from '../../Subscriber';
-import {GameController} from './game.controller';
-import {Card, GameState, GameStatus, getThrownCards, Player} from './game.model';
+import {GameController} from './api/game.controller';
+import {Card, GameState, GameStatus, getThrownCards, Player} from './api/game.model';
 import {GameSounds} from './game.sounds';
+import {DialogPosition} from '@angular/material/dialog/dialog-config';
 
 @Component({
   selector: 'app-game',
@@ -24,6 +25,9 @@ export class GameComponent extends SubscriberDirective implements OnInit {
 
   timeLeft?: number;
   private timerInterval?: number;
+  private dialogPosition = {
+    top: '200px'
+  } as DialogPosition;
 
   constructor(
     private gameService: GameController,
@@ -188,6 +192,7 @@ export class GameComponent extends SubscriberDirective implements OnInit {
     this.gameSounds.playGameOver();
     const result = this.gameState.roundsResults[this.gameState.roundsResults.length - 1];
     this.dialog.open(DialogComponent, {
+      position: this.dialogPosition,
       data: {
         title: 'GAME OVER!',
         content: `${result.winner.name} Wins!`
@@ -214,6 +219,7 @@ export class GameComponent extends SubscriberDirective implements OnInit {
     title = `${title} ${result.winner.name} Wins!`;
 
     this.dialog.open(DialogComponent, {
+      position: this.dialogPosition,
       data: {
         title,
         content: resultScoresString

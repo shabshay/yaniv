@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
-import {GameController} from './game/game.controller';
-import {GameConfig, GameState, Player} from './game/game.model';
+import {GameController} from './game/api/game.controller';
+import {GameConfig, GameState, Player} from './game/api/game.model';
 
 @Component({
   selector: 'app-root',

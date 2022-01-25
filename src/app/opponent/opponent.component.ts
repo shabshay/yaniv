@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Card, cardsScore, getSortedCards, Player} from '../game/game.model';
+import {Card, cardsScore, getSortedCards, Player} from '../game/api/game.model';
 
 @Component({
   selector: 'app-opponent',

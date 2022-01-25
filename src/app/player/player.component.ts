@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Player, cardsScore, Card, getSortedCards} from '../game/game.model';
-import {GameValidator} from '../game/game.validator';
+import {Player, cardsScore, Card, getSortedCards} from '../game/api/game.model';
+import {GameValidator} from '../game/api/game.validator';
 import {GameSounds} from '../game/game.sounds';
 
 @Component({

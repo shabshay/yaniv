@@ -8,7 +8,8 @@ export class GameValidator {
   selectedCardIsValid(cardToTake: Card | null, gameState: GameState): boolean {
     if (cardToTake) {
       const cardsFromPile = getThrownCards(gameState);
-      if (cardsFromPile.length && cardsFromPile[0] !== cardToTake && cardsFromPile[cardsFromPile.length - 1] !== cardToTake) {
+      const selectedCardIsFirstOrLast = cardsFromPile[0] === cardToTake || cardsFromPile[cardsFromPile.length - 1] === cardToTake;
+      if (cardsFromPile.length && !this.cardsHasSameValue(cardsFromPile) && selectedCardIsFirstOrLast) {
         return false;
       }
     }

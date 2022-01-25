@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Player} from '../game/game.model';
+import {Player} from '../game/api/game.model';
 
 @Component({
   selector: 'app-avatar',
