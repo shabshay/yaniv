@@ -58,11 +58,10 @@ export class GameValidator {
       if (card.value.order - 1 - jokersOffset !== prevCard?.value.order) {
         return [];
       }
+      jokersOffset = 0;
       prevCard = card;
       sortedCards.push(card);
-      jokersOffset = 0;
     }
-
     while (jokers.length) {
       sortedCards.push(jokers.pop() as Card);
     }

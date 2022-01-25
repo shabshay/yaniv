@@ -46,7 +46,9 @@ export class GameController {
       return;
     }
     this.clearAutoMoveTimer();
-    const newState = this.gameReducer.makeMove(gameState, thrownCards, cardToTake);
+    const thrownCardsAsStraight = this.gameValidator.asStraightCards(thrownCards);
+    const cardsForMove = thrownCardsAsStraight.length ? thrownCardsAsStraight : thrownCards;
+    const newState = this.gameReducer.makeMove(gameState, cardsForMove, cardToTake);
     this.updateGameState(newState);
   }
 
