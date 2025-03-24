@@ -7,7 +7,7 @@ import {GameReducer} from './game.reducer';
 @Injectable()
 export class GameController {
 
-  private autoMoveTimer?: number;
+  private autoMoveTimer?: ReturnType<typeof setTimeout>;
 
   constructor(
     private gameValidator: GameValidator,
