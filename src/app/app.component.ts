@@ -3,9 +3,10 @@ import {GameController} from './game/api/game.controller';
 import {GameConfig, GameState, Player} from './game/api/game.model';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.scss'],
+    standalone: false
 })
 export class AppComponent {
   gameState: GameState;

@@ -7,9 +7,10 @@ export interface DialogData {
 }
 
 @Component({
-  selector: 'app-dialog',
-  templateUrl: './dialog.component.html',
-  styleUrls: ['./dialog.component.scss']
+    selector: 'app-dialog',
+    templateUrl: './dialog.component.html',
+    styleUrls: ['./dialog.component.scss'],
+    standalone: false
 })
 export class DialogComponent implements OnInit {
 

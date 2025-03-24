@@ -1,6 +1,6 @@
 <div class="player-container">
   <div class="cards-container">
-    <ng-template [ngIf]="player?.cards">
+    <ng-template [ngIf]="player && player.cards">
       <app-card *ngFor="let card of sortedCard" [card]="card" (click)="onCardClick(card)" [isActive]="true">
       </app-card>
     </ng-template>

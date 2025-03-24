@@ -8,12 +8,13 @@ import {SubscriberDirective} from '../../Subscriber';
 import {GameController} from './api/game.controller';
 import {Card, GameState, GameStatus, getThrownCards, Player} from './api/game.model';
 import {GameSounds} from './game.sounds';
-import {DialogPosition} from '@angular/material/dialog/dialog-config';
+import { DialogPosition } from '@angular/material/dialog';
 
 @Component({
-  selector: 'app-game',
-  templateUrl: './game.component.html',
-  styleUrls: ['./game.component.scss']
+    selector: 'app-game',
+    templateUrl: './game.component.html',
+    styleUrls: ['./game.component.scss'],
+    standalone: false
 })
 export class GameComponent extends SubscriberDirective implements OnInit {
 

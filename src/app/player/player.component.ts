@@ -4,9 +4,10 @@ import {GameValidator} from '../game/api/game.validator';
 import {GameSounds} from '../game/game.sounds';
 
 @Component({
-  selector: 'app-player',
-  templateUrl: './player.component.html',
-  styleUrls: ['./player.component.scss']
+    selector: 'app-player',
+    templateUrl: './player.component.html',
+    styleUrls: ['./player.component.scss'],
+    standalone: false
 })
 export class PlayerComponent implements OnInit {
 

@@ -2,9 +2,10 @@ import {Component, Input, OnInit} from '@angular/core';
 import {GameSounds} from '../game/game.sounds';
 
 @Component({
-  selector: 'app-timer',
-  templateUrl: './timer.component.html',
-  styleUrls: ['./timer.component.scss']
+    selector: 'app-timer',
+    templateUrl: './timer.component.html',
+    styleUrls: ['./timer.component.scss'],
+    standalone: false
 })
 export class TimerComponent implements OnInit {
 

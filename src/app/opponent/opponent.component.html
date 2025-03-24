@@ -2,7 +2,7 @@
   <app-avatar [player]="player"
               [isCurrentPlayer]="isCurrentPlayer">
   </app-avatar>
-  <ng-template [ngIf]="!player.isOut && player?.cards">
+  <ng-template [ngIf]="!player.isOut && player.cards">
     <div [class]="'opponent-cards-container ' + cardsClass">
       <app-card *ngFor="let card of sortedCard" class="opponent-card" [card]="card" [flipped]="!showCards">
       </app-card>

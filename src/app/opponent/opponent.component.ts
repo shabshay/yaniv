@@ -2,9 +2,10 @@ import {Component, Input, OnInit} from '@angular/core';
 import {Card, cardsScore, getSortedCards, Player} from '../game/api/game.model';
 
 @Component({
-  selector: 'app-opponent',
-  templateUrl: './opponent.component.html',
-  styleUrls: ['./opponent.component.scss']
+    selector: 'app-opponent',
+    templateUrl: './opponent.component.html',
+    styleUrls: ['./opponent.component.scss'],
+    standalone: false
 })
 export class OpponentComponent implements OnInit {
 
