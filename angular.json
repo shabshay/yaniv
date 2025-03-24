@@ -78,18 +78,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "yaniv:build"
+            "buildTarget": "yaniv:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "yaniv:build:production"
+              "buildTarget": "yaniv:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "yaniv:build"
+            "buildTarget": "yaniv:build"
           }
         },
         "test": {
