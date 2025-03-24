@@ -7,7 +7,7 @@ import {
   CardSymbolsMap,
   CardValue,
   CardValueEnum,
-  CardValuesMap,
+  CardValuesMap, deepClone,
   GameConfig,
   GameState,
   GameStatus,
@@ -67,13 +67,15 @@ export class GameReducer {
 
   yaniv(gameState: GameState): GameState {
     const newState = {...gameState};
-    const currentPlayer = newState.currentPlayer as Player;
-    const otherPlayers = this.getActivePlayers(newState).filter(player => player.id !== currentPlayer.id);
-    const {asaf, winner} = this.getWinners(otherPlayers, currentPlayer);
+    const callerPlayer = newState.currentPlayer as Player;
+    const otherPlayers = this.getActivePlayers(newState).filter(player => player.id !== callerPlayer.id);
+    const {asaf, winner} = this.getWinners(otherPlayers, callerPlayer);
 
     const playersRoundScores: PlayerRoundScore[] = this.getActivePlayers(newState).map(player => {
       let score = cardsScore(player.cards);
-      if (player.id === currentPlayer.id) {
+      if (player.id === winner.id) {
+        score = 0;
+      } else if (player.id === callerPlayer.id) {
         score = asaf ? 30 + cardsScore(player.cards) : 0;
       }
       player.totalScore += score;
@@ -87,7 +89,7 @@ export class GameReducer {
   }
 
   getWinners(otherPlayers: Player[], currentPlayer: Player): { winner: Player; asaf: boolean } {
-    const otherPlayersMinScore = otherPlayers.map(player => cardsScore(player.cards)).sort()[0];
+    const otherPlayersMinScore = otherPlayers.map(player => cardsScore(player.cards)).sort((a, b) => a - b)[0];
     const asaf = otherPlayersMinScore <= cardsScore(currentPlayer.cards);
     const winnerPlayers: Player[] = !asaf
       ? [currentPlayer]
