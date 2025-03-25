@@ -23,9 +23,7 @@
             "allowedCommonJsDependencies": [
               "async-lock"
             ],
-            "outputPath": {
-              "base": "dist/yaniv"
-            },
+            "outputPath": "dist/yaniv",
             "index": "src/index.html",
             "polyfills": [
               "src/polyfills.ts"
@@ -49,7 +47,8 @@
               "includePaths": [
                 "."
               ]
-            }
+            },
+            "baseHref": "/yaniv/"
           },
           "configurations": {
             "production": {
