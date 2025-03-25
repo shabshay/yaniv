@@ -47,7 +47,7 @@ export class GameComponent extends SubscriberDirective implements OnInit {
       const player = {
         name: 'Shamib',
         id: 'asd',
-        img: '../../assets/avatar2.png',
+        img: 'assets/avatar2.png',
         isComputerPlayer: true
       } as Player;
       this.gameService.addPlayer(this.gameState, player);
@@ -57,7 +57,7 @@ export class GameComponent extends SubscriberDirective implements OnInit {
       const player = {
         name: 'Dodik',
         id: 'fasdf',
-        img: '../../assets/avatar3.png',
+        img: 'assets/avatar3.png',
         isComputerPlayer: true
       } as Player;
       this.gameService.addPlayer(this.gameState, player);
@@ -67,7 +67,7 @@ export class GameComponent extends SubscriberDirective implements OnInit {
       const player = {
         name: 'Kaduri',
         id: '2dsfx',
-        img: '../../assets/avatar4.png',
+        img: 'assets/avatar4.png',
         isComputerPlayer: true
       } as Player;
       this.gameService.addPlayer(this.gameState, player);

@@ -15,28 +15,28 @@ function getNewGameState(): GameState {
   const player1 = {
     name: 'player1',
     id: 'player1',
-    img: '../../assets/avatar1.png',
+    img: 'assets/avatar1.png',
     isComputerPlayer: false
   } as Player;
 
   const player2 = {
     name: 'player2',
     id: 'player2',
-    img: '../../assets/avatar1.png',
+    img: 'assets/avatar1.png',
     isComputerPlayer: false
   } as Player;
 
   const player3 = {
     name: 'player3',
     id: 'player3',
-    img: '../../assets/avatar1.png',
+    img: 'assets/avatar1.png',
     isComputerPlayer: false
   } as Player;
 
   const player4 = {
     name: 'player4',
     id: 'player4',
-    img: '../../assets/avatar1.png',
+    img: 'assets/avatar1.png',
     isComputerPlayer: false
   } as Player;
 
@@ -151,7 +151,7 @@ describe('GameReducer', () => {
     const player = {
       name: 'player1',
       id: 'player1',
-      img: '../../assets/avatar1.png',
+      img: 'assets/avatar1.png',
       isComputerPlayer: false
     } as Player;
 
@@ -167,7 +167,7 @@ describe('GameReducer', () => {
     const newPlayer = {
       name: 'player5',
       id: 'player5',
-      img: '../../assets/avatar1.png',
+      img: 'assets/avatar1.png',
       isComputerPlayer: false
     } as Player;
 

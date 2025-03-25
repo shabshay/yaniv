@@ -24,7 +24,7 @@ export class AppComponent {
     this.player = {
       name: 'Shay',
       id: '2fb5s',
-      img: '../../assets/avatar1.png',
+      img: 'assets/avatar1.png',
       isComputerPlayer: false
     } as Player;
     this.gameState = this.gameService.newGame(config, this.player);
