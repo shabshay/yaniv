@@ -23,7 +23,6 @@ export interface Move {
 
 export enum GameStatus {
   pending = 'pending',
-  running = 'running',
   move = 'move',
   yaniv = 'yaniv',
   newRound = 'newRound',

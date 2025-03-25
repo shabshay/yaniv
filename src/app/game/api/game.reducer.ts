@@ -7,7 +7,7 @@ import {
   CardSymbolsMap,
   CardValue,
   CardValueEnum,
-  CardValuesMap, deepClone,
+  CardValuesMap,
   GameConfig,
   GameState,
   GameStatus,
@@ -42,7 +42,6 @@ export class GameReducer {
 
   startGame(gameState: GameState): GameState {
     const newState = {...gameState};
-    newState.status = GameStatus.running;
     newState.players.forEach(player => {
       player.totalScore = 0;
       player.isOut = false;

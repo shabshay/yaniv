@@ -1,5 +1,5 @@
 import {GameReducer} from './game.reducer';
-import {CardSymbol, CardValue, GameConfig, GameState, Player} from './game.model';
+import {Card, CardSymbol, CardValue, GameConfig, GameState, GameStatus, Player} from './game.model';
 
 const gameReducer = new GameReducer();
 
@@ -137,5 +137,74 @@ describe('GameReducer', () => {
     const possibleWinners = [testPlayer2.id];
     expect(possibleWinners).toContain(newState.roundsResults[0].winner.id);
     expect(testPlayer2.totalScore).toEqual(0);
+  });
+
+  it('should start a new game with the correct initial state', () => {
+    const config = {
+      yanivThreshold: 7,
+      scoreLimit: 50,
+      cardsPerPlayer: 5,
+      moveTimeoutInMS: 15000,
+      timeBetweenRoundsInMS: 5000
+    } as GameConfig;
+
+    const player = {
+      name: 'player1',
+      id: 'player1',
+      img: '../../assets/avatar1.png',
+      isComputerPlayer: false
+    } as Player;
+
+    const gameState = gameReducer.newGame(config, player);
+    expect(gameState.config).toEqual(config);
+    expect(gameState.players.length).toBe(1);
+    expect(gameState.players[0].id).toBe('player1');
+    expect(gameState.status).toBe(GameStatus.pending);
+  });
+
+  it('should add a player to the game state', () => {
+    const gameState = getNewGameState();
+    const newPlayer = {
+      name: 'player5',
+      id: 'player5',
+      img: '../../assets/avatar1.png',
+      isComputerPlayer: false
+    } as Player;
+
+    const newState = gameReducer.addPlayer(gameState, newPlayer);
+    expect(newState.players.length).toBe(5);
+    expect(newState.players[4].id).toBe('player5');
+  });
+
+  it('should start a game and set the status to running', () => {
+    const gameState = getNewGameState();
+    const newState = gameReducer.startGame(gameState);
+    expect(newState.status).toBe(GameStatus.newRound);
+    newState.players.forEach(player => {
+      expect(player.totalScore).toBe(0);
+      expect(player.isOut).toBe(false);
+    });
+  });
+
+  it('should make a move and update the game state', () => {
+    const gameState = getNewGameState();
+    const testState = gameReducer.startNewRound(gameState, gameState.players[0]);
+    const testPlayer1 = testState.players.filter(player => player.id === 'player1')[0];
+    const thrownCards = testPlayer1.cards?.slice(0, 2) as Card[];
+
+    const newState = gameReducer.makeMove(testState, thrownCards);
+    expect(newState.status).toBe(GameStatus.move);
+    expect(newState.moves.length).toBe(2);
+    expect(newState.moves.pop()?.cards).toEqual(thrownCards);
+    expect(testPlayer1.cards?.length).toBe(4);
+  });
+
+  it('should end the game when only one player is left with a valid score', () => {
+    const gameState = getNewGameState();
+    gameState.players.forEach(player => player.totalScore = 51);
+    gameState.players[0].totalScore = 49;
+
+    const newState = gameReducer.startNewRound(gameState, gameState.players[0]);
+    expect(newState.status).toBe(GameStatus.gameOver);
   });
 });
