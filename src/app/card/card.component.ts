@@ -23,4 +23,9 @@ export class CardComponent implements OnInit {
 
   ngOnInit(): void {
   }
+
+  get isRed(): boolean {
+    const redSymbols = ['♥', '♦'];
+    return redSymbols.includes(this.card.symbol.icon);
+  }
 }

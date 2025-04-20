@@ -82,6 +82,7 @@ export interface Card {
 
 export interface CardSymbol {
   icon: string;
+  type: string;
   color: string;
 }
 
@@ -94,29 +95,34 @@ export interface CardValue {
 export const CardSymbolsMap: Map<CardSymbolEnum, CardSymbol> = new Map([
   [CardSymbolEnum.Clubs, {
     icon: '♣',
+    type: 'clubs',
     color: 'black'
   }],
   [CardSymbolEnum.Diamonds, {
     icon: '♦',
+    type: 'diamonds',
     color: 'red'
   }],
   [CardSymbolEnum.Spades, {
     icon: '♠',
+    type: 'spades',
     color: 'black'
   }],
   [CardSymbolEnum.Hearts, {
     icon: '♥',
+    type: 'hearts',
     color: 'red'
   }],
   [CardSymbolEnum.Joker, {
     icon: '🤡',
+    type: 'joker',
     color: ''
   }],
 ]);
 
 export const CardValuesMap: Map<CardValueEnum, CardValue> = new Map([
   [CardValueEnum.Joker, {
-    text: 'Joker',
+    text: '',
     score: 0,
     order: 0
   }],

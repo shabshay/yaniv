@@ -1,13 +1,27 @@
 <div class="card-container" [ngClass]="{'card-active' : isActive, 'flipped' : flipped}">
   <div class="card-inner">
-    <div class="card card-{{card.symbol.color}}"
-         [ngClass]="{'card-selected' : card.selected}">
-      <div class="card-symbol">
-        {{card.symbol.icon}}
-      </div>
-      <div class="card-value">
-        {{card.value.text}}
-      </div>
+    <div class="card card-{{card.symbol.color}}" [ngClass]="{'card-selected' : card.selected}">
+      <svg viewBox="0 0 300 450" xmlns="http://www.w3.org/2000/svg" class="card-svg">
+        <rect width="100%" height="100%" rx="20" ry="20" fill="#fffaf0" stroke="#d3bfa6" stroke-width="4" />
+
+        <image
+          [attr.href]="'assets/suits/' + card.symbol.type + '-bg-texture.png'"
+          x="0"
+          y="0"
+          width="300"
+          height="450"
+        />
+        <text x="20" y="80" font-size="90" font-weight="bold" [attr.fill]="isRed ? '#d33' : '#000'">
+          {{ card.value.text }}
+        </text>
+
+        <g transform="rotate(180 280 418)">
+          <text x="330" y="480" font-size="90" font-weight="bold" text-anchor="end" [attr.fill]="isRed ? '#d33' : '#000'">
+            {{ card.value.text }}
+          </text>
+        </g>
+      </svg>
+
     </div>
     <div class="card card-back">
     </div>

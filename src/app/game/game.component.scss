@@ -3,7 +3,9 @@
 .game-container {
   height: 960px;
   width: 600px;
-  background-image: radial-gradient(#89c189 30%, #408940 70%);
+  background-image: url('src/assets/background.png');
+  background-size: cover;
+  background-position: center;
   padding: $spacing-medium;
 }
 
