@@ -2,7 +2,12 @@
 
 .app-container {
   display: flex;
+  height: 1200px;
   width: 600px;
   justify-content: center;
   margin: auto;
+}
+
+.main-menu-img {
+  width: 100%;
 }

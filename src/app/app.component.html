@@ -3,10 +3,6 @@
     <app-game [gameState]="gameState" [player]="player"></app-game>
   </ng-template>
   <ng-template #gameNotRunningTemplate>
-    <mat-toolbar color="primary">
-      <mat-icon>local_fire_department</mat-icon>
-      <span>Yaniv!</span>
-    </mat-toolbar>
-    <button mat-raised-button color="primary" (click)="startGame()">Play!</button>
+    <app-menu (startGame)="startGame()"></app-menu>
   </ng-template>
 </div>

@@ -9,17 +9,11 @@ import {GameConfig, GameState, Player} from './game/api/game.model';
     standalone: false
 })
 export class AppComponent {
-  gameState: GameState;
+  gameState: GameState | undefined;
   player: Player;
 
   constructor(private gameService: GameController) {
-    const config = {
-      yanivThreshold: 7,
-      scoreLimit: 50,
-      cardsPerPlayer: 5,
-      moveTimeoutInMS: 10000,
-      timeBetweenRoundsInMS: 5000
-    } as GameConfig;
+
 
     this.player = {
       name: 'Shay',
@@ -27,10 +21,16 @@ export class AppComponent {
       img: 'assets/avatar1.png',
       isComputerPlayer: false
     } as Player;
-    this.gameState = this.gameService.newGame(config, this.player);
   }
 
   startGame(): void {
-
+    const config = {
+      yanivThreshold: 7,
+      scoreLimit: 50,
+      cardsPerPlayer: 5,
+      moveTimeoutInMS: 10000,
+      timeBetweenRoundsInMS: 5000
+    } as GameConfig;
+    this.gameState = this.gameService.newGame(config, this.player);
   }
 }
