@@ -1,5 +1,10 @@
 @use './src/variables' as *;
 
+:host {
+  animation: slideUp 1s ease-out forwards;
+  opacity: 0;
+}
+
 .game-container {
   height: 960px;
   width: 600px;
@@ -86,4 +91,9 @@
 
 .pile-card {
   margin: -15px;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
 }

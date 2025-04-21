@@ -1,6 +1,11 @@
+:host {
+  animation: slideUp 1s ease-out forwards;
+  opacity: 0;
+}
+
 .main-menu-container {
   width: 600px;
-  height: 1200px;
+  height: 960px;
   background: #ea8612 url('src/assets/menu.png') no-repeat;
   background-size: contain;
 }
@@ -38,4 +43,15 @@
     cursor: pointer;
     transform: scale(1.1);
   }
+
+  a {
+    font-size: 2.5rem;
+    color: inherit;
+    text-decoration: none;
+  }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
 }

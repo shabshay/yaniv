@@ -7,4 +7,5 @@ import { Component, EventEmitter, Output } from '@angular/core';
 })
 export class MenuComponent {
   @Output() startGame = new EventEmitter<void>();
+  @Output() showSettings = new EventEmitter<void>();
 }
