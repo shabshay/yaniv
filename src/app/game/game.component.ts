@@ -30,6 +30,8 @@ export class GameComponent extends SubscriberDirective implements OnInit {
     top: '300px'
   } as DialogPosition;
 
+  private computerPlayerNames: string[] = ['Alice', 'Bob', 'Charlie', 'David', 'Eva', 'Frank', 'Grace'];
+
   constructor(
     private gameService: GameController,
     private dialog: MatDialog,
@@ -45,7 +47,7 @@ export class GameComponent extends SubscriberDirective implements OnInit {
 
     setTimeout(() => {
       const player = {
-        name: 'Shamib',
+        name: this.getRandomComputerName(),
         id: 'asd',
         img: 'assets/avatar2.png',
         isComputerPlayer: true
@@ -55,7 +57,7 @@ export class GameComponent extends SubscriberDirective implements OnInit {
 
     setTimeout(() => {
       const player = {
-        name: 'Dodik',
+        name: this.getRandomComputerName(),
         id: 'fasdf',
         img: 'assets/avatar3.png',
         isComputerPlayer: true
@@ -65,7 +67,7 @@ export class GameComponent extends SubscriberDirective implements OnInit {
 
     setTimeout(() => {
       const player = {
-        name: 'Kaduri',
+        name: this.getRandomComputerName(),
         id: '2dsfx',
         img: 'assets/avatar4.png',
         isComputerPlayer: true
@@ -141,6 +143,13 @@ export class GameComponent extends SubscriberDirective implements OnInit {
       .subscribe((gameStatus: GameState) => {
         this.onGameStateUpdate(gameStatus);
       });
+  }
+
+  private getRandomComputerName(): string {
+    const index = Math.floor(Math.random() * this.computerPlayerNames.length);
+    const name = this.computerPlayerNames[index];
+    this.computerPlayerNames.splice(index, 1);
+    return name;
   }
 
   private onGameStateUpdate(gameStatus: GameState): void {
