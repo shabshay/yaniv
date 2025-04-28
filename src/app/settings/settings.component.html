@@ -2,28 +2,35 @@
   <div class="modal-content" (click)="$event.stopPropagation()">
     <h2>Settings</h2>
     <form (ngSubmit)="onSave()">
-      <label>
-        Yaniv Threshold:
-        <input type="number" [(ngModel)]="gameConfig.yanivThreshold" name="yanivThreshold">
-      </label>
-      <label>
-        Score Limit:
-        <input type="number" [(ngModel)]="gameConfig.scoreLimit" name="scoreLimit">
-      </label>
-      <label>
-        Cards Per Player:
-        <input type="number" [(ngModel)]="gameConfig.cardsPerPlayer" name="cardsPerPlayer">
-      </label>
-      <label>
-        Move Timeout (ms):
-        <input type="number" [(ngModel)]="gameConfig.moveTimeoutInMS" name="moveTimeoutInMS">
-      </label>
-      <label>
-        Time Between Rounds (ms):
-        <input type="number" [(ngModel)]="gameConfig.timeBetweenRoundsInMS" name="timeBetweenRoundsInMS">
-      </label>
-      <button type="submit">Save</button>
+      <div>
+        <label>Yaniv Threshold:
+          <input type="number" [(ngModel)]="gameConfig.yanivThreshold" name="yanivThreshold">
+        </label>
+      </div>
+      <div>
+        <label>Score Limit:
+          <input type="number" [(ngModel)]="gameConfig.scoreLimit" name="scoreLimit">
+        </label>
+      </div>
+      <div>
+        <label>Cards Per Player:
+          <input type="number" [(ngModel)]="gameConfig.cardsPerPlayer" name="cardsPerPlayer">
+        </label>
+      </div>
+      <div>
+        <label>Move Timeout (ms):
+          <input type="number" [(ngModel)]="gameConfig.moveTimeoutInMS" name="moveTimeoutInMS">
+        </label>
+      </div>
+      <div>
+        <label>Time Between Rounds (ms):
+          <input type="number" [(ngModel)]="gameConfig.timeBetweenRoundsInMS" name="timeBetweenRoundsInMS">
+        </label>
+      </div>
+      <div class="button-container">
+        <button type="button" (click)="onClose()">Cancel</button>
+        <button type="submit">Save</button>
+      </div>
     </form>
-    <button (click)="onClose()">Close</button>
   </div>
 </div>
