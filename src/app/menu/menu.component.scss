@@ -1,12 +1,23 @@
+@keyframes fadeInZoom {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 :host {
-  animation: slideUp 1s ease-out forwards;
+  animation: fadeInZoom 0.5s ease-out forwards;
   opacity: 0;
 }
 
 .main-menu-container {
   width: 600px;
   height: 960px;
-  background: #ea8612 url('src/assets/menu.png') no-repeat;
+  background: #ea8612 url('src/assets/menu-bg.png') no-repeat;
   background-size: contain;
 }
 
@@ -14,18 +25,18 @@
   position: relative;
   width: 400px;
   left: 100px;
-  top: 80px;
+  top: 100px;
 }
 
 .buttons-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 42px;
+  gap: 50px;
   width: 300px;
   height: 450px;
   position: relative;
-  top: 30px;
+  top: 50px;
   left: 150px;
 }
 
@@ -49,9 +60,4 @@
     color: inherit;
     text-decoration: none;
   }
-}
-
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(40px); }
-  to { opacity: 1; transform: translateY(0); }
 }

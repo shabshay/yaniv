@@ -22,6 +22,7 @@ import { AvatarComponent } from './avatar/avatar.component';
 import { TimerComponent } from './timer/timer.component';
 import {GameSounds} from './game/game.sounds';
 import {MenuComponent} from './menu/menu.component';
+import {SettingsComponent} from './settings/settings.component';
 
 @NgModule({
   declarations: [
@@ -43,7 +44,8 @@ import {MenuComponent} from './menu/menu.component';
     MatCardModule,
     MatButtonModule,
     MatDialogModule,
-    MenuComponent
+    MenuComponent,
+    SettingsComponent
   ],
   providers: [GameController, GameValidator, GameEvents, GameReducer, GameSounds],
   bootstrap: [AppComponent]

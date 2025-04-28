@@ -3,6 +3,14 @@
     <app-game [gameState]="gameState" [player]="player"></app-game>
   </ng-template>
   <ng-template #gameNotRunningTemplate>
-    <app-menu (startGame)="startGame()"></app-menu>
+    <app-menu
+      (startGame)="startGame()"
+      (showSettings)="showSettings()"
+    ></app-menu>
   </ng-template>
 </div>
+<app-settings
+  *ngIf="settingsVisible"
+  (settingsChanged)="updateSettings($event)"
+  (close)="handleSettingsClose()">
+</app-settings>
