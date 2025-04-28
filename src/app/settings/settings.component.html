@@ -6,27 +6,22 @@
         Yaniv Threshold:
         <input type="number" [(ngModel)]="gameConfig.yanivThreshold" name="yanivThreshold">
       </label>
-      <br>
       <label>
         Score Limit:
         <input type="number" [(ngModel)]="gameConfig.scoreLimit" name="scoreLimit">
       </label>
-      <br>
       <label>
         Cards Per Player:
         <input type="number" [(ngModel)]="gameConfig.cardsPerPlayer" name="cardsPerPlayer">
       </label>
-      <br>
       <label>
         Move Timeout (ms):
         <input type="number" [(ngModel)]="gameConfig.moveTimeoutInMS" name="moveTimeoutInMS">
       </label>
-      <br>
       <label>
         Time Between Rounds (ms):
         <input type="number" [(ngModel)]="gameConfig.timeBetweenRoundsInMS" name="timeBetweenRoundsInMS">
       </label>
-      <br>
       <button type="submit">Save</button>
     </form>
     <button (click)="onClose()">Close</button>
