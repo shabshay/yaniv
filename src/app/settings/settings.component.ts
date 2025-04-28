@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import { GameConfig } from '../game/api/game.model';
 import {FormsModule} from '@angular/forms';
 
@@ -11,6 +11,7 @@ import {FormsModule} from '@angular/forms';
     styleUrls: ['./settings.component.scss']
   })
   export class SettingsComponent {
+    @Input()
     gameConfig: GameConfig = {
       yanivThreshold: 7,
       scoreLimit: 50,

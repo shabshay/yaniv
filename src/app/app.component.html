@@ -11,6 +11,7 @@
 </div>
 <app-settings
   *ngIf="settingsVisible"
+  [gameConfig]="gameSettings"
   (settingsChanged)="updateSettings($event)"
   (close)="handleSettingsClose()">
 </app-settings>

@@ -9,13 +9,7 @@ import {GameConfig, GameState, Player} from './game/api/game.model';
     standalone: false
 })
 export class AppComponent {
-  gameSettings: GameConfig = {
-    yanivThreshold: 7,
-    scoreLimit: 50,
-    cardsPerPlayer: 5,
-    moveTimeoutInMS: 10000,
-    timeBetweenRoundsInMS: 5000
-  } as GameConfig;
+  gameSettings: GameConfig;
   gameState: GameState | undefined;
   player: Player;
   settingsVisible = false;
@@ -27,6 +21,7 @@ export class AppComponent {
       img: 'assets/avatar1.png',
       isComputerPlayer: false
     } as Player;
+    this.gameSettings = this.loadGameSettings();
   }
 
   showSettings(): void {
@@ -43,5 +38,21 @@ export class AppComponent {
 
   updateSettings(config: GameConfig): void {
     this.gameSettings = config;
+    localStorage.setItem('gameSettings', JSON.stringify(config));
+  }
+
+  private loadGameSettings(): GameConfig {
+    const savedConfig = localStorage.getItem('gameSettings');
+    if (savedConfig) {
+      return JSON.parse(savedConfig);
+    } else {
+      return {
+        yanivThreshold: 7,
+        scoreLimit: 50,
+        cardsPerPlayer: 5,
+        moveTimeoutInMS: 10000,
+        timeBetweenRoundsInMS: 5000
+      } as GameConfig;
+    }
   }
 }

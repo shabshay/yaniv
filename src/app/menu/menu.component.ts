@@ -4,9 +4,7 @@ import {SettingsComponent} from '../settings/settings.component';
 @Component({
   selector: 'app-menu',
   templateUrl: './menu.component.html',
-  imports: [
-    SettingsComponent
-  ],
+  imports: [],
   styleUrls: ['./menu.component.scss']
 })
 export class MenuComponent {
