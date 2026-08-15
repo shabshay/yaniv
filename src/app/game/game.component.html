@@ -10,6 +10,7 @@
       <app-opponent *ngIf="opponentTop"
                     [player]="opponentTop"
                     [isCurrentPlayer]="isCurrentPlayer(opponentTop)"
+                    [animateDeal]="dealAnimationActive"
                     opponentClass="opponent-top"
                     cardsClass="rotated-180"
                     [showCards]="showCards">
@@ -20,6 +21,7 @@
         <app-opponent *ngIf="opponentLeft"
                       [player]="opponentLeft"
                       [isCurrentPlayer]="isCurrentPlayer(opponentLeft)"
+                      [animateDeal]="dealAnimationActive"
                       opponentClass="opponent-side"
                       cardsClass="rotated-90"
                       [showCards]="showCards">
@@ -27,14 +29,14 @@
       </div>
       <div class="pile-deck-container">
         <div class="deck-container" *ngIf="gameState.deck?.length" (click)="makeMove()">
-          <app-card *ngFor="let card of deckTopCards; let i = index"
+          <app-card *ngFor="let card of deckTopCards; let i = index; trackBy: trackCard"
                     [card]="card"
                     [isActive]="gameState.status !== 'gameOver' &&  i === deckTopCards.length - 1 && gameState.currentPlayer?.id === player.id"
                     [flipped]="true"
                     class="deck-card"></app-card>
         </div>
         <div class="pile-container" *ngIf="thrownCards?.length">
-          <app-card *ngFor="let card of thrownCards"
+          <app-card *ngFor="let card of thrownCards; trackBy: trackCard"
                     [card]="card" class="pile-card"
                     [isActive]="gameState.status !== 'gameOver' && gameState.currentPlayer?.id === player.id"
                     (click)="makeMove(card)">
@@ -45,6 +47,7 @@
         <app-opponent *ngIf="opponentRight"
                       [player]="opponentRight"
                       [isCurrentPlayer]="isCurrentPlayer(opponentRight)"
+                      [animateDeal]="dealAnimationActive"
                       opponentClass="opponent-side"
                       cardsClass="rotated-270"
                       [showCards]="showCards">
@@ -54,6 +57,7 @@
     <div class="player-container">
       <app-player [player]="player"
                   [isCurrentPlayer]="isCurrentPlayer(player)"
+                  [animateDeal]="dealAnimationActive"
                   [yanivThreshold]="gameState.config.yanivThreshold"
                   (yanivClick)="onPlayerCallYaniv()">
       </app-player>

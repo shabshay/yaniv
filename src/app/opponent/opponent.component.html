@@ -4,7 +4,11 @@
   </app-avatar>
   <ng-template [ngIf]="!player.isOut && player.cards">
     <div [class]="'opponent-cards-container ' + cardsClass">
-      <app-card *ngFor="let card of sortedCard" class="opponent-card" [card]="card" [flipped]="!showCards">
+      <app-card *ngFor="let card of sortedCard; trackBy: trackCard"
+                class="opponent-card"
+                [card]="card"
+                [animateDeal]="animateDeal"
+                [flipped]="!showCards">
       </app-card>
     </div>
     <div class="hand-score" *ngIf="showCards">
