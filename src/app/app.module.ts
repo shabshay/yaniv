@@ -27,6 +27,7 @@ import {OnlineComponent} from './online/online.component';
 import {FirebaseService} from './online/firebase.service';
 import {OnlineRoomService} from './online/online-room.service';
 import {HostGameEngineService} from './online/host-game-engine.service';
+import {AnalyticsService} from './analytics.service';
 
 @NgModule({
   declarations: [
@@ -59,6 +60,7 @@ import {HostGameEngineService} from './online/host-game-engine.service';
     GameReducer,
     GameSounds,
     FirebaseService,
+    AnalyticsService,
     HostGameEngineService,
     OnlineRoomService
   ],

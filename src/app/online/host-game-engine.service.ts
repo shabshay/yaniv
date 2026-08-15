@@ -15,6 +15,7 @@ import {
   setDoc,
   Unsubscribe,
   updateDoc,
+  where,
   writeBatch
 } from 'firebase/firestore';
 import {GameController} from '../game/api/game.controller';
@@ -41,6 +42,8 @@ import {
   isValidRoomAction
 } from './online.model';
 import {isAllowedPlayerAvatar, normalizePlayerName} from './player-profile';
+import {expirationTimestamp, PROCESSED_ACTION_TTL_MS, ROOM_TTL_MS} from './firestore-ttl';
+import {AnalyticsService} from '../analytics.service';
 
 const PRESENCE_TIMEOUT_MS = 90000;
 
@@ -63,6 +66,8 @@ export class HostGameEngineService {
   private playerOrder: string[] = [];
   private currentState?: GameState;
   private seenActionIds = new Set<string>();
+  private gameStartedAt?: number;
+  private gameCompletionTracked = false;
 
   private gameEventsSubscription?: Subscription;
   private actionsUnsubscribe?: Unsubscribe;
@@ -71,7 +76,8 @@ export class HostGameEngineService {
   constructor(
     private firebaseService: FirebaseService,
     private gameController: GameController,
-    private gameEvents: GameEvents
+    private gameEvents: GameEvents,
+    private analyticsService: AnalyticsService
   ) {
   }
 
@@ -86,10 +92,12 @@ export class HostGameEngineService {
     };
     this.playerOrder = [hostUid];
     this.seenActionIds = new Set();
+    this.gameStartedAt = undefined;
+    this.gameCompletionTracked = false;
 
     let publishAfterFirstEvent: Promise<void> = Promise.resolve();
     this.gameEventsSubscription = this.gameEvents.gameStateUpdate.subscribe(state => {
-      this.currentState = state;
+      this.onAuthoritativeStateUpdate(state);
       publishAfterFirstEvent = this.queuePublish().catch(error => console.error('Failed to publish room state', error));
     });
 
@@ -118,9 +126,11 @@ export class HostGameEngineService {
     this.playerOrder = room.playerOrder;
     this.currentState = privateSnap.data().game;
     this.seenActionIds = new Set();
+    this.gameStartedAt = undefined;
+    this.gameCompletionTracked = this.currentState.status === GameStatus.gameOver;
 
     this.gameEventsSubscription = this.gameEvents.gameStateUpdate.subscribe(state => {
-      this.currentState = state;
+      this.onAuthoritativeStateUpdate(state);
       this.queuePublish().catch(error => console.error('Failed to publish room state', error));
     });
 
@@ -136,6 +146,7 @@ export class HostGameEngineService {
     }
     const roomCode = this.roomCode;
     await this.lock.acquire(roomCode, async () => {
+      this.trackAbandonedGame();
       this.stop();
       await updateDoc(this.roomDocRef(roomCode), {status: RoomStatus.closed});
     });
@@ -157,7 +168,11 @@ export class HostGameEngineService {
 
   private subscribeToActions(): void {
     const roomCode = this.requireRoomCode();
-    const actionsQuery = query(this.actionsColRef(roomCode), orderBy('createdAt'));
+    const actionsQuery = query(
+      this.actionsColRef(roomCode),
+      where('processed', '==', false),
+      orderBy('createdAt')
+    );
     this.actionsUnsubscribe = onSnapshot(actionsQuery, snapshot => {
       snapshot.docs
         .filter(document => !document.data().processed && !this.seenActionIds.has(document.id))
@@ -209,7 +224,7 @@ export class HostGameEngineService {
     const action: unknown = document.data();
     if (!isValidRoomAction(action)) {
       console.warn('Rejected malformed room action', document.id);
-      await updateDoc(document.ref, {processed: true});
+      await this.markActionProcessed(document);
       return;
     }
     switch (action.type) {
@@ -226,7 +241,14 @@ export class HostGameEngineService {
         this.handleYaniv(action);
         break;
     }
-    await updateDoc(document.ref, {processed: true});
+    await this.markActionProcessed(document);
+  }
+
+  private markActionProcessed(document: QueryDocumentSnapshot<RoomActionData>): Promise<void> {
+    return updateDoc(document.ref, {
+      processed: true,
+      expiresAt: expirationTimestamp(PROCESSED_ACTION_TTL_MS)
+    });
   }
 
   private queuePublish(): Promise<void> {
@@ -272,7 +294,14 @@ export class HostGameEngineService {
     if (playerCount < MIN_ONLINE_PLAYERS || playerCount > MAX_ONLINE_PLAYERS) {
       return;
     }
+    if (this.currentState.status !== GameStatus.pending) {
+      return;
+    }
+    this.gameStartedAt = Date.now();
     this.gameController.startGame(this.currentState);
+    if (this.currentState.status !== GameStatus.pending) {
+      this.analyticsService.trackGameStarted('online', this.currentState);
+    }
   }
 
   private handleMove(action: MoveActionData): void {
@@ -299,12 +328,31 @@ export class HostGameEngineService {
     this.gameController.yaniv(this.currentState);
   }
 
+  private onAuthoritativeStateUpdate(state: GameState): void {
+    this.currentState = state;
+    if (state.status === GameStatus.gameOver && !this.gameCompletionTracked) {
+      this.gameCompletionTracked = true;
+      this.analyticsService.trackGameCompleted('online', state, this.gameStartedAt);
+    }
+  }
+
+  private trackAbandonedGame(): void {
+    if (!this.currentState
+      || this.gameCompletionTracked
+      || [GameStatus.pending, GameStatus.gameOver].includes(this.currentState.status)
+    ) {
+      return;
+    }
+    this.analyticsService.trackGameAbandoned('online', this.currentState, this.gameStartedAt);
+  }
+
   private async publish(): Promise<void> {
     if (!this.currentState || !this.roomCode || !this.hostUid) {
       return;
     }
     const state = this.currentState;
     const sanitized = sanitizeGameState(state);
+    const expiresAt = expirationTimestamp(ROOM_TTL_MS);
     const publicRoom: PublicRoomState = {
       code: this.roomCode,
       hostId: this.hostUid,
@@ -312,9 +360,10 @@ export class HostGameEngineService {
       createdAt: this.roomCreatedAt,
       participants: this.participants,
       playerOrder: this.playerOrder,
-      game: sanitized
+      game: sanitized,
+      expiresAt
     };
-    const privateState: PrivateRoomState = {game: state, updatedAt: Date.now()};
+    const privateState: PrivateRoomState = {game: state, updatedAt: Date.now(), expiresAt};
 
     // The public room doc is written first (and awaited) so that firestore.rules can safely
     // get() its hostId while validating the private/hand writes below: within a single batch,
@@ -324,7 +373,7 @@ export class HostGameEngineService {
     const batch = writeBatch(this.firebaseService.firestore);
     batch.set(this.privateDocRef(this.roomCode), privateState);
     state.players.forEach(player => {
-      const handDoc: HandDoc = {cards: player.cards ?? [], updatedAt: Date.now()};
+      const handDoc: HandDoc = {cards: player.cards ?? [], updatedAt: Date.now(), expiresAt};
       batch.set(this.handDocRef(this.roomCode as string, player.id), handDoc);
     });
     await batch.commit();

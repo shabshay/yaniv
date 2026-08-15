@@ -15,16 +15,31 @@ service cloud.firestore {
       return isSignedIn() && roomHostId(code) == request.auth.uid;
     }
 
+    function hasValidExpiry(data, maximumTtl) {
+      return data.expiresAt is timestamp
+        && data.expiresAt > request.time
+        && data.expiresAt <= request.time + maximumTtl;
+    }
+
+    function hasRolloutExpiry(data, maximumTtl) {
+      return (
+          request.time < timestamp.date(2026, 8, 17)
+          && !data.keys().hasAll(['expiresAt'])
+        )
+        || hasValidExpiry(data, maximumTtl);
+    }
+
     function isValidActionBase(data) {
       return data.uid is string
         && data.uid == request.auth.uid
         && data.createdAt is int
         && data.createdAt > 0
-        && data.processed == false;
+        && data.processed == false
+        && hasRolloutExpiry(data, duration.value(65, 'm'));
     }
 
     function isValidJoinAction(data) {
-      return data.keys().hasOnly(['type', 'uid', 'name', 'img', 'createdAt', 'processed'])
+      return data.keys().hasOnly(['type', 'uid', 'name', 'img', 'createdAt', 'processed', 'expiresAt'])
         && data.type == 'join'
         && data.name is string
         && data.name.size() > 0
@@ -38,7 +53,7 @@ service cloud.firestore {
     }
 
     function isValidSimpleAction(data) {
-      return data.keys().hasOnly(['type', 'uid', 'createdAt', 'processed'])
+      return data.keys().hasOnly(['type', 'uid', 'createdAt', 'processed', 'expiresAt'])
         && data.type in ['start', 'yaniv'];
     }
 
@@ -55,7 +70,7 @@ service cloud.firestore {
     }
 
     function isValidMoveAction(data) {
-      return data.keys().hasOnly(['type', 'uid', 'cards', 'cardToTake', 'createdAt', 'processed'])
+      return data.keys().hasOnly(['type', 'uid', 'cards', 'cardToTake', 'createdAt', 'processed', 'expiresAt'])
         && data.type == 'move'
         && data.cards is list
         && isValidCardRefs(data.cards)
@@ -85,16 +100,21 @@ service cloud.firestore {
       // it, and a room's host cannot be changed after creation.
       allow get: if isSignedIn();
       allow list: if false;
-      allow create: if isSignedIn() && request.resource.data.hostId == request.auth.uid;
+      allow create: if isSignedIn()
+        && request.resource.data.hostId == request.auth.uid
+        && hasRolloutExpiry(request.resource.data, duration.value(65, 'm'));
       allow update: if isSignedIn()
         && resource.data.hostId == request.auth.uid
-        && request.resource.data.hostId == resource.data.hostId;
+        && request.resource.data.hostId == resource.data.hostId
+        && hasRolloutExpiry(request.resource.data, duration.value(65, 'm'));
       allow delete: if false;
 
       // Host-only complete GameState (deck, every hand, everything). Never readable by anyone
       // else - only the host's own browser needs it, to resume authoritative processing.
       match /private/{document=**} {
-        allow read, write: if isHost(code);
+        allow read: if isHost(code);
+        allow write: if isHost(code)
+          && hasRolloutExpiry(request.resource.data, duration.value(65, 'm'));
       }
 
       // One document per participant containing their real cards. Readable only by that
@@ -102,7 +122,8 @@ service cloud.firestore {
       // authoritative state change).
       match /hands/{uid} {
         allow read: if isSignedIn() && (request.auth.uid == uid || isHost(code));
-        allow write: if isHost(code);
+        allow write: if isHost(code)
+          && hasRolloutExpiry(request.resource.data, duration.value(65, 'm'));
       }
 
       // Every browser owns one short-lived heartbeat document. The host may list these records
@@ -112,7 +133,9 @@ service cloud.firestore {
         allow create, update: if isSignedIn()
           && request.auth.uid == uid
           && request.resource.data.uid == uid
-          && request.resource.data.lastSeenAt is int;
+          && request.resource.data.keys().hasOnly(['uid', 'lastSeenAt', 'expiresAt'])
+          && request.resource.data.lastSeenAt is int
+          && hasRolloutExpiry(request.resource.data, duration.value(10, 'm'));
         allow delete: if isSignedIn() && (request.auth.uid == uid || isHost(code));
       }
 
@@ -128,7 +151,11 @@ service cloud.firestore {
             || isValidSimpleAction(request.resource.data)
             || isValidMoveAction(request.resource.data)
           );
-        allow read, update: if isHost(code);
+        allow read: if isHost(code);
+        allow update: if isHost(code)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['processed', 'expiresAt'])
+          && request.resource.data.processed == true
+          && hasRolloutExpiry(request.resource.data, duration.value(10, 'm'));
         allow delete: if false;
       }
     }

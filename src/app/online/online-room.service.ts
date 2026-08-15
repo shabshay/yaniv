@@ -22,6 +22,8 @@ import {
   StartActionData,
   YanivActionData
 } from './online.model';
+import {expirationTimestamp, PRESENCE_TTL_MS, ROOM_TTL_MS} from './firestore-ttl';
+import {AnalyticsService} from '../analytics.service';
 
 const HOST_SESSION_STORAGE_KEY = 'yaniv.onlineHostSession';
 const JOIN_TIMEOUT_MS = 15000;
@@ -80,7 +82,11 @@ export class OnlineRoomService {
       })
     );
 
-  constructor(private firebaseService: FirebaseService, private hostEngine: HostGameEngineService) {
+  constructor(
+    private firebaseService: FirebaseService,
+    private hostEngine: HostGameEngineService,
+    private analyticsService: AnalyticsService
+  ) {
   }
 
   get uid(): string | undefined {
@@ -115,6 +121,7 @@ export class OnlineRoomService {
     await this.hostEngine.start(code, uid, hostPlayer, config);
     await this.startPresence(code, uid);
     this.saveHostSession(code, uid);
+    this.analyticsService.trackGameCreated(config);
     return code;
   }
 
@@ -160,6 +167,7 @@ export class OnlineRoomService {
     this.subscribeToHand(saved.code, uid);
     await this.hostEngine.resume(saved.code, uid);
     await this.startPresence(saved.code, uid);
+    this.analyticsService.trackGameResumed();
     return true;
   }
 
@@ -200,10 +208,12 @@ export class OnlineRoomService {
           name: playerName,
           img: playerImg,
           createdAt: Date.now(),
-          processed: false
+          processed: false,
+          expiresAt: expirationTimestamp(ROOM_TTL_MS)
         };
         await addDoc(collection(this.firestore, 'rooms', code, 'actions'), action);
         await this.waitUntilJoined(code, uid);
+        this.analyticsService.trackGameJoined();
       }
     } catch (error) {
       try {
@@ -216,7 +226,13 @@ export class OnlineRoomService {
   }
 
   requestStart(): Promise<void> {
-    const action: StartActionData = {type: 'start', uid: this.requireUid(), createdAt: Date.now(), processed: false};
+    const action: StartActionData = {
+      type: 'start',
+      uid: this.requireUid(),
+      createdAt: Date.now(),
+      processed: false,
+      expiresAt: expirationTimestamp(ROOM_TTL_MS)
+    };
     return this.submitAction(action);
   }
 
@@ -227,13 +243,20 @@ export class OnlineRoomService {
       cards: toCardRefs(cards),
       cardToTake: cardToTake ? toCardRef(cardToTake) : null,
       createdAt: Date.now(),
-      processed: false
+      processed: false,
+      expiresAt: expirationTimestamp(ROOM_TTL_MS)
     };
     return this.submitAction(action);
   }
 
   submitYaniv(): Promise<void> {
-    const action: YanivActionData = {type: 'yaniv', uid: this.requireUid(), createdAt: Date.now(), processed: false};
+    const action: YanivActionData = {
+      type: 'yaniv',
+      uid: this.requireUid(),
+      createdAt: Date.now(),
+      processed: false,
+      expiresAt: expirationTimestamp(ROOM_TTL_MS)
+    };
     return this.submitAction(action);
   }
 
@@ -340,7 +363,11 @@ export class OnlineRoomService {
   }
 
   private writePresence(code: string, uid: string): Promise<void> {
-    return setDoc(this.presenceDocRef(code, uid), {uid, lastSeenAt: Date.now()});
+    return setDoc(this.presenceDocRef(code, uid), {
+      uid,
+      lastSeenAt: Date.now(),
+      expiresAt: expirationTimestamp(PRESENCE_TTL_MS)
+    });
   }
 
   private presenceDocRef(code: string, uid: string) {

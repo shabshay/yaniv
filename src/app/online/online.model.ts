@@ -1,4 +1,5 @@
 import {Card, GameConfig, GameState, GameStatus, Move, Player} from '../game/api/game.model';
+import {Timestamp} from 'firebase/firestore';
 
 export const MIN_ONLINE_PLAYERS = 2;
 export const MAX_ONLINE_PLAYERS = 4;
@@ -61,24 +62,28 @@ export interface PublicRoomState {
   participants: Record<string, RoomParticipant>;
   playerOrder: string[];
   game: SanitizedGameState | null;
+  expiresAt: Timestamp;
 }
 
 /** Host-only document at rooms/{code}/private/state holding the full authoritative GameState. */
 export interface PrivateRoomState {
   game: GameState;
   updatedAt: number;
+  expiresAt: Timestamp;
 }
 
 /** Per-player document at rooms/{code}/hands/{uid}, readable only by that uid and the host. */
 export interface HandDoc {
   cards: Card[];
   updatedAt: number;
+  expiresAt: Timestamp;
 }
 
 /** Ephemeral per-player heartbeat at rooms/{code}/presence/{uid}. */
 export interface PresenceDoc {
   uid: string;
   lastSeenAt: number;
+  expiresAt: Timestamp;
 }
 
 /** Identifies a physical card without relying on object identity, safe to send over the wire. */
@@ -92,6 +97,7 @@ interface BaseActionData {
   uid: string;
   createdAt: number;
   processed: boolean;
+  expiresAt: Timestamp;
 }
 
 export interface JoinActionData extends BaseActionData {
@@ -123,6 +129,7 @@ export function isValidRoomAction(value: unknown): value is RoomActionData {
     || typeof value.createdAt !== 'number'
     || !Number.isSafeInteger(value.createdAt)
     || typeof value.processed !== 'boolean'
+    || !(value.expiresAt instanceof Timestamp)
   ) {
     return false;
   }

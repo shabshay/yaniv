@@ -1,4 +1,5 @@
 import {isValidRoomAction} from './online.model';
+import {Timestamp} from 'firebase/firestore';
 
 describe('online action validation', () => {
   it('accepts a well-formed move', () => {
@@ -7,6 +8,7 @@ describe('online action validation', () => {
       uid: 'player-1',
       createdAt: Date.now(),
       processed: false,
+      expiresAt: Timestamp.now(),
       cards: [{valueOrder: 7, symbolType: 'hearts', symbolColor: 'red'}],
       cardToTake: null
     })).toBe(true);
@@ -18,6 +20,7 @@ describe('online action validation', () => {
       uid: 'player-1',
       createdAt: Date.now(),
       processed: false,
+      expiresAt: Timestamp.now(),
       cards: [null],
       cardToTake: null
     })).toBe(false);
@@ -28,7 +31,8 @@ describe('online action validation', () => {
       type: 'overwrite-state',
       uid: 'player-1',
       createdAt: Date.now(),
-      processed: false
+      processed: false,
+      expiresAt: Timestamp.now()
     })).toBe(false);
   });
 });

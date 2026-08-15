@@ -10,6 +10,7 @@ import {Card, GameState, GameStatus, getThrownCards, Player} from './api/game.mo
 import {GameSounds} from './game.sounds';
 import {DialogPosition} from '@angular/material/dialog';
 import {OnlineRoomService} from '../online/online-room.service';
+import {AnalyticsService} from '../analytics.service';
 
 @Component({
     selector: 'app-game',
@@ -37,6 +38,9 @@ export class GameComponent extends SubscriberDirective implements OnInit {
   private timerInterval?: ReturnType<typeof setInterval>;
   private dealAnimationTimer?: ReturnType<typeof setTimeout>;
   private initialDealAnimated = false;
+  private gameStartedAt?: number;
+  private gameStartedTracked = false;
+  private gameCompletionTracked = false;
   private dialogPosition = {
     top: '300px'
   } as DialogPosition;
@@ -49,7 +53,8 @@ export class GameComponent extends SubscriberDirective implements OnInit {
     private cardsValidator: GameValidator,
     private gameEvents: GameEvents,
     private gameSounds: GameSounds,
-    private onlineRoomService: OnlineRoomService
+    private onlineRoomService: OnlineRoomService,
+    private analyticsService: AnalyticsService
   ) {
     super();
   }
@@ -166,6 +171,9 @@ export class GameComponent extends SubscriberDirective implements OnInit {
   }
 
   override ngOnDestroy(): void {
+    if (!this.isOnline && this.gameStartedTracked && !this.gameCompletionTracked) {
+      this.analyticsService.trackGameAbandoned('local', this.gameState, this.gameStartedAt);
+    }
     this.stopTimer();
     if (this.dealAnimationTimer) {
       clearTimeout(this.dealAnimationTimer);
@@ -194,6 +202,11 @@ export class GameComponent extends SubscriberDirective implements OnInit {
 
   private onGameStateUpdate(gameStatus: GameState): void {
     this.gameState = gameStatus;
+    if (!this.isOnline && !this.gameStartedTracked && this.gameState.status === GameStatus.newRound) {
+      this.gameStartedTracked = true;
+      this.gameStartedAt = Date.now();
+      this.analyticsService.trackGameStarted('local', this.gameState);
+    }
     this.showInitialDealAnimation();
     this.gameSounds.tikTokAudio.pause();
     this.gameSounds.tikTokAudio.currentTime = 0;
@@ -210,6 +223,10 @@ export class GameComponent extends SubscriberDirective implements OnInit {
         break;
 
       case GameStatus.gameOver:
+        if (!this.isOnline && !this.gameCompletionTracked) {
+          this.gameCompletionTracked = true;
+          this.analyticsService.trackGameCompleted('local', this.gameState, this.gameStartedAt);
+        }
         this.onGameOver();
         break;
 
