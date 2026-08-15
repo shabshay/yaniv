@@ -18,6 +18,9 @@ export class CardComponent implements OnInit {
   @Input()
   flipped = false;
 
+  @Input()
+  animateDeal = false;
+
   constructor() {
   }
 

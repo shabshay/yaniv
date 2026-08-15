@@ -23,6 +23,9 @@ export class PlayerComponent implements OnInit {
   @Input()
   opponentClass?: string;
 
+  @Input()
+  animateDeal = false;
+
   @Output()
   yanivClick: EventEmitter<any> = new EventEmitter<any>();
 
@@ -48,5 +51,9 @@ export class PlayerComponent implements OnInit {
       this.gameSounds.cardClickAudio.play().catch();
     }
     card.selected = !card.selected && isValidSelection;
+  }
+
+  trackCard(index: number): number {
+    return index;
   }
 }

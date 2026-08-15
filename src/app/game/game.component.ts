@@ -33,7 +33,10 @@ export class GameComponent extends SubscriberDirective implements OnInit {
   leaveOnline = new EventEmitter<void>();
 
   timeLeft?: number;
+  dealAnimationActive = false;
   private timerInterval?: ReturnType<typeof setInterval>;
+  private dealAnimationTimer?: ReturnType<typeof setTimeout>;
+  private initialDealAnimated = false;
   private dialogPosition = {
     top: '300px'
   } as DialogPosition;
@@ -158,6 +161,18 @@ export class GameComponent extends SubscriberDirective implements OnInit {
     }
   }
 
+  trackCard(index: number): number {
+    return index;
+  }
+
+  override ngOnDestroy(): void {
+    this.stopTimer();
+    if (this.dealAnimationTimer) {
+      clearTimeout(this.dealAnimationTimer);
+    }
+    super.ngOnDestroy();
+  }
+
   private initGameEvents(): void {
     const gameStateUpdate$ = this.isOnline
       ? this.onlineRoomService.gameState$.pipe(filter((state): state is GameState => !!state))
@@ -179,6 +194,7 @@ export class GameComponent extends SubscriberDirective implements OnInit {
 
   private onGameStateUpdate(gameStatus: GameState): void {
     this.gameState = gameStatus;
+    this.showInitialDealAnimation();
     this.gameSounds.tikTokAudio.pause();
     this.gameSounds.tikTokAudio.currentTime = 0;
     if (this.isCurrentPlayer(this.player)) {
@@ -204,6 +220,18 @@ export class GameComponent extends SubscriberDirective implements OnInit {
 
     this.player = this.gameState.players.find(player => player.id === this.player.id) as Player;
     this.startTimer();
+  }
+
+  private showInitialDealAnimation(): void {
+    if (this.initialDealAnimated || this.gameState.status !== GameStatus.newRound) {
+      return;
+    }
+    this.initialDealAnimated = true;
+    this.dealAnimationActive = true;
+    this.dealAnimationTimer = setTimeout(() => {
+      this.dealAnimationActive = false;
+      this.dealAnimationTimer = undefined;
+    }, 800);
   }
 
   private stopTimer(): void {

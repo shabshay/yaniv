@@ -21,7 +21,6 @@ $animation-speed: 200ms;
 }
 
 .card-container {
-  animation: spin 800ms;
   background-color: transparent;
   width: $card-width;
   height: $card-height;
@@ -29,6 +28,10 @@ $animation-speed: 200ms;
 
   &:not(card-active) {
     cursor: default;
+  }
+
+  .card-container.deal-animation {
+    animation: spin 800ms;
   }
 
   &.card-active {

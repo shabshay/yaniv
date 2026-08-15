@@ -24,6 +24,9 @@ export class OpponentComponent implements OnInit {
   @Input()
   cardsClass?: string;
 
+  @Input()
+  animateDeal = false;
+
   cardsScore = cardsScore;
 
   constructor() {
@@ -34,5 +37,9 @@ export class OpponentComponent implements OnInit {
 
   get sortedCard(): Card[] | undefined {
     return getSortedCards(this.player.cards);
+  }
+
+  trackCard(index: number): number {
+    return index;
   }
 }
