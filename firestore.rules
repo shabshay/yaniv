@@ -1,0 +1,59 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function roomHostId(code) {
+      return get(/databases/$(database)/documents/rooms/$(code)).data.hostId;
+    }
+
+    function isHost(code) {
+      return isSignedIn() && roomHostId(code) == request.auth.uid;
+    }
+
+    match /rooms/{code} {
+
+      // Public room summary: sanitized game state, participant/host identities and room status.
+      // Never contains the deck or any player's hand. Any signed-in user who knows the exact
+      // room code may read it (no `list`, so rooms cannot be enumerated); only the host may write
+      // it, and a room's host cannot be changed after creation.
+      allow get: if isSignedIn();
+      allow list: if false;
+      allow create: if isSignedIn() && request.resource.data.hostId == request.auth.uid;
+      allow update: if isSignedIn()
+        && resource.data.hostId == request.auth.uid
+        && request.resource.data.hostId == resource.data.hostId;
+      allow delete: if false;
+
+      // Host-only complete GameState (deck, every hand, everything). Never readable by anyone
+      // else - only the host's own browser needs it, to resume authoritative processing.
+      match /private/{document=**} {
+        allow read, write: if isHost(code);
+      }
+
+      // One document per participant containing their real cards. Readable only by that
+      // participant and the host; writable only by the host (who republishes hands after every
+      // authoritative state change).
+      match /hands/{uid} {
+        allow read: if isSignedIn() && (request.auth.uid == uid || isHost(code));
+        allow write: if isHost(code);
+      }
+
+      // Join/move/yaniv/start commands. Anyone signed in may submit a command as themselves
+      // (including a join request before they are a room participant), but only as an unprocessed
+      // action they cannot mark as already handled. Only the host reads and processes the queue,
+      // and only the host may flip `processed` once a command has been applied.
+      match /actions/{actionId} {
+        allow create: if isSignedIn()
+          && request.resource.data.uid == request.auth.uid
+          && request.resource.data.processed == false;
+        allow read, update: if isHost(code);
+        allow delete: if false;
+      }
+    }
+  }
+}

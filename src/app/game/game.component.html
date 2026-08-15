@@ -1,6 +1,9 @@
 <div class="game-container">
   <div class="top-container">
     <app-timer [timeLeft]="timeLeft"></app-timer>
+    <div class="leave-online-container" *ngIf="isOnline">
+      <div class="leave-online-btn" (click)="leaveOnline.emit()">Leave</div>
+    </div>
   </div>
   <div class="opponents-container">
     <div class="opponent-top-container">

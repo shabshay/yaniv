@@ -1,0 +1,81 @@
+<div class="online-container">
+  <ng-container [ngSwitch]="view">
+
+    <div class="online-panel" *ngSwitchCase="'home'">
+      <h2>Play Online</h2>
+      <div class="buttons-container">
+        <div class="btn" (click)="showCreateForm()">Create Online Game</div>
+        <div class="btn" (click)="showJoinForm()">Join Online Game</div>
+        <div class="btn secondary" (click)="leave()">Back</div>
+      </div>
+    </div>
+
+    <div class="online-panel" *ngSwitchCase="'create'">
+      <h2>Create Online Game</h2>
+      <form (ngSubmit)="createRoom()">
+        <label>Your name
+          <input type="text" name="hostName" [(ngModel)]="hostNameInput" maxlength="20" required autofocus>
+        </label>
+        <div class="error" *ngIf="errorMessage">{{ errorMessage }}</div>
+        <div class="button-container">
+          <button type="button" (click)="backToHome()">Cancel</button>
+          <button type="submit" [disabled]="!hostNameInput.trim()">Create</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="online-panel" *ngSwitchCase="'join'">
+      <h2>Join Online Game</h2>
+      <form (ngSubmit)="joinRoom()">
+        <label>Your name
+          <input type="text" name="joinName" [(ngModel)]="joinNameInput" maxlength="20" required autofocus>
+        </label>
+        <label>Room code
+          <input type="text" name="joinCode" [(ngModel)]="joinCodeInput" maxlength="6"
+                 class="room-code-input" required>
+        </label>
+        <div class="error" *ngIf="errorMessage">{{ errorMessage }}</div>
+        <div class="button-container">
+          <button type="button" (click)="backToHome()">Cancel</button>
+          <button type="submit" [disabled]="!joinNameInput.trim() || !joinCodeInput.trim()">Join</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="online-panel" *ngSwitchCase="'connecting'">
+      <h2>Connecting&hellip;</h2>
+      <div class="spinner"></div>
+    </div>
+
+    <div class="online-panel" *ngSwitchCase="'lobby'">
+      <ng-container *ngIf="room$ | async as room">
+        <h2>Room Lobby</h2>
+        <div class="room-code" (click)="copyRoomCode(room.code)" title="Click to copy">
+          {{ room.code }}
+        </div>
+        <p class="hint">Share this code with friends so they can join</p>
+
+        <ul class="participants-list">
+          <li *ngFor="let participant of participantsOf(room)">
+            {{ participant.name }}
+            <span *ngIf="participant.uid === room.hostId" class="host-tag">Host</span>
+          </li>
+        </ul>
+
+        <div class="error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+        <div class="button-container">
+          <button type="button" (click)="leave()">Leave</button>
+          <button type="button"
+                  *ngIf="isHost(room)"
+                  [disabled]="!canStart(room)"
+                  (click)="startGame(room)">
+            Start Game ({{ room.playerOrder.length }}/{{ maxPlayers }})
+          </button>
+          <p *ngIf="!isHost(room)">Waiting for the host to start the game&hellip;</p>
+        </div>
+      </ng-container>
+    </div>
+
+  </ng-container>
+</div>

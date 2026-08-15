@@ -1,0 +1,165 @@
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+:host {
+  display: block;
+}
+
+.online-container {
+  width: 600px;
+  height: 960px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ea8612 url('src/assets/menu-bg.png') no-repeat;
+  background-size: contain;
+}
+
+.online-panel {
+  width: 420px;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  color: #4c2c26;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  background: rgba(255, 250, 245, 0.92);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+h2 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.buttons-container, form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+form label {
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  font-size: 16px;
+  text-align: left;
+}
+
+form input {
+  margin-top: 6px;
+  padding: 8px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  background: #fffaf5;
+  font-size: 16px;
+}
+
+.room-code-input {
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  text-align: center;
+}
+
+.room-code {
+  font-size: 48px;
+  font-weight: bold;
+  letter-spacing: 8px;
+  cursor: pointer;
+  padding: 8px 16px;
+  border: 2px dashed #8b3a4c;
+  border-radius: 12px;
+}
+
+.hint, .error {
+  margin: 0;
+  font-size: 14px;
+}
+
+.hint {
+  opacity: 0.8;
+}
+
+.error {
+  color: #b04545;
+  font-weight: bold;
+}
+
+.participants-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.participants-list li {
+  padding: 8px 12px;
+  background: #fffaf5;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.host-tag {
+  font-size: 12px;
+  color: #8b3a4c;
+  font-weight: bold;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.btn, button {
+  padding: 10px 20px;
+  border-radius: 10px;
+  background-color: #8b3a4c;
+  color: white;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+}
+
+.btn {
+  font-size: 1.3rem;
+  padding: 16px;
+}
+
+.btn.secondary {
+  background-color: #b04545;
+}
+
+button:hover, .btn:hover {
+  background-color: #c8647b;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 6px solid #fffaf5;
+  border-top-color: #8b3a4c;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}

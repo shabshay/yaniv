@@ -1,6 +1,7 @@
 import {Component} from '@angular/core';
 import {GameController} from './game/api/game.controller';
 import {GameConfig, GameState, Player} from './game/api/game.model';
+import {OnlineRoomService} from './online/online-room.service';
 
 @Component({
     selector: 'app-root',
@@ -13,8 +14,11 @@ export class AppComponent {
   gameState: GameState | undefined;
   player: Player;
   settingsVisible = false;
+  onlineMenuVisible = false;
 
-  constructor(private gameService: GameController) {
+  readonly activeOnlineGame$ = this.onlineRoomService.activeGame$;
+
+  constructor(private gameService: GameController, public onlineRoomService: OnlineRoomService) {
     this.player = {
       name: 'Shay',
       id: '2fb5s',
@@ -34,6 +38,19 @@ export class AppComponent {
 
   startGame(): void {
     this.gameState = this.gameService.newGame(this.gameSettings, this.player);
+  }
+
+  showOnlineMenu(): void {
+    this.onlineMenuVisible = true;
+  }
+
+  handleOnlineMenuExit(): void {
+    this.onlineMenuVisible = false;
+  }
+
+  async leaveOnlineGame(): Promise<void> {
+    await this.onlineRoomService.leaveRoom();
+    this.onlineMenuVisible = false;
   }
 
   updateSettings(config: GameConfig): void {

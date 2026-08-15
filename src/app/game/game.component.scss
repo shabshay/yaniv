@@ -28,6 +28,28 @@
 .top-container {
   height: 50px;
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.leave-online-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.leave-online-btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  background-color: rgba(139, 58, 76, 0.85);
+  color: white;
+  font-weight: bold;
+  font-size: 0.9rem;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #c8647b;
+  }
 }
 
 .pile-deck-container {

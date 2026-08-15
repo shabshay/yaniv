@@ -8,6 +8,8 @@ import {GameReducer} from './game.reducer';
 export class GameController {
 
   private autoMoveTimer?: ReturnType<typeof setTimeout>;
+  private computerMoveTimer?: ReturnType<typeof setTimeout>;
+  private newRoundTimer?: ReturnType<typeof setTimeout>;
 
   constructor(
     private gameValidator: GameValidator,
@@ -17,6 +19,7 @@ export class GameController {
   }
 
   newGame(config: GameConfig, player: Player): GameState {
+    this.cancelPendingActions();
     const gameState = this.gameReducer.newGame(config, player);
     this.updateGameState(gameState);
     return gameState;
@@ -45,7 +48,7 @@ export class GameController {
     ) {
       return;
     }
-    this.clearAutoMoveTimer();
+    this.cancelPendingActions();
     const thrownCardsAsStraight = this.gameValidator.asStraightCards(thrownCards);
     const cardsForMove = thrownCardsAsStraight.length ? thrownCardsAsStraight : thrownCards;
     const newState = this.gameReducer.makeMove(gameState, cardsForMove, cardToTake);
@@ -58,17 +61,35 @@ export class GameController {
     ) {
       return;
     }
-    this.clearAutoMoveTimer();
+    this.cancelPendingActions();
     const newState = this.gameReducer.yaniv(gameState);
     this.updateGameState(newState);
     this.startNewRound(newState);
   }
 
-  private clearAutoMoveTimer(): void {
+  cancelPendingActions(): void {
     if (this.autoMoveTimer) {
       clearTimeout(this.autoMoveTimer);
       this.autoMoveTimer = undefined;
     }
+    if (this.computerMoveTimer) {
+      clearTimeout(this.computerMoveTimer);
+      this.computerMoveTimer = undefined;
+    }
+    if (this.newRoundTimer) {
+      clearTimeout(this.newRoundTimer);
+      this.newRoundTimer = undefined;
+    }
+  }
+
+  resumeGame(gameState: GameState): void {
+    this.cancelPendingActions();
+    if (gameState.status === GameStatus.yaniv) {
+      this.startNewRound(gameState);
+      return;
+    }
+    this.initComputerMove(gameState);
+    this.initAutoMoveTimer(gameState);
   }
 
   private updateGameState(gameState: GameState): void {
@@ -89,7 +110,8 @@ export class GameController {
   }
 
   private startNewRound(gameState: GameState): void {
-    setTimeout(() => {
+    this.newRoundTimer = setTimeout(() => {
+      this.newRoundTimer = undefined;
       if (gameState.status !== GameStatus.gameOver) {
         const newState = this.gameReducer.startNewRound(gameState, gameState.roundsResults[gameState.roundsResults.length - 1].winner);
         this.updateGameState(newState);
@@ -101,7 +123,8 @@ export class GameController {
     if (!gameState.currentPlayer?.isComputerPlayer || [GameStatus.yaniv, GameStatus.gameOver].includes(gameState.status)) {
       return;
     }
-    setTimeout(() => {
+    this.computerMoveTimer = setTimeout(() => {
+      this.computerMoveTimer = undefined;
       this.makeAutoMove(gameState);
     }, Math.random() * 2000 + 1000);
   }

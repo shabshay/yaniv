@@ -1,14 +1,15 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {DialogComponent, DialogData} from '../dialog/dialog.component';
 import {GameValidator} from './api/game.validator';
 import {GameEvents} from './api/game.events';
-import {takeUntil} from 'rxjs/operators';
+import {filter, takeUntil} from 'rxjs/operators';
 import {SubscriberDirective} from '../../Subscriber';
 import {GameController} from './api/game.controller';
 import {Card, GameState, GameStatus, getThrownCards, Player} from './api/game.model';
 import {GameSounds} from './game.sounds';
-import { DialogPosition } from '@angular/material/dialog';
+import {DialogPosition} from '@angular/material/dialog';
+import {OnlineRoomService} from '../online/online-room.service';
 
 @Component({
     selector: 'app-game',
@@ -24,6 +25,13 @@ export class GameComponent extends SubscriberDirective implements OnInit {
   @Input()
   player!: Player;
 
+  /** When true, moves/yaniv calls go through OnlineRoomService and no local AI players are added. */
+  @Input()
+  isOnline = false;
+
+  @Output()
+  leaveOnline = new EventEmitter<void>();
+
   timeLeft?: number;
   private timerInterval?: ReturnType<typeof setInterval>;
   private dialogPosition = {
@@ -37,13 +45,18 @@ export class GameComponent extends SubscriberDirective implements OnInit {
     private dialog: MatDialog,
     private cardsValidator: GameValidator,
     private gameEvents: GameEvents,
-    private gameSounds: GameSounds
+    private gameSounds: GameSounds,
+    private onlineRoomService: OnlineRoomService
   ) {
     super();
   }
 
   ngOnInit(): void {
     this.initGameEvents();
+
+    if (this.isOnline) {
+      return;
+    }
 
     setTimeout(() => {
       const player = {
@@ -128,17 +141,29 @@ export class GameComponent extends SubscriberDirective implements OnInit {
     if (this.gameState.currentPlayer?.id === this.player.id) {
       const selectedCards = this.player.cards?.filter(c => c.selected);
       if (selectedCards?.length && this.cardsValidator.selectedCardsAreValid(selectedCards)) {
-        this.gameService.makeMove(this.gameState, selectedCards, cardToTake);
+        if (this.isOnline) {
+          this.onlineRoomService.submitMove(selectedCards, cardToTake).catch(error => console.error('Failed to submit move', error));
+        } else {
+          this.gameService.makeMove(this.gameState, selectedCards, cardToTake);
+        }
       }
     }
   }
 
   onPlayerCallYaniv(): void {
-    this.gameService.yaniv(this.gameState);
+    if (this.isOnline) {
+      this.onlineRoomService.submitYaniv().catch(error => console.error('Failed to submit yaniv', error));
+    } else {
+      this.gameService.yaniv(this.gameState);
+    }
   }
 
   private initGameEvents(): void {
-    this.gameEvents.gameStateUpdate
+    const gameStateUpdate$ = this.isOnline
+      ? this.onlineRoomService.gameState$.pipe(filter((state): state is GameState => !!state))
+      : this.gameEvents.gameStateUpdate;
+
+    gameStateUpdate$
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((gameStatus: GameState) => {
         this.onGameStateUpdate(gameStatus);
