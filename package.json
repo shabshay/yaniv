@@ -9,9 +9,9 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "build:gh": "ng build --configuration production",
-    "predeploy": "cp dist/yaniv/browser/index.html dist/yaniv/browser/404.html || true",
-    "deploy:gh": "npx angular-cli-ghpages --dir=dist/yaniv/browser",
-    "deploy": "npm run build:gh && npm run predeploy && npm run deploy:gh"
+    "prepare:gh-pages": "cp dist/yaniv/browser/index.html dist/yaniv/browser/404.html",
+    "deploy:gh": "npx angular-cli-ghpages --dir=dist/yaniv/browser --name=\"github-actions[bot]\" --email=\"41898282+github-actions[bot]@users.noreply.github.com\" --no-silent",
+    "deploy": "npm run build:gh && npm run prepare:gh-pages && npm run deploy:gh"
   },
   "private": true,
   "dependencies": {
