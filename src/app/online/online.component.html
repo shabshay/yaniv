@@ -50,10 +50,13 @@
     <div class="online-panel" *ngSwitchCase="'lobby'">
       <ng-container *ngIf="room$ | async as room">
         <h2>Room Lobby</h2>
-        <div class="room-code" (click)="copyRoomCode(room.code)" title="Click to copy">
+        <div class="room-code">
           {{ room.code }}
         </div>
         <p class="hint">Share this code with friends so they can join</p>
+        <button type="button" (click)="copyRoomCode(room.code)">
+          {{ codeCopied ? 'Copied!' : 'Copy Code' }}
+        </button>
 
         <ul class="participants-list">
           <li *ngFor="let participant of participantsOf(room)">
