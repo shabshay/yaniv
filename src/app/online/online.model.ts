@@ -2,6 +2,7 @@ import {Card, GameConfig, GameState, GameStatus, Move, Player} from '../game/api
 
 export const MIN_ONLINE_PLAYERS = 2;
 export const MAX_ONLINE_PLAYERS = 4;
+export const MAX_ONLINE_CARDS_PER_PLAYER = 10;
 
 export enum RoomStatus {
   lobby = 'lobby',
@@ -115,11 +116,51 @@ export interface YanivActionData extends BaseActionData {
 
 export type RoomActionData = JoinActionData | StartActionData | MoveActionData | YanivActionData;
 
+export function isValidRoomAction(value: unknown): value is RoomActionData {
+  if (!isRecord(value)
+    || typeof value.uid !== 'string'
+    || !value.uid
+    || typeof value.createdAt !== 'number'
+    || !Number.isSafeInteger(value.createdAt)
+    || typeof value.processed !== 'boolean'
+  ) {
+    return false;
+  }
+  switch (value.type) {
+    case 'join':
+      return typeof value.name === 'string' && typeof value.img === 'string';
+    case 'start':
+    case 'yaniv':
+      return true;
+    case 'move':
+      return Array.isArray(value.cards)
+        && value.cards.length > 0
+        && value.cards.length <= MAX_ONLINE_CARDS_PER_PLAYER
+        && value.cards.every(isCardRef)
+        && (value.cardToTake === null || isCardRef(value.cardToTake));
+    default:
+      return false;
+  }
+}
+
+function isCardRef(value: unknown): value is CardRef {
+  return isRecord(value)
+    && typeof value.valueOrder === 'number'
+    && Number.isInteger(value.valueOrder)
+    && typeof value.symbolType === 'string'
+    && typeof value.symbolColor === 'string';
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
 export type OnlineRoomErrorReason =
   | 'not-found'
   | 'room-full'
   | 'already-started'
   | 'invalid-code'
+  | 'invalid-config'
   | 'invalid-name'
   | 'timeout'
   | 'not-signed-in';

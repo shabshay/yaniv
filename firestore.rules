@@ -15,6 +15,68 @@ service cloud.firestore {
       return isSignedIn() && roomHostId(code) == request.auth.uid;
     }
 
+    function isValidActionBase(data) {
+      return data.uid is string
+        && data.uid == request.auth.uid
+        && data.createdAt is int
+        && data.createdAt > 0
+        && data.processed == false;
+    }
+
+    function isValidJoinAction(data) {
+      return data.keys().hasOnly(['type', 'uid', 'name', 'img', 'createdAt', 'processed'])
+        && data.type == 'join'
+        && data.name is string
+        && data.name.size() > 0
+        && data.name.size() <= 20
+        && data.img in [
+          'assets/avatar1.png',
+          'assets/avatar2.png',
+          'assets/avatar3.png',
+          'assets/avatar4.png'
+        ];
+    }
+
+    function isValidSimpleAction(data) {
+      return data.keys().hasOnly(['type', 'uid', 'createdAt', 'processed'])
+        && data.type in ['start', 'yaniv'];
+    }
+
+    function isValidCardRef(card) {
+      return card is map
+        && card.keys().hasOnly(['valueOrder', 'symbolType', 'symbolColor'])
+        && card.valueOrder is int
+        && card.valueOrder >= 0
+        && card.valueOrder <= 13
+        && card.symbolType is string
+        && card.symbolType in ['clubs', 'diamonds', 'hearts', 'spades', 'joker']
+        && card.symbolColor is string
+        && card.symbolColor in ['black', 'red', ''];
+    }
+
+    function isValidMoveAction(data) {
+      return data.keys().hasOnly(['type', 'uid', 'cards', 'cardToTake', 'createdAt', 'processed'])
+        && data.type == 'move'
+        && data.cards is list
+        && isValidCardRefs(data.cards)
+        && (data.cardToTake == null || isValidCardRef(data.cardToTake));
+    }
+
+    function isValidCardRefs(cards) {
+      return cards.size() > 0
+        && cards.size() <= 10
+        && isValidCardRef(cards[0])
+        && (cards.size() < 2 || isValidCardRef(cards[1]))
+        && (cards.size() < 3 || isValidCardRef(cards[2]))
+        && (cards.size() < 4 || isValidCardRef(cards[3]))
+        && (cards.size() < 5 || isValidCardRef(cards[4]))
+        && (cards.size() < 6 || isValidCardRef(cards[5]))
+        && (cards.size() < 7 || isValidCardRef(cards[6]))
+        && (cards.size() < 8 || isValidCardRef(cards[7]))
+        && (cards.size() < 9 || isValidCardRef(cards[8]))
+        && (cards.size() < 10 || isValidCardRef(cards[9]));
+    }
+
     match /rooms/{code} {
 
       // Public room summary: sanitized game state, participant/host identities and room status.
@@ -60,8 +122,12 @@ service cloud.firestore {
       // and only the host may flip `processed` once a command has been applied.
       match /actions/{actionId} {
         allow create: if isSignedIn()
-          && request.resource.data.uid == request.auth.uid
-          && request.resource.data.processed == false;
+          && isValidActionBase(request.resource.data)
+          && (
+            isValidJoinAction(request.resource.data)
+            || isValidSimpleAction(request.resource.data)
+            || isValidMoveAction(request.resource.data)
+          );
         allow read, update: if isHost(code);
         allow delete: if false;
       }

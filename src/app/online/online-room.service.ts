@@ -9,8 +9,10 @@ import {mergeLocalHand} from './game-state-sanitizer';
 import {toCardRef, toCardRefs} from './card-refs';
 import {generateRoomCode, isValidRoomCode, normalizeRoomCode} from './room-code';
 import {handConverter, presenceConverter, roomConverter} from './firestore-converters';
+import {isAllowedPlayerAvatar, normalizePlayerName} from './player-profile';
 import {
   JoinActionData,
+  MAX_ONLINE_CARDS_PER_PLAYER,
   MAX_ONLINE_PLAYERS,
   MoveActionData,
   OnlineRoomError,
@@ -91,10 +93,20 @@ export class OnlineRoomService {
 
   async createRoom(hostName: string, hostImg: string, config: GameConfig): Promise<string> {
     const name = requireName(hostName);
+    const img = requireAvatar(hostImg);
+    if (!Number.isInteger(config.cardsPerPlayer)
+      || config.cardsPerPlayer < 1
+      || config.cardsPerPlayer > MAX_ONLINE_CARDS_PER_PLAYER
+    ) {
+      throw new OnlineRoomError(
+        `Online games support 1-${MAX_ONLINE_CARDS_PER_PLAYER} cards per player`,
+        'invalid-config'
+      );
+    }
     const uid = await this.firebaseService.ensureSignedIn();
     await this.closeStoredHostRoom(uid);
     const code = await this.reserveRoomCode();
-    const hostPlayer: Player = {id: uid, name, img: hostImg, isOut: false, totalScore: 0, isComputerPlayer: false};
+    const hostPlayer: Player = {id: uid, name, img, isOut: false, totalScore: 0, isComputerPlayer: false};
 
     this.localPlayer = hostPlayer;
     this.roomCode = code;
@@ -157,6 +169,7 @@ export class OnlineRoomService {
       throw new OnlineRoomError('Please enter a valid 6-character room code', 'invalid-code');
     }
     const playerName = requireName(name);
+    const playerImg = requireAvatar(img);
     const uid = await this.firebaseService.ensureSignedIn();
     await this.closeStoredHostRoom(uid);
     const roomRef = doc(this.firestore, 'rooms', code).withConverter(roomConverter);
@@ -173,7 +186,7 @@ export class OnlineRoomService {
       throw new OnlineRoomError('This room is already full', 'room-full');
     }
 
-    this.localPlayer = {id: uid, name: playerName, img, isOut: false, totalScore: 0, isComputerPlayer: false};
+    this.localPlayer = {id: uid, name: playerName, img: playerImg, isOut: false, totalScore: 0, isComputerPlayer: false};
     this.roomCode = code;
     this.subscribeToRoom(code);
     this.subscribeToHand(code, uid);
@@ -181,7 +194,14 @@ export class OnlineRoomService {
 
     try {
       if (!alreadyJoined) {
-        const action: JoinActionData = {type: 'join', uid, name: playerName, img, createdAt: Date.now(), processed: false};
+        const action: JoinActionData = {
+          type: 'join',
+          uid,
+          name: playerName,
+          img: playerImg,
+          createdAt: Date.now(),
+          processed: false
+        };
         await addDoc(collection(this.firestore, 'rooms', code, 'actions'), action);
         await this.waitUntilJoined(code, uid);
       }
@@ -380,9 +400,16 @@ export class OnlineRoomService {
 }
 
 function requireName(name: string): string {
-  const trimmed = name.trim();
-  if (!trimmed) {
+  const normalized = normalizePlayerName(name);
+  if (!normalized) {
     throw new OnlineRoomError('Please enter a name', 'invalid-name');
   }
-  return trimmed;
+  return normalized;
+}
+
+function requireAvatar(img: string): string {
+  if (!isAllowedPlayerAvatar(img)) {
+    throw new Error('Invalid player avatar');
+  }
+  return img;
 }

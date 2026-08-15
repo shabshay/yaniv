@@ -7,10 +7,9 @@ import {SubscriberDirective} from '../../Subscriber';
 import {GameConfig} from '../game/api/game.model';
 import {OnlineRoomService} from './online-room.service';
 import {MAX_ONLINE_PLAYERS, MIN_ONLINE_PLAYERS, OnlineRoomError, PublicRoomState, RoomParticipant, RoomStatus} from './online.model';
+import {PLAYER_AVATARS} from './player-profile';
 
 type OnlineView = 'home' | 'create' | 'join' | 'connecting' | 'lobby';
-
-const AVATARS = ['assets/avatar1.png', 'assets/avatar2.png', 'assets/avatar3.png', 'assets/avatar4.png'];
 
 /**
  * Handles the "create/join online game" flow and realtime lobby. Once the host starts the game,
@@ -196,7 +195,16 @@ export class OnlineComponent extends SubscriberDirective implements OnInit {
 }
 
 function randomAvatar(): string {
-  return AVATARS[Math.floor(Math.random() * AVATARS.length)];
+  return PLAYER_AVATARS[cryptoRandomIndex(PLAYER_AVATARS.length)];
+}
+
+function cryptoRandomIndex(length: number): number {
+  const max = Math.floor(0x100000000 / length) * length;
+  const randomValue = new Uint32Array(1);
+  do {
+    crypto.getRandomValues(randomValue);
+  } while (randomValue[0] >= max);
+  return randomValue[0] % length;
 }
 
 function describeError(error: unknown): string {

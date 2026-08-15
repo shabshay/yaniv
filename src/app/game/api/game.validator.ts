@@ -9,7 +9,7 @@ export class GameValidator {
     if (cardToTake) {
       const cardsFromPile = getThrownCards(gameState);
       const selectedCardIsFirstOrLast = cardsFromPile[0] === cardToTake || cardsFromPile[cardsFromPile.length - 1] === cardToTake;
-      if (cardsFromPile.length && !this.cardsHasSameValue(cardsFromPile) && selectedCardIsFirstOrLast) {
+      if (cardsFromPile.length && !this.cardsHasSameValue(cardsFromPile) && !selectedCardIsFirstOrLast) {
         return false;
       }
     }
