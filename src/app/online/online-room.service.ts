@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {addDoc, collection, doc, getDoc, onSnapshot, Unsubscribe} from 'firebase/firestore';
+import {addDoc, collection, deleteDoc, doc, getDoc, onSnapshot, setDoc, Unsubscribe, updateDoc} from 'firebase/firestore';
 import {combineLatest, Observable, ReplaySubject, Subscription} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {Card, GameConfig, GameState, Player} from '../game/api/game.model';
@@ -8,7 +8,7 @@ import {HostGameEngineService} from './host-game-engine.service';
 import {mergeLocalHand} from './game-state-sanitizer';
 import {toCardRef, toCardRefs} from './card-refs';
 import {generateRoomCode, isValidRoomCode, normalizeRoomCode} from './room-code';
-import {handConverter, roomConverter} from './firestore-converters';
+import {handConverter, presenceConverter, roomConverter} from './firestore-converters';
 import {
   JoinActionData,
   MAX_ONLINE_PLAYERS,
@@ -24,6 +24,7 @@ import {
 const HOST_SESSION_STORAGE_KEY = 'yaniv.onlineHostSession';
 const JOIN_TIMEOUT_MS = 15000;
 const MAX_ROOM_CODE_ATTEMPTS = 10;
+const PRESENCE_HEARTBEAT_MS = 15000;
 
 interface StoredHostSession {
   code: string;
@@ -45,6 +46,9 @@ export class OnlineRoomService {
   private roomCode?: string;
   private roomUnsubscribe?: Unsubscribe;
   private handUnsubscribe?: Unsubscribe;
+  private presenceHeartbeat?: ReturnType<typeof setInterval>;
+  private presenceCode?: string;
+  private presenceUid?: string;
 
   private readonly roomSubject = new ReplaySubject<PublicRoomState | null>(1);
   private readonly handSubject = new ReplaySubject<Card[] | undefined>(1);
@@ -88,6 +92,7 @@ export class OnlineRoomService {
   async createRoom(hostName: string, hostImg: string, config: GameConfig): Promise<string> {
     const name = requireName(hostName);
     const uid = await this.firebaseService.ensureSignedIn();
+    await this.closeStoredHostRoom(uid);
     const code = await this.reserveRoomCode();
     const hostPlayer: Player = {id: uid, name, img: hostImg, isOut: false, totalScore: 0, isComputerPlayer: false};
 
@@ -96,11 +101,31 @@ export class OnlineRoomService {
     this.subscribeToRoom(code);
     this.subscribeToHand(code, uid);
     await this.hostEngine.start(code, uid, hostPlayer, config);
+    await this.startPresence(code, uid);
     this.saveHostSession(code, uid);
     return code;
   }
 
-  /** Attempts to resume hosting a room this browser created before a reload. Best-effort only. */
+  async hasResumableHostSession(): Promise<boolean> {
+    const saved = this.loadHostSession();
+    if (!saved) {
+      return false;
+    }
+    const uid = await this.firebaseService.ensureSignedIn();
+    if (uid !== saved.uid) {
+      this.clearHostSession();
+      return false;
+    }
+    const snap = await getDoc(doc(this.firestore, 'rooms', saved.code).withConverter(roomConverter));
+    const room = snap.exists() ? snap.data() : undefined;
+    const resumable = !!room && room.hostId === uid && room.status !== RoomStatus.closed;
+    if (!resumable) {
+      this.clearHostSession();
+    }
+    return resumable;
+  }
+
+  /** Resumes only after the user explicitly chooses to restore their last hosted room. */
   async tryResumeHostSession(): Promise<boolean> {
     const saved = this.loadHostSession();
     if (!saved) {
@@ -122,6 +147,7 @@ export class OnlineRoomService {
     this.subscribeToRoom(saved.code);
     this.subscribeToHand(saved.code, uid);
     await this.hostEngine.resume(saved.code, uid);
+    await this.startPresence(saved.code, uid);
     return true;
   }
 
@@ -132,6 +158,7 @@ export class OnlineRoomService {
     }
     const playerName = requireName(name);
     const uid = await this.firebaseService.ensureSignedIn();
+    await this.closeStoredHostRoom(uid);
     const roomRef = doc(this.firestore, 'rooms', code).withConverter(roomConverter);
     const snap = await getDoc(roomRef);
     if (!snap.exists()) {
@@ -150,11 +177,21 @@ export class OnlineRoomService {
     this.roomCode = code;
     this.subscribeToRoom(code);
     this.subscribeToHand(code, uid);
+    await this.startPresence(code, uid);
 
-    if (!alreadyJoined) {
-      const action: JoinActionData = {type: 'join', uid, name: playerName, img, createdAt: Date.now(), processed: false};
-      await addDoc(collection(this.firestore, 'rooms', code, 'actions'), action);
-      await this.waitUntilJoined(code, uid);
+    try {
+      if (!alreadyJoined) {
+        const action: JoinActionData = {type: 'join', uid, name: playerName, img, createdAt: Date.now(), processed: false};
+        await addDoc(collection(this.firestore, 'rooms', code, 'actions'), action);
+        await this.waitUntilJoined(code, uid);
+      }
+    } catch (error) {
+      try {
+        await this.stopPresence(true);
+      } catch (cleanupError) {
+        console.error('Failed to clean up presence after join failure', cleanupError);
+      }
+      throw error;
     }
   }
 
@@ -182,7 +219,16 @@ export class OnlineRoomService {
 
   async leaveRoom(): Promise<void> {
     try {
+      let presenceError: unknown;
+      try {
+        await this.stopPresence(true);
+      } catch (error) {
+        presenceError = error;
+      }
       await this.hostEngine.close();
+      if (presenceError) {
+        throw presenceError;
+      }
     } finally {
       this.roomUnsubscribe?.();
       this.handUnsubscribe?.();
@@ -247,6 +293,55 @@ export class OnlineRoomService {
     this.handUnsubscribe = onSnapshot(doc(this.firestore, 'rooms', code, 'hands', uid).withConverter(handConverter), snap => {
       this.handSubject.next(snap.exists() ? snap.data().cards : undefined);
     }, error => console.error('Hand listener failed', error));
+  }
+
+  private async startPresence(code: string, uid: string): Promise<void> {
+    await this.stopPresence(false);
+    this.presenceCode = code;
+    this.presenceUid = uid;
+    await this.writePresence(code, uid);
+    this.presenceHeartbeat = setInterval(() => {
+      this.writePresence(code, uid).catch(error => console.error('Presence heartbeat failed', error));
+    }, PRESENCE_HEARTBEAT_MS);
+  }
+
+  private async stopPresence(deleteRemote: boolean): Promise<void> {
+    if (this.presenceHeartbeat) {
+      clearInterval(this.presenceHeartbeat);
+      this.presenceHeartbeat = undefined;
+    }
+    const code = this.presenceCode;
+    const uid = this.presenceUid;
+    this.presenceCode = undefined;
+    this.presenceUid = undefined;
+    if (deleteRemote && code && uid) {
+      await deleteDoc(this.presenceDocRef(code, uid));
+    }
+  }
+
+  private writePresence(code: string, uid: string): Promise<void> {
+    return setDoc(this.presenceDocRef(code, uid), {uid, lastSeenAt: Date.now()});
+  }
+
+  private presenceDocRef(code: string, uid: string) {
+    return doc(this.firestore, 'rooms', code, 'presence', uid).withConverter(presenceConverter);
+  }
+
+  private async closeStoredHostRoom(uid: string): Promise<void> {
+    const saved = this.loadHostSession();
+    if (!saved) {
+      return;
+    }
+    if (saved.uid !== uid) {
+      this.clearHostSession();
+      return;
+    }
+    const roomRef = doc(this.firestore, 'rooms', saved.code).withConverter(roomConverter);
+    const snap = await getDoc(roomRef);
+    if (snap.exists() && snap.data().hostId === uid && snap.data().status !== RoomStatus.closed) {
+      await updateDoc(roomRef, {status: RoomStatus.closed});
+    }
+    this.clearHostSession();
   }
 
   private requireUid(): string {

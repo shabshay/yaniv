@@ -74,6 +74,12 @@ export interface HandDoc {
   updatedAt: number;
 }
 
+/** Ephemeral per-player heartbeat at rooms/{code}/presence/{uid}. */
+export interface PresenceDoc {
+  uid: string;
+  lastSeenAt: number;
+}
+
 /** Identifies a physical card without relying on object identity, safe to send over the wire. */
 export interface CardRef {
   valueOrder: number;

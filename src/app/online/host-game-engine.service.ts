@@ -11,6 +11,7 @@ import {
   orderBy,
   query,
   QueryDocumentSnapshot,
+  QuerySnapshot,
   setDoc,
   Unsubscribe,
   updateDoc,
@@ -22,13 +23,14 @@ import {GameConfig, GameState, GameStatus, getThrownCards, Player} from '../game
 import {FirebaseService} from './firebase.service';
 import {sanitizeGameState} from './game-state-sanitizer';
 import {resolveCardRef, resolveCardRefs} from './card-refs';
-import {actionConverter, handConverter, privateStateConverter, roomConverter} from './firestore-converters';
+import {actionConverter, handConverter, presenceConverter, privateStateConverter, roomConverter} from './firestore-converters';
 import {
   HandDoc,
   JoinActionData,
   MAX_ONLINE_PLAYERS,
   MIN_ONLINE_PLAYERS,
   MoveActionData,
+  PresenceDoc,
   PrivateRoomState,
   PublicRoomState,
   RoomActionData,
@@ -37,6 +39,8 @@ import {
   StartActionData,
   YanivActionData
 } from './online.model';
+
+const PRESENCE_TIMEOUT_MS = 90000;
 
 /**
  * Runs only in the host's browser. Listens for join/move/yaniv/start commands submitted by every
@@ -60,6 +64,7 @@ export class HostGameEngineService {
 
   private gameEventsSubscription?: Subscription;
   private actionsUnsubscribe?: Unsubscribe;
+  private presenceUnsubscribe?: Unsubscribe;
 
   constructor(
     private firebaseService: FirebaseService,
@@ -89,6 +94,7 @@ export class HostGameEngineService {
     this.currentState = this.gameController.newGame(config, hostPlayer);
     await publishAfterFirstEvent;
     this.subscribeToActions();
+    this.subscribeToPresence();
   }
 
   /** Reattaches to a room this browser was hosting, restoring state from the private document. */
@@ -117,6 +123,7 @@ export class HostGameEngineService {
     });
 
     this.subscribeToActions();
+    this.subscribeToPresence();
     this.gameController.resumeGame(this.currentState);
   }
 
@@ -139,6 +146,8 @@ export class HostGameEngineService {
     this.gameEventsSubscription = undefined;
     this.actionsUnsubscribe?.();
     this.actionsUnsubscribe = undefined;
+    this.presenceUnsubscribe?.();
+    this.presenceUnsubscribe = undefined;
     this.roomCode = undefined;
     this.hostUid = undefined;
     this.currentState = undefined;
@@ -156,6 +165,42 @@ export class HostGameEngineService {
             .catch(error => console.error('Failed to process room action', document.id, error));
         });
     }, error => console.error('Room actions listener failed', error));
+  }
+
+  private subscribeToPresence(): void {
+    const roomCode = this.requireRoomCode();
+    this.presenceUnsubscribe = onSnapshot(this.presenceColRef(roomCode), snapshot => {
+      this.lock.acquire(roomCode, () => this.pruneStaleLobbyPlayers(snapshot))
+        .catch(error => console.error('Failed to prune stale room participants', error));
+    }, error => console.error('Room presence listener failed', error));
+  }
+
+  private async pruneStaleLobbyPlayers(snapshot: QuerySnapshot<PresenceDoc>): Promise<void> {
+    if (!this.currentState || this.currentState.status !== GameStatus.pending || !this.hostUid) {
+      return;
+    }
+    const cutoff = Date.now() - PRESENCE_TIMEOUT_MS;
+    const activeUids = new Set(
+      snapshot.docs
+        .map(document => document.data())
+        .filter(presence => presence.lastSeenAt >= cutoff)
+        .map(presence => presence.uid)
+    );
+    const staleUids = this.playerOrder.filter(uid => uid !== this.hostUid && !activeUids.has(uid));
+    if (!staleUids.length) {
+      return;
+    }
+    const staleUidSet = new Set(staleUids);
+    this.playerOrder = this.playerOrder.filter(uid => !staleUidSet.has(uid));
+    this.currentState.players = this.currentState.players.filter(player => !staleUidSet.has(player.id));
+    const activeParticipants: Record<string, RoomParticipant> = {};
+    Object.keys(this.participants).forEach(uid => {
+      if (!staleUidSet.has(uid)) {
+        activeParticipants[uid] = this.participants[uid];
+      }
+    });
+    this.participants = activeParticipants;
+    await this.publish();
   }
 
   private async processAction(document: QueryDocumentSnapshot<RoomActionData>): Promise<void> {
@@ -292,5 +337,9 @@ export class HostGameEngineService {
 
   private actionsColRef(roomCode: string): CollectionReference<RoomActionData> {
     return collection(this.firebaseService.firestore, 'rooms', roomCode, 'actions').withConverter(actionConverter);
+  }
+
+  private presenceColRef(roomCode: string): CollectionReference<PresenceDoc> {
+    return collection(this.firebaseService.firestore, 'rooms', roomCode, 'presence').withConverter(presenceConverter);
   }
 }

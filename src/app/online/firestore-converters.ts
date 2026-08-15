@@ -1,5 +1,5 @@
 import {DocumentData, FirestoreDataConverter, QueryDocumentSnapshot} from 'firebase/firestore';
-import {HandDoc, PrivateRoomState, PublicRoomState, RoomActionData} from './online.model';
+import {HandDoc, PresenceDoc, PrivateRoomState, PublicRoomState, RoomActionData} from './online.model';
 
 /**
  * Firestore's client SDK works with untyped DocumentData; these converters are the single,
@@ -17,3 +17,4 @@ export const roomConverter = converterFor<PublicRoomState>();
 export const privateStateConverter = converterFor<PrivateRoomState>();
 export const handConverter = converterFor<HandDoc>();
 export const actionConverter = converterFor<RoomActionData>();
+export const presenceConverter = converterFor<PresenceDoc>();

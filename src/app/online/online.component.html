@@ -6,7 +6,8 @@
       <div class="buttons-container">
         <div class="btn" (click)="showCreateForm()">Create Online Game</div>
         <div class="btn" (click)="showJoinForm()">Join Online Game</div>
-        <div class="btn secondary" (click)="leave()">Back</div>
+        <div class="btn" *ngIf="canResumeLastGame" (click)="resumeLastGame()">Resume Last Game</div>
+        <div class="btn secondary" (click)="exitMenu()">Back</div>
       </div>
     </div>
 
