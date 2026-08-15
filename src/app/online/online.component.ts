@@ -41,6 +41,7 @@ export class OnlineComponent extends SubscriberDirective implements OnInit {
   errorMessage?: string;
   busy = false;
   codeCopied = false;
+  canResumeLastGame = false;
   private copyFeedbackTimer?: ReturnType<typeof setTimeout>;
 
   hostNameInput = '';
@@ -53,15 +54,9 @@ export class OnlineComponent extends SubscriberDirective implements OnInit {
 
   ngOnInit(): void {
     this.room$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(room => this.onRoomUpdate(room));
-    this.onlineRoomService.tryResumeHostSession()
-      .then(resumed => {
-        if (resumed) {
-          this.view = 'lobby';
-        }
-      })
-      .catch(() => {
-        // No previous host session to resume from - stay on the home view.
-      });
+    this.onlineRoomService.hasResumableHostSession()
+      .then(canResume => this.canResumeLastGame = canResume)
+      .catch(error => this.errorMessage = describeError(error));
   }
 
   isHost(room: PublicRoomState | null): boolean {
@@ -88,6 +83,27 @@ export class OnlineComponent extends SubscriberDirective implements OnInit {
   backToHome(): void {
     this.errorMessage = undefined;
     this.view = 'home';
+  }
+
+  async resumeLastGame(): Promise<void> {
+    this.errorMessage = undefined;
+    this.busy = true;
+    this.view = 'connecting';
+    try {
+      const resumed = await this.onlineRoomService.tryResumeHostSession();
+      if (!resumed) {
+        this.canResumeLastGame = false;
+        this.errorMessage = 'The previous room is no longer available.';
+        this.view = 'home';
+        return;
+      }
+      this.view = 'lobby';
+    } catch (error) {
+      this.errorMessage = describeError(error);
+      this.view = 'home';
+    } finally {
+      this.busy = false;
+    }
   }
 
   async createRoom(): Promise<void> {
@@ -158,6 +174,10 @@ export class OnlineComponent extends SubscriberDirective implements OnInit {
     }
   }
 
+  exitMenu(): void {
+    this.exit.emit();
+  }
+
   override ngOnDestroy(): void {
     if (this.copyFeedbackTimer) {
       clearTimeout(this.copyFeedbackTimer);
@@ -169,6 +189,8 @@ export class OnlineComponent extends SubscriberDirective implements OnInit {
     if (room?.status === RoomStatus.closed) {
       this.errorMessage = 'The host closed this room.';
       this.view = 'home';
+      this.onlineRoomService.leaveRoom()
+        .catch(error => this.errorMessage = describeError(error));
     }
   }
 }

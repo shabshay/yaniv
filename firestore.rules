@@ -43,6 +43,17 @@ service cloud.firestore {
         allow write: if isHost(code);
       }
 
+      // Every browser owns one short-lived heartbeat document. The host may list these records
+      // to remove disconnected players from a lobby, while players cannot impersonate each other.
+      match /presence/{uid} {
+        allow read: if isSignedIn() && (request.auth.uid == uid || isHost(code));
+        allow create, update: if isSignedIn()
+          && request.auth.uid == uid
+          && request.resource.data.uid == uid
+          && request.resource.data.lastSeenAt is int;
+        allow delete: if isSignedIn() && (request.auth.uid == uid || isHost(code));
+      }
+
       // Join/move/yaniv/start commands. Anyone signed in may submit a command as themselves
       // (including a join request before they are a room participant), but only as an unprocessed
       // action they cannot mark as already handled. Only the host reads and processes the queue,
