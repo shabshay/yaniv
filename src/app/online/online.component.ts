@@ -40,6 +40,8 @@ export class OnlineComponent extends SubscriberDirective implements OnInit {
   view: OnlineView = 'home';
   errorMessage?: string;
   busy = false;
+  codeCopied = false;
+  private copyFeedbackTimer?: ReturnType<typeof setTimeout>;
 
   hostNameInput = '';
   joinNameInput = '';
@@ -130,10 +132,20 @@ export class OnlineComponent extends SubscriberDirective implements OnInit {
     return playerCount >= this.minPlayers && playerCount <= this.maxPlayers;
   }
 
-  copyRoomCode(code: string): void {
-    navigator.clipboard?.writeText(code).catch(() => {
-      // Clipboard access can be denied by the browser; the code is already shown on screen.
-    });
+  async copyRoomCode(code: string): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(code);
+      this.codeCopied = true;
+      if (this.copyFeedbackTimer) {
+        clearTimeout(this.copyFeedbackTimer);
+      }
+      this.copyFeedbackTimer = setTimeout(() => {
+        this.codeCopied = false;
+        this.copyFeedbackTimer = undefined;
+      }, 2000);
+    } catch {
+      this.errorMessage = 'Could not copy the room code. Please copy it manually.';
+    }
   }
 
   async leave(): Promise<void> {
@@ -144,6 +156,13 @@ export class OnlineComponent extends SubscriberDirective implements OnInit {
     } catch (error) {
       this.errorMessage = describeError(error);
     }
+  }
+
+  override ngOnDestroy(): void {
+    if (this.copyFeedbackTimer) {
+      clearTimeout(this.copyFeedbackTimer);
+    }
+    super.ngOnDestroy();
   }
 
   private onRoomUpdate(room: PublicRoomState | null): void {
