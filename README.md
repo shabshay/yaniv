@@ -6,14 +6,16 @@ Try to play the [live demo](https://shabshay.github.io/yaniv/).
 
 ## Firestore deployment
 
-Online rooms expire one hour after their last state update. Presence and processed action
-documents expire after five minutes. Deploy the rules, indexes, and TTL field policies with:
+The host deletes processed actions immediately and removes room data when a room is explicitly
+closed or replaced by a new hosted room. Stale lobby presence is pruned by the active host.
+Deploy the rules and indexes with:
 
 ```sh
 firebase deploy --only firestore
 ```
 
-Firestore TTL deletion is asynchronous and can occur up to 24 hours after a document expires.
+The free Spark plan cannot automatically remove rooms whose host crashes and never returns;
+managed TTL cleanup requires the Blaze billing plan.
 
 ## Usage analytics
 

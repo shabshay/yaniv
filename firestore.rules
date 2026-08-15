@@ -11,6 +11,10 @@ service cloud.firestore {
       return get(/databases/$(database)/documents/rooms/$(code)).data.hostId;
     }
 
+    function roomStatus(code) {
+      return get(/databases/$(database)/documents/rooms/$(code)).data.status;
+    }
+
     function isHost(code) {
       return isSignedIn() && roomHostId(code) == request.auth.uid;
     }
@@ -107,14 +111,15 @@ service cloud.firestore {
         && resource.data.hostId == request.auth.uid
         && request.resource.data.hostId == resource.data.hostId
         && hasRolloutExpiry(request.resource.data, duration.value(65, 'm'));
-      allow delete: if false;
+      allow delete: if isHost(code);
 
       // Host-only complete GameState (deck, every hand, everything). Never readable by anyone
       // else - only the host's own browser needs it, to resume authoritative processing.
       match /private/{document=**} {
         allow read: if isHost(code);
-        allow write: if isHost(code)
+        allow create, update: if isHost(code)
           && hasRolloutExpiry(request.resource.data, duration.value(65, 'm'));
+        allow delete: if isHost(code);
       }
 
       // One document per participant containing their real cards. Readable only by that
@@ -122,8 +127,9 @@ service cloud.firestore {
       // authoritative state change).
       match /hands/{uid} {
         allow read: if isSignedIn() && (request.auth.uid == uid || isHost(code));
-        allow write: if isHost(code)
+        allow create, update: if isHost(code)
           && hasRolloutExpiry(request.resource.data, duration.value(65, 'm'));
+        allow delete: if isHost(code);
       }
 
       // Every browser owns one short-lived heartbeat document. The host may list these records
@@ -145,6 +151,7 @@ service cloud.firestore {
       // and only the host may flip `processed` once a command has been applied.
       match /actions/{actionId} {
         allow create: if isSignedIn()
+          && roomStatus(code) in ['lobby', 'active']
           && isValidActionBase(request.resource.data)
           && (
             isValidJoinAction(request.resource.data)
@@ -156,7 +163,7 @@ service cloud.firestore {
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['processed', 'expiresAt'])
           && request.resource.data.processed == true
           && hasRolloutExpiry(request.resource.data, duration.value(10, 'm'));
-        allow delete: if false;
+        allow delete: if isHost(code);
       }
     }
   }

@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {addDoc, collection, deleteDoc, doc, getDoc, onSnapshot, setDoc, Unsubscribe, updateDoc} from 'firebase/firestore';
+import {addDoc, collection, deleteDoc, doc, getDoc, onSnapshot, setDoc, Unsubscribe} from 'firebase/firestore';
 import {combineLatest, Observable, ReplaySubject, Subscription} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {Card, GameConfig, GameState, Player} from '../game/api/game.model';
@@ -386,7 +386,7 @@ export class OnlineRoomService {
     const roomRef = doc(this.firestore, 'rooms', saved.code).withConverter(roomConverter);
     const snap = await getDoc(roomRef);
     if (snap.exists() && snap.data().hostId === uid && snap.data().status !== RoomStatus.closed) {
-      await updateDoc(roomRef, {status: RoomStatus.closed});
+      await this.hostEngine.closeStoredRoom(saved.code, uid);
     }
     this.clearHostSession();
   }

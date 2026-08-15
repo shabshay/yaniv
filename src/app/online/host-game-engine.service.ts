@@ -4,9 +4,12 @@ import AsyncLock from 'async-lock';
 import {
   collection,
   CollectionReference,
+  deleteDoc,
   doc,
   DocumentReference,
   getDoc,
+  getDocs,
+  limit,
   onSnapshot,
   orderBy,
   query,
@@ -42,10 +45,11 @@ import {
   isValidRoomAction
 } from './online.model';
 import {isAllowedPlayerAvatar, normalizePlayerName} from './player-profile';
-import {expirationTimestamp, PROCESSED_ACTION_TTL_MS, ROOM_TTL_MS} from './firestore-ttl';
+import {expirationTimestamp, ROOM_TTL_MS} from './firestore-ttl';
 import {AnalyticsService} from '../analytics.service';
 
 const PRESENCE_TIMEOUT_MS = 90000;
+const CLEANUP_BATCH_SIZE = 450;
 
 /**
  * Runs only in the host's browser. Listens for join/move/yaniv/start commands submitted by every
@@ -147,8 +151,21 @@ export class HostGameEngineService {
     const roomCode = this.roomCode;
     await this.lock.acquire(roomCode, async () => {
       this.trackAbandonedGame();
+      const participantIds = Object.keys(this.participants);
       this.stop();
       await updateDoc(this.roomDocRef(roomCode), {status: RoomStatus.closed});
+      await this.deleteRoomData(roomCode, participantIds);
+    });
+  }
+
+  async closeStoredRoom(roomCode: string, hostUid: string): Promise<void> {
+    await this.lock.acquire(roomCode, async () => {
+      const roomSnap = await getDoc(this.roomDocRef(roomCode));
+      if (!roomSnap.exists() || roomSnap.data().hostId !== hostUid) {
+        return;
+      }
+      await updateDoc(roomSnap.ref, {status: RoomStatus.closed});
+      await this.deleteRoomData(roomCode, Object.keys(roomSnap.data().participants));
     });
   }
 
@@ -217,6 +234,11 @@ export class HostGameEngineService {
       }
     });
     this.participants = activeParticipants;
+    const presenceBatch = writeBatch(this.firebaseService.firestore);
+    staleUids.forEach(uid => {
+      presenceBatch.delete(doc(this.firebaseService.firestore, 'rooms', this.requireRoomCode(), 'presence', uid));
+    });
+    await presenceBatch.commit();
     await this.publish();
   }
 
@@ -224,7 +246,7 @@ export class HostGameEngineService {
     const action: unknown = document.data();
     if (!isValidRoomAction(action)) {
       console.warn('Rejected malformed room action', document.id);
-      await this.markActionProcessed(document);
+      await deleteDoc(document.ref);
       return;
     }
     switch (action.type) {
@@ -241,14 +263,7 @@ export class HostGameEngineService {
         this.handleYaniv(action);
         break;
     }
-    await this.markActionProcessed(document);
-  }
-
-  private markActionProcessed(document: QueryDocumentSnapshot<RoomActionData>): Promise<void> {
-    return updateDoc(document.ref, {
-      processed: true,
-      expiresAt: expirationTimestamp(PROCESSED_ACTION_TTL_MS)
-    });
+    await deleteDoc(document.ref);
   }
 
   private queuePublish(): Promise<void> {
@@ -344,6 +359,27 @@ export class HostGameEngineService {
       return;
     }
     this.analyticsService.trackGameAbandoned('online', this.currentState, this.gameStartedAt);
+  }
+
+  private async deleteRoomData(roomCode: string, participantIds: string[]): Promise<void> {
+    while (true) {
+      const actionSnapshot = await getDocs(query(this.actionsColRef(roomCode), limit(CLEANUP_BATCH_SIZE)));
+      if (actionSnapshot.empty) {
+        break;
+      }
+      const actionBatch = writeBatch(this.firebaseService.firestore);
+      actionSnapshot.docs.forEach(action => actionBatch.delete(action.ref));
+      await actionBatch.commit();
+    }
+
+    const roomBatch = writeBatch(this.firebaseService.firestore);
+    roomBatch.delete(this.privateDocRef(roomCode));
+    participantIds.forEach(uid => {
+      roomBatch.delete(this.handDocRef(roomCode, uid));
+      roomBatch.delete(doc(this.firebaseService.firestore, 'rooms', roomCode, 'presence', uid));
+    });
+    await roomBatch.commit();
+    await deleteDoc(this.roomDocRef(roomCode));
   }
 
   private async publish(): Promise<void> {
