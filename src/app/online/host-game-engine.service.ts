@@ -37,8 +37,10 @@ import {
   RoomParticipant,
   RoomStatus,
   StartActionData,
-  YanivActionData
+  YanivActionData,
+  isValidRoomAction
 } from './online.model';
+import {isAllowedPlayerAvatar, normalizePlayerName} from './player-profile';
 
 const PRESENCE_TIMEOUT_MS = 90000;
 
@@ -204,7 +206,12 @@ export class HostGameEngineService {
   }
 
   private async processAction(document: QueryDocumentSnapshot<RoomActionData>): Promise<void> {
-    const action = document.data();
+    const action: unknown = document.data();
+    if (!isValidRoomAction(action)) {
+      console.warn('Rejected malformed room action', document.id);
+      await updateDoc(document.ref, {processed: true});
+      return;
+    }
     switch (action.type) {
       case 'join':
         this.handleJoin(action);
@@ -231,12 +238,19 @@ export class HostGameEngineService {
     if (!this.currentState || this.currentState.status !== GameStatus.pending) {
       return;
     }
+    const name = normalizePlayerName(action.name);
+    const nameTaken = Object.values(this.participants)
+      .some(participant => participant.name.toLocaleLowerCase() === name.toLocaleLowerCase());
+    if (!name || !isAllowedPlayerAvatar(action.img) || nameTaken) {
+      console.warn('Rejected invalid or duplicate player profile', action.uid);
+      return;
+    }
     if (this.participants[action.uid] || Object.keys(this.participants).length >= MAX_ONLINE_PLAYERS) {
       return;
     }
     const player: Player = {
       id: action.uid,
-      name: action.name,
+      name,
       img: action.img,
       isOut: false,
       totalScore: 0,
@@ -244,7 +258,7 @@ export class HostGameEngineService {
     };
     this.participants = {
       ...this.participants,
-      [action.uid]: {uid: action.uid, name: action.name, img: action.img, joinedAt: action.createdAt}
+      [action.uid]: {uid: action.uid, name, img: action.img, joinedAt: action.createdAt}
     };
     this.playerOrder = [...this.playerOrder, action.uid];
     this.gameController.addPlayer(this.currentState, player);

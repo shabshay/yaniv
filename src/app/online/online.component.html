@@ -55,6 +55,7 @@
           {{ room.code }}
         </div>
         <p class="hint">Share this code with friends so they can join</p>
+        <p class="hint" *ngIf="!isHost(room)">Only join hosts you trust: the host runs the game.</p>
         <button type="button" (click)="copyRoomCode(room.code)">
           {{ codeCopied ? 'Copied!' : 'Copy Code' }}
         </button>
