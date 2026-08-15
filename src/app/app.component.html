@@ -1,10 +1,26 @@
 <div class="app-container">
-  <ng-template [ngIf]="gameState" [ngIfElse]="gameNotRunningTemplate">
+  <ng-container *ngIf="gameState; else onlineOrMenuTemplate">
     <app-game [gameState]="gameState" [player]="player"></app-game>
+  </ng-container>
+  <ng-template #onlineOrMenuTemplate>
+    <ng-container *ngIf="activeOnlineGame$ | async as activeGame; else onlineMenuOrMainMenuTemplate">
+      <app-game
+        [gameState]="activeGame.gameState"
+        [player]="activeGame.player"
+        [isOnline]="true"
+        (leaveOnline)="leaveOnlineGame()">
+      </app-game>
+    </ng-container>
   </ng-template>
-  <ng-template #gameNotRunningTemplate>
+  <ng-template #onlineMenuOrMainMenuTemplate>
+    <ng-container *ngIf="onlineMenuVisible; else mainMenuTemplate">
+      <app-online [gameConfig]="gameSettings" (exit)="handleOnlineMenuExit()"></app-online>
+    </ng-container>
+  </ng-template>
+  <ng-template #mainMenuTemplate>
     <app-menu
       (startGame)="startGame()"
+      (playOnline)="showOnlineMenu()"
       (showSettings)="showSettings()"
     ></app-menu>
   </ng-template>

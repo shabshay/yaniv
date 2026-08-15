@@ -23,6 +23,10 @@ import { TimerComponent } from './timer/timer.component';
 import {GameSounds} from './game/game.sounds';
 import {MenuComponent} from './menu/menu.component';
 import {SettingsComponent} from './settings/settings.component';
+import {OnlineComponent} from './online/online.component';
+import {FirebaseService} from './online/firebase.service';
+import {OnlineRoomService} from './online/online-room.service';
+import {HostGameEngineService} from './online/host-game-engine.service';
 
 @NgModule({
   declarations: [
@@ -45,9 +49,19 @@ import {SettingsComponent} from './settings/settings.component';
     MatButtonModule,
     MatDialogModule,
     MenuComponent,
-    SettingsComponent
+    SettingsComponent,
+    OnlineComponent
   ],
-  providers: [GameController, GameValidator, GameEvents, GameReducer, GameSounds],
+  providers: [
+    GameController,
+    GameValidator,
+    GameEvents,
+    GameReducer,
+    GameSounds,
+    FirebaseService,
+    HostGameEngineService,
+    OnlineRoomService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

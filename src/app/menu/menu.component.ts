@@ -9,5 +9,6 @@ import {SettingsComponent} from '../settings/settings.component';
 })
 export class MenuComponent {
   @Output() startGame = new EventEmitter<void>();
+  @Output() playOnline = new EventEmitter<void>();
   @Output() showSettings = new EventEmitter<void>();
 }
