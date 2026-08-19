@@ -75,6 +75,9 @@ export class GameValidator {
 
   private cardsHasSameSymbol(cards: Card[]): boolean {
     const cardsWithoutJokers = cards.filter(card => card.value.order !== 0);
-    return cardsWithoutJokers.every(card => card.symbol === cardsWithoutJokers[0].symbol);
+    return cardsWithoutJokers.every(card =>
+      card.symbol.type === cardsWithoutJokers[0].symbol.type
+      && card.symbol.color === cardsWithoutJokers[0].symbol.color
+    );
   }
 }

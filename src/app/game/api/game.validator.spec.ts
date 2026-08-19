@@ -26,6 +26,17 @@ describe('GameValidator', () => {
     expect(orderedValues).toEqual([5, 6, 7]);
   });
 
+  it('asStraightCards accepts deserialized cards with equivalent suit objects', () => {
+    const hearts = CardSymbolsMap.get(CardSymbolEnum.Hearts) as CardSymbol;
+    const cards: Card[] = [
+      {value: CardValuesMap.get(CardValueEnum.Three) as CardValue, symbol: {...hearts}},
+      {value: CardValuesMap.get(CardValueEnum.Four) as CardValue, symbol: {...hearts}},
+      {value: CardValuesMap.get(CardValueEnum.Five) as CardValue, symbol: {...hearts}}
+    ];
+
+    expect(validator.selectedCardsAreValid(cards)).toBe(true);
+  });
+
   it('asStraightCards should return empty when its not straight cards', () => {
     const cards: Card[] = [
       {value: CardValuesMap.get(CardValueEnum.Six) as CardValue, symbol: CardSymbolsMap.get(CardSymbolEnum.Hearts) as CardSymbol},
