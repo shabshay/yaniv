@@ -172,23 +172,26 @@ describe('game-state-sanitizer', () => {
       opponentCards?.forEach(c => expect(c.symbol.type).toBe('hidden'));
     });
 
-    it('restores opponents\' revealed cards during Yaniv', () => {
-      const player1 = player('p1', [card(1)]);
-      const player2 = player('p2', [card(2), card(3)]);
-      const gameState: GameState = {
-        config,
-        players: [player1, player2],
-        deck: [],
-        roundsResults: [],
-        moves: [],
-        status: GameStatus.yaniv
-      };
-      const sanitized = sanitizeGameState(gameState);
+    it.each([GameStatus.yaniv, GameStatus.gameOver])(
+      'restores opponents\' revealed cards during %s',
+      status => {
+        const player1 = player('p1', [card(1)]);
+        const player2 = player('p2', [card(2), card(3)]);
+        const gameState: GameState = {
+          config,
+          players: [player1, player2],
+          deck: [],
+          roundsResults: [],
+          moves: [],
+          status
+        };
+        const sanitized = sanitizeGameState(gameState);
 
-      const merged = mergeLocalHand(sanitized, 'p1', [card(1)]);
+        const merged = mergeLocalHand(sanitized, 'p1', [card(1)]);
 
-      expect(merged.players.find(p => p.id === 'p2')?.cards).toEqual(player2.cards);
-    });
+        expect(merged.players.find(p => p.id === 'p2')?.cards).toEqual(player2.cards);
+      }
+    );
 
     it('leaves players who are already out without any cards', () => {
       const player1 = player('p1', [card(1)]);
