@@ -1,4 +1,4 @@
-import {Card, GameState, Player, RoundResult} from '../game/api/game.model';
+import {Card, GameState, GameStatus, Player, RoundResult} from '../game/api/game.model';
 import {PublicPlayerSummary, SanitizedGameState, SanitizedPlayer, SanitizedRoundResult} from './online.model';
 
 // Placeholder face for cards whose identity must not be revealed (opponents' hands, the deck).
@@ -24,9 +24,13 @@ function toPublicPlayerSummary(player: Player): PublicPlayerSummary {
   };
 }
 
-function toSanitizedPlayer(player: Player): SanitizedPlayer {
+function toSanitizedPlayer(player: Player, revealCards: boolean): SanitizedPlayer {
   const {cards, ...publicFields} = player;
-  return {...publicFields, cardsCount: cards?.length ?? 0};
+  return {
+    ...publicFields,
+    cardsCount: cards?.length ?? 0,
+    ...(revealCards ? {cards} : {})
+  };
 }
 
 function sanitizeRoundResult(roundResult: RoundResult): SanitizedRoundResult {
@@ -41,14 +45,15 @@ function sanitizeRoundResult(roundResult: RoundResult): SanitizedRoundResult {
 }
 
 /**
- * Produces the shape of GameState that is safe to publish to every room participant: no deck
- * contents and no player hands (top-level or nested inside round results).
+ * Produces the public GameState. The deck is always hidden; hands are revealed only after Yaniv
+ * so every participant can verify the round scores.
  */
 export function sanitizeGameState(gameState: GameState): SanitizedGameState {
+  const revealCards = [GameStatus.yaniv, GameStatus.gameOver].includes(gameState.status);
   return {
     config: gameState.config,
-    currentPlayer: gameState.currentPlayer ? toSanitizedPlayer(gameState.currentPlayer) : undefined,
-    players: gameState.players.map(toSanitizedPlayer),
+    currentPlayer: gameState.currentPlayer ? toSanitizedPlayer(gameState.currentPlayer, revealCards) : undefined,
+    players: gameState.players.map(player => toSanitizedPlayer(player, revealCards)),
     deckCount: gameState.deck.length,
     roundsResults: gameState.roundsResults.map(sanitizeRoundResult),
     moves: gameState.moves,
@@ -69,9 +74,9 @@ export function mergeLocalHand(sanitized: SanitizedGameState, localPlayerId: str
     isOut: player.isOut,
     totalScore: player.totalScore,
     isComputerPlayer: player.isComputerPlayer,
-    cards: player.id === localPlayerId
+    cards: player.cards ?? (player.id === localPlayerId
       ? localHand
-      : (player.isOut ? undefined : buildPlaceholderCards(player.cardsCount))
+      : (player.isOut ? undefined : buildPlaceholderCards(player.cardsCount)))
   }));
 
   return {

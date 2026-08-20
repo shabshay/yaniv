@@ -18,8 +18,8 @@ export interface RoomParticipant {
   joinedAt: number;
 }
 
-/** A Player as it may safely be shared with every client: never carries hidden card data. */
-export type SanitizedPlayer = Omit<Player, 'cards'> & { cardsCount: number };
+/** A publicly shared player. Cards are included only while a completed round is being shown. */
+export type SanitizedPlayer = Omit<Player, 'cards'> & { cardsCount: number; cards?: Card[] };
 
 /** Minimal public identity of a player, used inside round results so hands never leak there either. */
 export interface PublicPlayerSummary {
@@ -42,7 +42,7 @@ export interface SanitizedRoundResult {
   playersRoundScores: SanitizedPlayerRoundScore[];
 }
 
-/** The shape of GameState that is safe to publish to every participant (no deck, no hands). */
+/** The public GameState shape. Hands are present only while a completed round is being shown. */
 export interface SanitizedGameState {
   config: GameConfig;
   currentPlayer?: SanitizedPlayer;
