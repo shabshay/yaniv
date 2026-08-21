@@ -153,7 +153,10 @@ export class HostGameEngineService {
       this.trackAbandonedGame();
       const participantIds = Object.keys(this.participants);
       this.stop();
-      await updateDoc(this.roomDocRef(roomCode), {status: RoomStatus.closed});
+      await updateDoc(this.roomDocRef(roomCode), {
+        status: RoomStatus.closed,
+        expiresAt: expirationTimestamp(ROOM_TTL_MS)
+      });
       await this.deleteRoomData(roomCode, participantIds);
     });
   }
@@ -164,7 +167,10 @@ export class HostGameEngineService {
       if (!roomSnap.exists() || roomSnap.data().hostId !== hostUid) {
         return;
       }
-      await updateDoc(roomSnap.ref, {status: RoomStatus.closed});
+      await updateDoc(roomSnap.ref, {
+        status: RoomStatus.closed,
+        expiresAt: expirationTimestamp(ROOM_TTL_MS)
+      });
       await this.deleteRoomData(roomCode, Object.keys(roomSnap.data().participants));
     });
   }
